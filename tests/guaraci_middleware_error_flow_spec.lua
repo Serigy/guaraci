@@ -1,4 +1,4 @@
--- tests/nika_middleware_error_flow_spec.lua
+-- tests/guaraci_middleware_error_flow_spec.lua
 -- Testes para erro em middleware de route groups (Phase 13 Block 3)
 -- Valida que erro em middleware é capturado, padronizado e negociado
 
@@ -7,7 +7,7 @@ local middleware_chain = require("middleware_chain")
 local error_handler = require("error_handler")
 local error_formatter = require("error_formatter")
 
-describe("Nika middleware error flow (Phase 13 Block 3)", function()
+describe("Guaraci middleware error flow (Phase 13 Block 3)", function()
     before_each(function()
         middleware_chain.clear()
         hooks.clear()
@@ -154,11 +154,11 @@ describe("Nika middleware error flow (Phase 13 Block 3)", function()
     end)
 
     it("custom error handler pode processar middleware error", function()
-        nika = require("nika")
-        nika.reset_error_handler()
+        guaraci = require("guaraci")
+        guaraci.reset_error_handler()
 
         local custom_handler_called = false
-        nika.set_error_handler(function(err, context)
+        guaraci.set_error_handler(function(err, context)
             custom_handler_called = true
             return {
                 status = 418,
@@ -180,7 +180,7 @@ describe("Nika middleware error flow (Phase 13 Block 3)", function()
         -- Default handler retorna 500
         assert.are.equal(500, res.status)
 
-        nika.reset_error_handler()
+        guaraci.reset_error_handler()
     end)
 
     it("middleware error com fallback seguro", function()

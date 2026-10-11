@@ -63,14 +63,14 @@ local function compile_tokens(template)
     local contexts = {}
 
     lines[#lines + 1] = "local __buf = {}"
-    lines[#lines + 1] = "local function __nika_write(v) table.insert(__buf, tostring(v)) end"
+    lines[#lines + 1] = "local function __guaraci_write(v) table.insert(__buf, tostring(v)) end"
     lines[#lines + 1] = "local escape = assert(escape, \"escape function is required\")"
     lines[#lines + 1] =
-    "local __nika_escape_by_context = assert(__nika_escape_by_context, \"__nika_escape_by_context function is required\")"
-    lines[#lines + 1] = "local __nika_partial = assert(__nika_partial, \"__nika_partial function is required\")"
+    "local __guaraci_escape_by_context = assert(__guaraci_escape_by_context, \"__guaraci_escape_by_context function is required\")"
+    lines[#lines + 1] = "local __guaraci_partial = assert(__guaraci_partial, \"__guaraci_partial function is required\")"
     lines[#lines + 1] = "local function write(_) error(\"blocked_context:RAW_TEXT_TEMPLATE\", 2) end"
-    lines[#lines + 1] = "local function partial(name, data) return __nika_partial(name, data) end"
-    lines[#lines + 1] = "local function include(name, data) __nika_write(__nika_partial(name, data)) end"
+    lines[#lines + 1] = "local function partial(name, data) return __guaraci_partial(name, data) end"
+    lines[#lines + 1] = "local function include(name, data) __guaraci_write(__guaraci_partial(name, data)) end"
 
     while true do
         local open_start, open_end = string.find(template, "<%", cursor, true)
@@ -78,14 +78,14 @@ local function compile_tokens(template)
         if not open_start then
             local literal = string.sub(template, cursor)
             if literal ~= "" then
-                lines[#lines + 1] = "__nika_write(" .. string.format("%q", literal) .. ")"
+                lines[#lines + 1] = "__guaraci_write(" .. string.format("%q", literal) .. ")"
             end
             break
         end
 
         local literal = string.sub(template, cursor, open_start - 1)
         if literal ~= "" then
-            lines[#lines + 1] = "__nika_write(" .. string.format("%q", literal) .. ")"
+            lines[#lines + 1] = "__guaraci_write(" .. string.format("%q", literal) .. ")"
         end
 
         local close_start, _ = string.find(template, "%>", open_end + 1, true)
@@ -103,7 +103,7 @@ local function compile_tokens(template)
             end
             local context_name = infer_expr_context(template, open_start, literal)
             contexts[#contexts + 1] = context_name
-            lines[#lines + 1] = "__nika_write(__nika_escape_by_context(\"" ..
+            lines[#lines + 1] = "__guaraci_write(__guaraci_escape_by_context(\"" ..
             context_name .. "\", tostring(" .. expr .. " or \"\")))"
         else
             local code = trim(raw_block)

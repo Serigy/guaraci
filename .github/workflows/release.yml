@@ -153,8 +153,8 @@ jobs:
         run: |
           TAG="${{ steps.tag.outputs.tag }}"
           mkdir -p dist
-          git archive --format=zip --output "dist/nika-${TAG}.zip" "$TAG"
-          git archive --format=tar.gz --output "dist/nika-${TAG}.tar.gz" "$TAG"
+          git archive --format=zip --output "dist/guaraci-${TAG}.zip" "$TAG"
+          git archive --format=tar.gz --output "dist/guaraci-${TAG}.tar.gz" "$TAG"
 
       - name: Criar GitHub Release
         if: ${{ steps.existing_release.outputs.exists != 'true' }}
@@ -181,15 +181,15 @@ jobs:
         shell: bash
         run: |
           ROCK_VERSION="${{ steps.luarocks_meta.outputs.rock_version }}"
-          cat > "dist/nika-${ROCK_VERSION}.rockspec" <<EOF
-          package = "nika"
+          cat > "dist/guaraci-${ROCK_VERSION}.rockspec" <<EOF
+          package = "guaraci"
           version = "${ROCK_VERSION}"
           source = {
             url = "git+https://github.com/${{ github.repository }}.git",
             tag = "${{ steps.tag.outputs.tag }}"
           }
           description = {
-            summary = "Nika: framework web minimalista em Lua",
+            summary = "Guaraci: framework web minimalista em Lua",
             homepage = "https://github.com/${{ github.repository }}",
             license = "BSD-3-Clause"
           }
@@ -199,9 +199,9 @@ jobs:
           build = {
             type = "builtin",
             modules = {
-              nika = "src/nika.lua",
-              nika_io = "src/nika_io.lua",
-              nika_audit = "src/nika_audit.lua",
+              guaraci = "src/guaraci.lua",
+              guaraci_io = "src/guaraci_io.lua",
+              guaraci_audit = "src/guaraci_audit.lua",
               json_util = "src/json_util.lua",
               router = "src/router.lua",
               parser = "src/parser.lua",
@@ -220,7 +220,7 @@ jobs:
         env:
           LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
         run: |
-          ROCKSPEC_FILE="dist/nika-${{ steps.luarocks_meta.outputs.rock_version }}.rockspec"
+          ROCKSPEC_FILE="dist/guaraci-${{ steps.luarocks_meta.outputs.rock_version }}.rockspec"
           luarocks pack "$ROCKSPEC_FILE"
           luarocks upload --api-key="$LUAROCKS_API_KEY" "$ROCKSPEC_FILE"
 

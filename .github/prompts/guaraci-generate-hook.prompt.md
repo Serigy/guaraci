@@ -1,11 +1,11 @@
 ---
-name: "Nika Generate Hook"
-description: "Gera hook Lua do Nika com assinatura req/res, short-circuit explícito, log de segurança e retorno booleano de continuidade."
+name: "Guaraci Generate Hook"
+description: "Gera hook Lua do Guaraci com assinatura req/res, short-circuit explícito, log de segurança e retorno booleano de continuidade."
 argument-hint: "Informe propósito do hook e estágio (before_request, before_render, after_request)."
-agent: "Nika Principal Lua Developer"
+agent: "Guaraci Principal Lua Developer"
 ---
 
-@Nika Principal Lua Developer
+@Guaraci Principal Lua Developer
 
 **Tarefa:** Criar um Hook de {{proposito_do_hook}}.
 
@@ -15,7 +15,7 @@ agent: "Nika Principal Lua Developer"
 Gere a função de hook seguindo o padrão do framework:
 1. A função deve receber `(req, res)`.
 2. Defina claramente a condição de short-circuit (quando o hook deve retornar `true` e abortar a requisição com erro 403/401).
-3. Inclua geração de log inalterável (`nika_audit.log_security`) quando a condição de bloqueio for atingida.
+3. Inclua geração de log inalterável (`guaraci_audit.log_security`) quando a condição de bloqueio for atingida.
 4. Se o fluxo for válido, retorne `false` para dar continuidade.
 
 Formato obrigatório da resposta:

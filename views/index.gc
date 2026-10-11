@@ -1,2 +1,2 @@
-<h1>Nika MVP</h1>
+<h1>Guaraci MVP</h1>
 <p>Ola, <%= Request.query.nome or "visitante" %>!</p>

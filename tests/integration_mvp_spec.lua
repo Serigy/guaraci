@@ -1,5 +1,5 @@
 local hooks = require("hooks")
-local nika = require("nika")
+local guaraci = require("guaraci")
 
 describe("MVP integration flow", function()
     before_each(function()
@@ -11,7 +11,7 @@ describe("MVP integration flow", function()
     end)
 
     it("renderiza template e injeta security headers", function()
-        local res = nika.handle_request({
+        local res = guaraci.handle_request({
             method = "GET",
             path = "/",
             query = { nome = "Alice" }
@@ -32,7 +32,7 @@ describe("MVP integration flow", function()
             return true
         end, "auth_gate")
 
-        local res = nika.handle_request({
+        local res = guaraci.handle_request({
             method = "GET",
             path = "/",
             query = {}

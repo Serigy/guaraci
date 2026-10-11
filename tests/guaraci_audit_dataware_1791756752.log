@@ -1,0 +1,22 @@
+{"level":"error","timestamp":"2026-10-11T22:12:32Z","context":{"error":"./tests\\db_transaction_spec.lua:64: falha no bloco transacional"},"message":"Transacao revertida por excecao"}
+{"level":"error","timestamp":"2026-10-11T22:12:32Z","context":{"error":"db_constraint_violation"},"message":"Transacao revertida por erro de operacao"}
+{"level":"error","timestamp":"2026-10-11T22:12:32Z","context":{"op":"execute","mapped_error":"db_constraint_violation","error":"UNIQUE constraint failed: users.email"},"message":"Erro de execucao no driver"}
+{"level":"error","timestamp":"2026-10-11T22:12:32Z","context":{"op":"execute","mapped_error":"db_busy","error":"database is busy"},"message":"Erro de execucao no driver"}
+{"level":"error","timestamp":"2026-10-11T22:12:32Z","context":{"op":"execute","mapped_error":"db_locked","error":"database table is locked"},"message":"Erro de execucao no driver"}
+{"level":"security","timestamp":"2026-10-11T22:12:32Z","context":{"reason":"tenant_required","operation":"select","model":"User"},"message":"dataware_tenant_violation"}
+{"level":"security","timestamp":"2026-10-11T22:12:32Z","context":{"new_data":{"name":"Jane"},"model":"User","tenant_id":"t-1"},"message":"dataware_update"}
+{"level":"security","timestamp":"2026-10-11T22:12:32Z","context":{"model":"User","data":{"filters":[{"params":[42],"sql":"id = ?"}]},"tenant_id":"t-1"},"message":"dataware_delete"}
+{"level":"security","timestamp":"2026-10-11T22:12:32Z","context":{"new_data":{"name":"Neo"},"model":"User","tenant_id":"t-1"},"message":"dataware_update"}
+{"level":"security","timestamp":"2026-10-11T22:12:32Z","context":{"model":"User","data":{"filters":[{"params":["42"],"sql":"id = ?"}]},"tenant_id":"t-1"},"message":"dataware_delete"}
+{"level":"error","timestamp":"2026-10-11T22:12:32Z","context":{"op":"execute","mapped_error":"db_constraint_violation","error":"db_constraint_violation"},"message":"Erro de execucao no driver"}
+{"level":"error","timestamp":"2026-10-11T22:12:32Z","context":{"op":"execute","mapped_error":"db_busy","error":"db_busy"},"message":"Erro de execucao no driver"}
+{"level":"error","timestamp":"2026-10-11T22:12:32Z","context":{"op":"execute","mapped_error":"db_locked","error":"db_locked"},"message":"Erro de execucao no driver"}
+{"level":"security","timestamp":"2026-10-11T22:12:32Z","context":{"origin":"https://evil.example.com"},"message":"cors_origin_blocked"}
+{"level":"security","timestamp":"2026-10-11T22:12:32Z","context":{"has_cookie":true,"has_header":false,"method":"POST"},"message":"csrf_validation_failed"}
+{"level":"security","timestamp":"2026-10-11T22:12:32Z","context":{"retry_after":60,"ip":"10.0.0.1","count":3},"message":"rate_limit_exceeded"}
+{"level":"security","timestamp":"2026-10-11T22:12:32Z","context":{"reason":"path_traversal"},"message":"file_upload_blocked"}
+{"level":"security","timestamp":"2026-10-11T22:12:32Z","context":{"reason":"path_traversal"},"message":"file_upload_blocked"}
+{"level":"error","timestamp":"2026-10-11T22:12:32Z","context":{"hook":"broken_hook","stage":"before_render","error":"./tests\\guaraci_error_flow_spec.lua:80: hook exploded"},"message":"Hook falhou durante execucao"}
+{"level":"error","timestamp":"2026-10-11T22:12:32Z","context":{"context_id":"ctx-1791756752-489704","error":"./tests\\guaraci_error_flow_spec.lua:102: panic no router"},"message":"Falha inesperada no pipeline"}
+{"level":"error","timestamp":"2026-10-11T22:12:32Z","context":{"stage":"before_request","middleware":"auth_mid","error":"./tests\\guaraci_middleware_error_flow_spec.lua:18: Auth middleware failed"},"message":"middleware_error"}
+{"level":"error","timestamp":"2026-10-11T22:12:32Z","context":{"stage":"before_request","middleware":"second","error":"./tests\\guaraci_middleware_error_flow_spec.lua:138: Second failed"},"message":"middleware_error"}

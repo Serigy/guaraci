@@ -1,15 +1,15 @@
 local hooks = require("hooks")
 
-describe("Nika error flow (Phase 13)", function()
-    local nika
+describe("Guaraci error flow (Phase 13)", function()
+    local guaraci
     local original_router
 
     before_each(function()
         hooks.clear()
         original_router = package.loaded["router"]
-        package.loaded["nika"] = nil
-        nika = require("nika")
-        nika.reset_error_handler()
+        package.loaded["guaraci"] = nil
+        guaraci = require("guaraci")
+        guaraci.reset_error_handler()
     end)
 
     after_each(function()
@@ -17,7 +17,7 @@ describe("Nika error flow (Phase 13)", function()
     end)
 
     it("usa content negotiation para erro de upload", function()
-        local res = nika.handle_request({
+        local res = guaraci.handle_request({
             method = "POST",
             path = "/upload",
             headers = {
@@ -34,7 +34,7 @@ describe("Nika error flow (Phase 13)", function()
     end)
 
     it("permite configurar error handler global customizado", function()
-        nika.set_error_handler(function(err)
+        guaraci.set_error_handler(function(err)
             return {
                 status = 418,
                 headers = {
@@ -44,7 +44,7 @@ describe("Nika error flow (Phase 13)", function()
             }
         end)
 
-        local res = nika.handle_request({
+        local res = guaraci.handle_request({
             method = "POST",
             path = "/upload",
             upload_error = "any"
@@ -55,11 +55,11 @@ describe("Nika error flow (Phase 13)", function()
         assert.are.equal(418, res.status)
         assert.is_not_nil(res.body:find("custom", 1, true))
 
-        nika.reset_error_handler()
+        guaraci.reset_error_handler()
     end)
 
     it("padroniza erro de rota por formato", function()
-        local res = nika.handle_request({
+        local res = guaraci.handle_request({
             method = "GET",
             path = "/rota-inexistente",
             headers = {
@@ -80,7 +80,7 @@ describe("Nika error flow (Phase 13)", function()
             error("hook exploded")
         end, "broken_hook")
 
-        local res = nika.handle_request({
+        local res = guaraci.handle_request({
             method = "GET",
             path = "/",
             headers = {
@@ -103,11 +103,11 @@ describe("Nika error flow (Phase 13)", function()
             end
         }
 
-        package.loaded["nika"] = nil
-        nika = require("nika")
-        nika.reset_error_handler()
+        package.loaded["guaraci"] = nil
+        guaraci = require("guaraci")
+        guaraci.reset_error_handler()
 
-        local res = nika.handle_request({
+        local res = guaraci.handle_request({
             method = "GET",
             path = "/",
             headers = {

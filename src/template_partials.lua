@@ -11,7 +11,7 @@ local function emit_security(on_security, message, context)
 end
 
 local function is_registry(candidate)
-    return type(candidate) == "table" and candidate.__nika_template_partial_registry == true and
+    return type(candidate) == "table" and candidate.__guaraci_template_partial_registry == true and
     type(candidate.partials) == "table"
 end
 
@@ -31,7 +31,7 @@ end
 
 function M.new(initial_partials)
     local registry = {
-        __nika_template_partial_registry = true,
+        __guaraci_template_partial_registry = true,
         partials = {}
     }
 

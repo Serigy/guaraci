@@ -15,9 +15,9 @@ local FORBIDDEN_NAMES = {
     Response = true,
     escape = true,
     write = true,
-    __nika_emit = true,
-    __nika_write = true,
-    __nika_escape_by_context = true
+    __guaraci_emit = true,
+    __guaraci_write = true,
+    __guaraci_escape_by_context = true
 }
 
 local function is_valid_name(name)
@@ -31,7 +31,7 @@ local function emit_security(on_security, message, context)
 end
 
 local function is_registry(candidate)
-    return type(candidate) == "table" and candidate.__nika_template_fn_registry == true and
+    return type(candidate) == "table" and candidate.__guaraci_template_fn_registry == true and
     type(candidate.functions) == "table"
 end
 
@@ -56,7 +56,7 @@ end
 
 function M.new(initial_functions)
     local registry = {
-        __nika_template_fn_registry = true,
+        __guaraci_template_fn_registry = true,
         functions = {}
     }
 

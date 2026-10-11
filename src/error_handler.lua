@@ -17,7 +17,7 @@ local function current_env(config)
         return string.lower(from_config)
     end
 
-    local from_os = os.getenv("NIKA_ENV")
+    local from_os = os.getenv("GUARACI_ENV")
     if type(from_os) == "string" and from_os ~= "" then
         return string.lower(from_os)
     end

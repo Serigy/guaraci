@@ -100,10 +100,10 @@ function M.run(stage, req, res, context)
         local ok, result = pcall(mid.fn, req, res, context)
 
         if not ok then
-            -- Middleware error: log via nika_audit if available
-            local nika_audit = package.loaded["nika_audit"]
-            if nika_audit and nika_audit.log_error then
-                nika_audit.log_error("middleware_error", {
+            -- Middleware error: log via guaraci_audit if available
+            local guaraci_audit = package.loaded["guaraci_audit"]
+            if guaraci_audit and guaraci_audit.log_error then
+                guaraci_audit.log_error("middleware_error", {
                     stage = stage,
                     middleware = mid.name,
                     error = tostring(result)
@@ -114,8 +114,8 @@ function M.run(stage, req, res, context)
 
         -- Stages before_request/before_render podem short-circuit (retornar true)
         if stage ~= "after_request" and result == true then
-            if nika_audit and nika_audit.log_security then
-                nika_audit.log_security("middleware_shortcircuit", {
+            if guaraci_audit and guaraci_audit.log_security then
+                guaraci_audit.log_security("middleware_shortcircuit", {
                     stage = stage,
                     middleware = mid.name
                 })

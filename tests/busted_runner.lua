@@ -33,14 +33,14 @@ local SPEC_MODULES = {
     "tests.file_storage_spec",
     "tests.file_manager_spec",
     "tests.adapter_cgi_multipart_spec",
-    "tests.nika_upload_flow_spec",
+    "tests.guaraci_upload_flow_spec",
     -- Phase 13: Error handling
     "tests.error_formatter_spec",
     "tests.error_handler_spec",
-    "tests.nika_error_flow_spec",
+    "tests.guaraci_error_flow_spec",
     -- Phase 13 Block 3: Robustness
-    "tests.nika_middleware_error_flow_spec",
-    "tests.nika_stress_errors_spec"
+    "tests.guaraci_middleware_error_flow_spec",
+    "tests.guaraci_stress_errors_spec"
 }
 
 local function run_suite(suite)

@@ -1,6 +1,6 @@
 ---
 name: generate-sandbox-env
-description: 'Gera código Lua para _ENV (Lua 5.2+) ou wrapper com setfenv (Lua 5.1), expondo apenas símbolos de uma allow-list para execução segura de templates no Nika.'
+description: 'Gera código Lua para _ENV (Lua 5.2+) ou wrapper com setfenv (Lua 5.1), expondo apenas símbolos de uma allow-list para execução segura de templates no Guaraci.'
 argument-hint: 'Informe a allow-list de símbolos permitidos, por exemplo: ["Request", "escape", "math.random"].'
 user-invocable: true
 ---
@@ -11,10 +11,10 @@ user-invocable: true
 Retorna código Lua para inicialização de ambiente estrito de template com base em uma allow-list:
 - variante Lua 5.2+ com `load(..., env)` usando tabela de ambiente restrita
 - variante Lua 5.1 com `setfenv` em wrapper seguro
-- execução previsível e auditável alinhada ao objetivo de segurança inspirado em Go templates (sem mudar sintaxe ASP do Nika)
+- execução previsível e auditável alinhada ao objetivo de segurança inspirado em Go templates (sem mudar sintaxe ASP do Guaraci)
 
 ## Quando usar
-- Construção de motor de template no Nika com isolamento de escopo.
+- Construção de motor de template no Guaraci com isolamento de escopo.
 - Revisão de segurança para evitar acesso a `_G`, `io`, `os`, `require` e bibliotecas perigosas.
 - Geração rápida de boilerplate auditável para sandbox de execução.
 - Evolução incremental de comportamento seguro em templates mantendo simplicidade do core.

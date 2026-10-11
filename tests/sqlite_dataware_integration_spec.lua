@@ -1,4 +1,4 @@
-local nika = require("nika")
+local guaraci = require("guaraci")
 local db = require("db")
 
 describe("SQLite Dataware integration (Phase 11)", function()
@@ -7,7 +7,7 @@ describe("SQLite Dataware integration (Phase 11)", function()
     local connection
 
     before_each(function()
-        nika.clear_models()
+        guaraci.clear_models()
         temp_db_path = nil
         sqlite = nil
         connection = nil
@@ -46,11 +46,11 @@ describe("SQLite Dataware integration (Phase 11)", function()
         ]])
         assert.is_true(ok_schema == true or ok_schema == 0)
 
-        local init_ok, init_err = nika.init_dataware_sqlite({ connection = connection })
+        local init_ok, init_err = guaraci.init_dataware_sqlite({ connection = connection })
         assert.is_true(init_ok == true)
         assert.is_nil(init_err)
 
-        local user = nika.model("SqliteUser")
+        local user = guaraci.model("SqliteUser")
             :table("users")
             :tenant("tenant_id")
 
@@ -90,11 +90,11 @@ describe("SQLite Dataware integration (Phase 11)", function()
         ]])
         assert.is_true(ok_schema == true or ok_schema == 0)
 
-        local init_ok, init_err = nika.init_dataware_sqlite({ connection = connection })
+        local init_ok, init_err = guaraci.init_dataware_sqlite({ connection = connection })
         assert.is_true(init_ok == true)
         assert.is_nil(init_err)
 
-        local user = nika.model("SqliteTxUser")
+        local user = guaraci.model("SqliteTxUser")
             :table("users")
             :tenant("tenant_id")
 

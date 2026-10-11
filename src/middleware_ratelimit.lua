@@ -1,6 +1,6 @@
 local M = {}
 
-local has_audit, audit = pcall(require, "nika_audit")
+local has_audit, audit = pcall(require, "guaraci_audit")
 
 local function log_security(message, context)
     if has_audit and audit and type(audit.log_security) == "function" then

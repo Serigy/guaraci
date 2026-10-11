@@ -14,7 +14,7 @@ local ok = adapter.run_cgi({
         QUERY_STRING = "nome=Smoke%20Test"
     },
     stdout_writer = out,
-    nika_options = {
+    guaraci_options = {
         templates_root = "views"
     }
 })

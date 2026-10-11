@@ -39,7 +39,7 @@ local m2 = table.pack(p2:match(pat))
 print("  '" .. p1 .. "':match('" .. pat .. "') = " .. m1.n .. " matches")
 print("  '" .. p2 .. "':match('" .. pat .. "') = " .. m2.n .. " matches")
 
--- Check what Nika's compile_pattern generates  
+-- Check what Guaraci's compile_pattern generates  
 local routes_get = router_v2.get_routes("GET")
 if routes_get[1] then
     print("\nRoute internal details:")

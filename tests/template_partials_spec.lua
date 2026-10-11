@@ -99,13 +99,13 @@ describe("Template partials (Fase 8.2)", function()
         local ok = template_partials.register(registry, "card", "<article><%= Request.query.title %></article>")
         assert.is_true(ok)
 
-        local rendered, render_err = compile_and_render("<% include('card', { title = 'Nika' }) %>", {}, {
+        local rendered, render_err = compile_and_render("<% include('card', { title = 'Guaraci' }) %>", {}, {
             template_partials = registry
         })
 
         assert.is_nil(render_err)
         assert.is_not_nil(rendered)
-        assert.is_not_nil(rendered:find("<article>Nika</article>", 1, true))
+        assert.is_not_nil(rendered:find("<article>Guaraci</article>", 1, true))
     end)
 
     it("retorna erro quando template_partials e invalido", function()

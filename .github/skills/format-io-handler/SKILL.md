@@ -1,6 +1,6 @@
 ---
 name: format-io-handler
-description: 'Envelopa lógica de negócio Lua no contrato padrão do Nika, garantindo entrada req e retorno res com status, headers e body.'
+description: 'Envelopa lógica de negócio Lua no contrato padrão do Guaraci, garantindo entrada req e retorno res com status, headers e body.'
 argument-hint: 'Cole a lógica de negócios crua para converter ao padrão de Entrypoint req/res.'
 user-invocable: true
 ---
@@ -8,14 +8,14 @@ user-invocable: true
 # Format IO Handler
 
 ## O que esta skill produz
-- Código Lua pronto no padrão de Entrypoint do Nika.
+- Código Lua pronto no padrão de Entrypoint do Guaraci.
 - Função que sempre recebe `req` e retorna `res`.
 - Estrutura mínima e auditável com `status`, `headers` e `body`.
 
 ## Quando usar
 - Código de negócio sem contrato HTTP explícito.
 - Migração de funções soltas para padrão req/res agnóstico.
-- Revisão de PR para consistência de handlers no core do Nika.
+- Revisão de PR para consistência de handlers no core do Guaraci.
 
 ## Entrada esperada
 - String com lógica de negócios crua em Lua.

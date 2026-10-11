@@ -76,7 +76,7 @@ local function normalize_schema(schema_def)
     end
 
     local normalized = {
-        __nika_validator_schema = true,
+        __guaraci_validator_schema = true,
         fields = {}
     }
 
@@ -173,7 +173,7 @@ function M.validate(payload, schema_def, opts)
     end
 
     local compiled = schema_def
-    if type(schema_def) ~= "table" or schema_def.__nika_validator_schema ~= true then
+    if type(schema_def) ~= "table" or schema_def.__guaraci_validator_schema ~= true then
         compiled = nil
         local compile_err = nil
         compiled, compile_err = normalize_schema(schema_def)

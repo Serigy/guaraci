@@ -1,6 +1,6 @@
 local M = {}
 
-local has_audit, audit = pcall(require, "nika_audit")
+local has_audit, audit = pcall(require, "guaraci_audit")
 
 local ALLOWED_STAGES = {
     before_request = true,

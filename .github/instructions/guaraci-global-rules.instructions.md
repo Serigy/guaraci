@@ -1,13 +1,13 @@
 ---
-description: "Use when implementing, refactoring, or reviewing Nika framework code in Lua or .nika templates. Enforces ISO 27001-oriented security, zero-magic simplicity, sandboxing, and req/res agnostic contracts."
-name: "Nika Global Rules"
-applyTo: ["**/*.lua", "**/*.nika"]
+description: "Use when implementing, refactoring, or reviewing Guaraci framework code in Lua or .gc templates. Enforces ISO 27001-oriented security, zero-magic simplicity, sandboxing, and req/res agnostic contracts."
+name: "Guaraci Global Rules"
+applyTo: ["**/*.lua", "**/*.gc"]
 ---
 
-# Regras Globais do Projeto: Framework Nika (Lua)
+# Regras Globais do Projeto: Framework Guaraci (Lua)
 
 ## Identidade do Projeto
-- Nika e um framework web minimalista, agnostico e focado em seguranca (ISO 27001), escrito em Lua.
+- Guaraci e um framework web minimalista, agnostico e focado em seguranca (ISO 27001), escrito em Lua.
 - O paradigma e inspirado em ASP Classico (templates com logica embarcada).
 - Zero-magic: abstrações complexas e fluxo implicito sao proibidos.
 
@@ -15,11 +15,11 @@ applyTo: ["**/*.lua", "**/*.nika"]
 1. Nunca sugerir dependencias externas (LuaRocks ou bibliotecas C), exceto driver de banco de dados ou criptografia previamente aprovada.
 2. Sanitizacao por padrao: qualquer saida HTML com variavel dinamica deve usar `escape()`.
 3. Prepared statements obrigatorios: nunca concatenar input do usuario em SQL.
-4. Isolamento de template: arquivos `.nika` nao podem acessar `_G`, `require`, `os` ou `io`; usar `_ENV` (Lua 5.2+) ou `setfenv` (Lua 5.1).
+4. Isolamento de template: arquivos `.gc` nao podem acessar `_G`, `require`, `os` ou `io`; usar `_ENV` (Lua 5.2+) ou `setfenv` (Lua 5.1).
 5. Agnosticismo HTTP no core: nao usar `ngx.*` ou APIs especificas de servidor; manter contrato req/res.
 6. Performance de string: proibido `..` em loops de renderizacao; usar `table.insert(buffer, str)` e `table.concat(buffer)`.
-7. Auditoria e erros: falhas de seguranca, input invalido e erros de sistema devem ser logados (ex.: `nika_audit.log_security` e `nika_audit.log_error`); nao expor stack trace ao usuario final; usar `pcall` em areas de risco.
-8. Templates `.nika` mantem sintaxe ASP (`<% %>`, `<%= %>`). `html/template` e `text/template` do Go sao referencia de comportamento seguro (escaping/contexto), adotado por fases, sem promessa de paridade 1:1 imediata.
+7. Auditoria e erros: falhas de seguranca, input invalido e erros de sistema devem ser logados (ex.: `guaraci_audit.log_security` e `guaraci_audit.log_error`); nao expor stack trace ao usuario final; usar `pcall` em areas de risco.
+8. Templates `.gc` mantem sintaxe ASP (`<% %>`, `<%= %>`). `html/template` e `text/template` do Go sao referencia de comportamento seguro (escaping/contexto), adotado por fases, sem promessa de paridade 1:1 imediata.
 9. Mudanca em parser/renderizacao deve incluir validacao de regressao XSS/SSTI com payloads de contexto (HTML texto, atributo, URL, JS e CSS quando aplicavel).
 
 ## Fluxo de Trabalho Exigido
@@ -37,7 +37,7 @@ applyTo: ["**/*.lua", "**/*.nika"]
   - Conteúdo típico: `ROADMAP.md`, `PHASE_N_VALIDATION.md`, `PHASE_N_PENTEST.md`.
 
 - **`docs/`**: Wiki técnica e documentação de usuário (submodule Git apontando para repositório GitHub de wiki).
-  - Uso: Referência pragmática para instalar, usar, arquitetar e debugar Nika.
+  - Uso: Referência pragmática para instalar, usar, arquitetar e debugar Guaraci.
   - Manutenção: Espelho sempre atualizado da documentação pública; sincronizado com releases.
   - Conteúdo típico: Instalação, Quickstart, API Reference, Segurança, Conformidade, Best Practices.
 

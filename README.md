@@ -1,17 +1,17 @@
-# Nika
+# Guaraci
 
 Framework web minimalista em Lua, agnostico de servidor e orientado a seguranca by design (ISO 27001).
 
 ## Principios
 - Simples e auditavel (zero-magic)
 - Contrato agnostico req/res
-- Templates estilo ASP Classico (`.nika`)
+- Templates estilo ASP Classico (`.gc`)
 - Defesa nativa contra XSS, SSTI, SQLi e Path Traversal
 
 ## Estrutura
 - `src/`: core do framework
 - `hooks/`: hooks nativos de runtime
-- `views/`: templates `.nika`
+- `views/`: templates `.gc`
 - `tests/`: suite de testes estilo Busted (runner local)
 - `scripts/`: utilitarios de smoke/execucao
 - `docs/`: relatorios de validacao por fase
@@ -38,7 +38,7 @@ Resultado esperado:
 ```lua
 package.path = "./src/?.lua;./?.lua;" .. package.path
 
-local nika = require("nika")
+local guaraci = require("guaraci")
 
 local req = {
     method = "GET",
@@ -47,7 +47,7 @@ local req = {
     headers = {}
 }
 
-local res = nika.handle_request(req, {
+local res = guaraci.handle_request(req, {
     templates_root = "views"
 })
 

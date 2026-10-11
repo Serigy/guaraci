@@ -1,5 +1,5 @@
 local hooks = require("hooks")
-local nika = require("nika")
+local guaraci = require("guaraci")
 
 local M = {}
 
@@ -18,7 +18,7 @@ end
 function M.run()
     hooks.clear()
 
-    local res = nika.handle_request({
+    local res = guaraci.handle_request({
         method = "GET",
         path = "/",
         query = { nome = "Alice" }
@@ -40,7 +40,7 @@ function M.run()
         return true
     end, "auth_gate")
 
-    local res_blocked = nika.handle_request({
+    local res_blocked = guaraci.handle_request({
         method = "GET",
         path = "/",
         query = {}

@@ -1,26 +1,26 @@
 ---
-name: compile-nika-template
-description: 'Compila conteúdo de template .nika para Lua puro, gerando código otimizado com buffer via table.insert e função write para saída controlada.'
-argument-hint: 'Cole o conteúdo completo do arquivo .nika para gerar a versão compilada em Lua.'
+name: compile-guaraci-template
+description: 'Compila conteúdo de template .gc para Lua puro, gerando código otimizado com buffer via table.insert e função write para saída controlada.'
+argument-hint: 'Cole o conteúdo completo do arquivo .gc para gerar a versão compilada em Lua.'
 user-invocable: true
 ---
 
-# Compile Nika Template
+# Compile Guaraci Template
 
 ## O que esta skill produz
-- String de código Lua compilado a partir de um template `.nika`.
+- String de código Lua compilado a partir de um template `.gc`.
 - Saída otimizada para renderização com buffer (`table.insert`) e concatenação final (`table.concat`).
 - Função `write` para escrita controlada no buffer.
-- Compatibilidade com sintaxe ASP do Nika e baseline de segurança inspirado em Go templates.
+- Compatibilidade com sintaxe ASP do Guaraci e baseline de segurança inspirado em Go templates.
 
 ## Quando usar
-- Converter templates estáticos/dinâmicos do Nika em Lua puro para execução.
+- Converter templates estáticos/dinâmicos do Guaraci em Lua puro para execução.
 - Pré-compilar templates para reduzir custo em runtime.
 - Revisar se a transformação preserva o fluxo do modelo ASP-like (`<% ... %>`, `<%= ... %>`).
 - Evoluir comportamento de segurança em direção ao `html/template` e `text/template` (por fases).
 
 ## Entrada esperada
-- String com o conteúdo integral do arquivo `.nika`.
+- String com o conteúdo integral do arquivo `.gc`.
 
 ## Gramática suportada
 - Texto literal: emitido como `write("...")`.
@@ -47,7 +47,7 @@ user-invocable: true
 5. Aplicar otimizações seguras.
 - Mesclar literais adjacentes em um único `write` quando possível.
 - Evitar concatenação `..` em loop de renderização.
-- Não alterar sintaxe para `{{ }}`; manter semântica ASP do Nika.
+- Não alterar sintaxe para `{{ }}`; manter semântica ASP do Guaraci.
 
 ## Regras de decisão
 - Se houver tag aberta sem fechamento (`<%` sem `%>`): retornar erro de compilação com posição aproximada.

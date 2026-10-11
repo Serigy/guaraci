@@ -5,19 +5,19 @@ describe("Adapter CGI multipart integration (Phase 12)", function()
         local env = {
             REQUEST_METHOD = "POST",
             PATH_INFO = "/upload",
-            CONTENT_TYPE = "multipart/form-data; boundary=----NIKA",
+            CONTENT_TYPE = "multipart/form-data; boundary=----GUARACI",
             CONTENT_LENGTH = "221"
         }
 
         local body = table.concat({
-            "------NIKA\r\n",
+            "------GUARACI\r\n",
             "Content-Disposition: form-data; name=\"title\"\r\n\r\n",
             "Contrato\r\n",
-            "------NIKA\r\n",
+            "------GUARACI\r\n",
             "Content-Disposition: form-data; name=\"file\"; filename=\"doc.txt\"\r\n",
             "Content-Type: text/plain\r\n\r\n",
             "conteudo\r\n",
-            "------NIKA--\r\n"
+            "------GUARACI--\r\n"
         })
 
         local req = adapter_cgi.request_from_cgi(env, function()
@@ -34,19 +34,19 @@ describe("Adapter CGI multipart integration (Phase 12)", function()
         local env = {
             REQUEST_METHOD = "POST",
             PATH_INFO = "/upload",
-            CONTENT_TYPE = "multipart/form-data; boundary=----NIKA",
+            CONTENT_TYPE = "multipart/form-data; boundary=----GUARACI",
             CONTENT_LENGTH = "230"
         }
 
         local body = table.concat({
-            "------NIKA\r\n",
+            "------GUARACI\r\n",
             "Content-Disposition: form-data; name=\"title\"\r\n\r\n",
             "Contrato\r\n",
-            "------NIKA\r\n",
+            "------GUARACI\r\n",
             "Content-Disposition: form-data; name=\"file\"; filename=\"../../bad.exe\"\r\n",
             "Content-Type: application/x-msdownload\r\n\r\n",
             "payload\r\n",
-            "------NIKA--\r\n"
+            "------GUARACI--\r\n"
         })
 
         local req = adapter_cgi.request_from_cgi(env, function()

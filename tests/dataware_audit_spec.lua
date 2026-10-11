@@ -1,9 +1,9 @@
-local audit = require("nika_audit")
+local audit = require("guaraci_audit")
 local dataware_audit = require("dataware_audit")
 
 describe("Dataware audit (Phase 11)", function()
     it("registra evento de tenant violation", function()
-        local log_path = "tests/nika_audit_dataware_" .. tostring(os.time()) .. ".log"
+        local log_path = "tests/guaraci_audit_dataware_" .. tostring(os.time()) .. ".log"
         audit.set_log_path(log_path)
 
         dataware_audit.log_tenant_violation("User", "select")

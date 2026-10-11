@@ -31,7 +31,7 @@ describe("Security regression suite", function()
 
         local compiled_str = compiled or ""
         assert.is_not_nil(compiled_str:find(
-        '__nika_escape_by_context%("HTML_TEXT", tostring%(Request%.query%.nome or ""%)%)'))
+        '__guaraci_escape_by_context%("HTML_TEXT", tostring%(Request%.query%.nome or ""%)%)'))
     end)
 
     it("bloqueia acesso a os no sandbox", function()

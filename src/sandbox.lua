@@ -1,6 +1,6 @@
 local M = {}
 
-local has_audit, audit = pcall(require, "nika_audit")
+local has_audit, audit = pcall(require, "guaraci_audit")
 local loadstring_fn = rawget(_G, "loadstring")
 local setfenv_fn = rawget(_G, "setfenv")
 local escape_context = require("escape_context")
@@ -28,10 +28,10 @@ local RESERVED_ENV = {
     Context = true, -- Phase 10: request-scoped context (read-only)
     escape = true,
     write = true,
-    __nika_emit = true,
-    __nika_write = true,
-    __nika_escape_by_context = true,
-    __nika_partial = true,
+    __guaraci_emit = true,
+    __guaraci_write = true,
+    __guaraci_escape_by_context = true,
+    __guaraci_partial = true,
     partial = true,
     include = true,
     assert = true,
@@ -122,7 +122,7 @@ local function add_partial_renderer(env, req, res, escape_fn, api, fn_registry, 
     local max_depth = tonumber(opts.max_partial_depth) or 5
     local current_depth = tonumber(opts.partial_depth) or 0
 
-    env.__nika_partial = function(partial_name, partial_data)
+    env.__guaraci_partial = function(partial_name, partial_data)
         if current_depth >= max_depth then
             error("partial_depth_exceeded", 2)
         end
@@ -170,7 +170,7 @@ function M.build_env(req, res, escape_fn, api, fn_registry, partials, opts)
         Request = req,
         Response = res,
         escape = escape_fn,
-        __nika_escape_by_context = function(context_name, value)
+        __guaraci_escape_by_context = function(context_name, value)
             return escape_context.escape_by_context(context_name, value, {
                 mode = template_mode,
                 escape_fallback = escape_fn
@@ -236,12 +236,12 @@ function M.render_template(compiled_lua_code, req, res, opts)
 
     local chunk, load_err
     if _VERSION == "Lua 5.1" and type(loadstring_fn) == "function" and type(setfenv_fn) == "function" then
-        chunk, load_err = loadstring_fn(compiled_lua_code, "nika-template")
+        chunk, load_err = loadstring_fn(compiled_lua_code, "guaraci-template")
         if chunk then
             setfenv_fn(chunk, env)
         end
     else
-        chunk, load_err = load(compiled_lua_code, "nika-template", "t", env)
+        chunk, load_err = load(compiled_lua_code, "guaraci-template", "t", env)
     end
 
     if not chunk then

@@ -14,7 +14,7 @@ user-invocable: true
 ## Quando usar
 - PRs com concatenação de SQL usando `..`.
 - Correção rápida de risco de SQL Injection em camada de acesso a dados.
-- Padronização do acesso a banco no Nika com consultas parametrizadas.
+- Padronização do acesso a banco no Guaraci com consultas parametrizadas.
 
 ## Entrada esperada
 - String com código Lua contendo uma ou mais consultas SQL potencialmente inseguras.

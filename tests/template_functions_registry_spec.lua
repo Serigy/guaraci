@@ -48,14 +48,14 @@ describe("Template functions registry (Fase 8.1)", function()
         end)
         assert.is_true(ok)
 
-        local rendered, render_err = compile_and_render("<p><%= trim(Request.query.value) %></p>", { value = "  nika  " },
+        local rendered, render_err = compile_and_render("<p><%= trim(Request.query.value) %></p>", { value = "  guaraci  " },
             {
                 template_functions = registry
             })
 
         assert.is_nil(render_err)
         assert.is_not_nil(rendered)
-        assert.is_not_nil(rendered:find(">nika<", 1, true))
+        assert.is_not_nil(rendered:find(">guaraci<", 1, true))
     end)
 
     it("bloqueia chamada de funcao nao registrada", function()
@@ -84,13 +84,13 @@ describe("Template functions registry (Fase 8.1)", function()
     it("mantem compatibilidade de valores nao-funcao via template_api legado", function()
         local rendered, render_err = compile_and_render("<h1><%= site_name %></h1>", {}, {
             api = {
-                site_name = "Nika"
+                site_name = "Guaraci"
             }
         })
 
         assert.is_nil(render_err)
         assert.is_not_nil(rendered)
-        assert.is_not_nil(rendered:find("Nika", 1, true))
+        assert.is_not_nil(rendered:find("Guaraci", 1, true))
     end)
 
     it("bloqueia funcao proibida no registry", function()

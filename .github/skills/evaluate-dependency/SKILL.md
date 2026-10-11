@@ -1,6 +1,6 @@
 ---
 name: evaluate-dependency
-description: 'Avalia pedidos de nova biblioteca externa no Nika com foco em minimalismo, segurança e auditabilidade; retorna veredito e alternativa com Lua Standard Library ou FFI básico quando aplicável.'
+description: 'Avalia pedidos de nova biblioteca externa no Guaraci com foco em minimalismo, segurança e auditabilidade; retorna veredito e alternativa com Lua Standard Library ou FFI básico quando aplicável.'
 argument-hint: 'Informe nome do pacote, objetivo e justificativa técnica para adoção.'
 user-invocable: true
 ---
@@ -17,7 +17,7 @@ Retorna uma decisão objetiva para adoção de dependência externa:
 ## Quando usar
 - Solicitação para adicionar pacote externo (ex.: Redis, JWT, ORM, logger, utilitários).
 - Discussão de arquitetura com risco de over-engineering.
-- Revisão de PR que inclui nova dependência no core do Nika.
+- Revisão de PR que inclui nova dependência no core do Guaraci.
 
 ## Entrada esperada
 - String com nome da biblioteca e justificativa de uso.
@@ -58,7 +58,7 @@ Retorna uma decisão objetiva para adoção de dependência externa:
 - O veredito deve citar pelo menos 2 critérios objetivos.
 - A alternativa mínima deve ser concreta (não genérica).
 - Quando não houver alternativa viável, declarar explicitamente "não aplicável" em minimal_alternative.
-- A resposta deve ser curta, auditável e focada no contexto do Nika.
+- A resposta deve ser curta, auditável e focada no contexto do Guaraci.
 
 ## Formato de saída obrigatório
 ```json

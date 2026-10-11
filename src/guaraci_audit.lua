@@ -1,7 +1,7 @@
 local M = {}
 
 local config = {
-    log_path = "nika_audit.log"
+    log_path = "guaraci_audit.log"
 }
 
 local SENSITIVE_KEYS = {

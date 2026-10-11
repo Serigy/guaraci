@@ -1,6 +1,6 @@
 ---
 name: audit-template-injection
-description: 'Analisa código Lua/HTML de templates do Nika para detectar vetores de SSTI e XSS, classificar risco e retornar mitigação objetiva. Use quando precisar auditoria rápida de injeção em template.'
+description: 'Analisa código Lua/HTML de templates do Guaraci para detectar vetores de SSTI e XSS, classificar risco e retornar mitigação objetiva. Use quando precisar auditoria rápida de injeção em template.'
 argument-hint: 'Cole o trecho de template ou renderização Lua que deve ser auditado para SSTI/XSS.'
 user-invocable: true
 ---
@@ -15,10 +15,10 @@ Retorna uma saída estruturada com:
 - parity_status (BASELINE, PARCIAL ou BLOQUEADO)
 
 ## Quando usar
-- Revisão de trechos Lua/HTML do Nika com renderização dinâmica.
+- Revisão de trechos Lua/HTML do Guaraci com renderização dinâmica.
 - Dúvidas sobre escape HTML, sandbox de template e execução de código em template.
 - Triagem rápida de risco de SSTI ou XSS antes de merge.
-- Avaliar lacunas entre baseline atual do Nika e comportamento esperado de `html/template`/`text/template` do Go.
+- Avaliar lacunas entre baseline atual do Guaraci e comportamento esperado de `html/template`/`text/template` do Go.
 
 ## Entrada esperada
 - String com código fonte do template, do compilador de template ou do ponto de renderização.
@@ -69,7 +69,7 @@ Retorna uma saída estruturada com:
 ## Critérios de qualidade e conclusão
 - A análise deve citar pelo menos um ponto técnico observado no trecho.
 - A saída deve ser somente um objeto JSON válido.
-- mitigation_suggestion deve propor correção mínima alinhada ao Nika (simplicidade, allow-list, escape obrigatório, sandbox estrita).
+- mitigation_suggestion deve propor correção mínima alinhada ao Guaraci (simplicidade, allow-list, escape obrigatório, sandbox estrita).
 - A saída deve indicar `parity_status` sem alegar paridade 1:1 imediata sem evidência.
 
 ## Formato de saída obrigatório

@@ -1,4 +1,4 @@
-local io_factory = require("nika_io")
+local io_factory = require("guaraci_io")
 local router = require("router")
 local parser = require("parser")
 local sandbox = require("sandbox")
@@ -20,7 +20,7 @@ local middleware_ratelimit = require("middleware_ratelimit")
 local file_manager = require("file_manager")
 local error_handler = require("error_handler")
 
-local has_audit, audit = pcall(require, "nika_audit")
+local has_audit, audit = pcall(require, "guaraci_audit")
 
 local M = {}
 local configured_error_handler = error_handler.create_default({

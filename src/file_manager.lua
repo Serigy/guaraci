@@ -1,7 +1,7 @@
 local file_storage = require("file_storage")
 local file_validator = require("file_validator")
 
-local has_audit, audit = pcall(require, "nika_audit")
+local has_audit, audit = pcall(require, "guaraci_audit")
 
 local M = {}
 

@@ -1,18 +1,18 @@
 ---
-name: "Nika Security Architecture Review"
-description: "Revisa proposta arquitetural de módulo do Nika sob ISO 27001, simplicidade e agnosticismo req/res, com decisão APROVADO ou BLOQUEADO."
+name: "Guaraci Security Architecture Review"
+description: "Revisa proposta arquitetural de módulo do Guaraci sob ISO 27001, simplicidade e agnosticismo req/res, com decisão APROVADO ou BLOQUEADO."
 argument-hint: "Informe nome do módulo e proposta inicial de implementação."
-agent: "Nika Security Architect"
+agent: "Guaraci Security Architect"
 ---
 
-@Nika Security Architect
+@Guaraci Security Architect
 
 **Objetivo:** Projetar a arquitetura para o módulo de {{nome_do_modulo}}.
 
 **Proposta Inicial:**
 {{proposta_inicial}}
 
-Faça uma revisão arquitetural desta proposta considerando o manifesto do Nika:
+Faça uma revisão arquitetural desta proposta considerando o manifesto do Guaraci:
 1. Avalie riscos de segurança (ISO 27001), especialmente manipulação de estado, vazamento de dados e necessidades de log.
 2. Identifique riscos de complexidade desnecessária (over-engineering).
 3. Se a proposta for aprovada, sugira a assinatura das funções principais respeitando o agnosticismo do framework (req/res).

@@ -1,17 +1,17 @@
 local hooks = require("hooks")
 
-describe("Nika upload flow (Phase 12)", function()
-    local original_nika
+describe("Guaraci upload flow (Phase 12)", function()
+    local original_guaraci
     local original_file_manager
 
     before_each(function()
         hooks.clear()
-        original_nika = package.loaded["nika"]
+        original_guaraci = package.loaded["guaraci"]
         original_file_manager = package.loaded["file_manager"]
     end)
 
     after_each(function()
-        package.loaded["nika"] = original_nika
+        package.loaded["guaraci"] = original_guaraci
         package.loaded["file_manager"] = original_file_manager
     end)
 
@@ -25,10 +25,10 @@ describe("Nika upload flow (Phase 12)", function()
             end
         }
 
-        package.loaded["nika"] = nil
-        local nika = require("nika")
+        package.loaded["guaraci"] = nil
+        local guaraci = require("guaraci")
 
-        local res = nika.handle_request({
+        local res = guaraci.handle_request({
             method = "POST",
             path = "/upload",
             context_id = "req-upload-77",

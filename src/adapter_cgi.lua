@@ -1,8 +1,8 @@
-local nika = require("nika")
+local guaraci = require("guaraci")
 local multipart = require("multipart")
 local file_manager = require("file_manager")
 
-local has_audit, audit = pcall(require, "nika_audit")
+local has_audit, audit = pcall(require, "guaraci_audit")
 
 local M = {}
 
@@ -203,7 +203,7 @@ function M.run_cgi(opts)
     opts = opts or {}
 
     local req = M.request_from_cgi(opts.env or _G, opts.stdin_reader)
-    local res = nika.handle_request(req, opts.nika_options)
+    local res = guaraci.handle_request(req, opts.guaraci_options)
     M.response_to_cgi(res, opts.stdout_writer)
     return true
 end

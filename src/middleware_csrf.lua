@@ -1,6 +1,6 @@
 local M = {}
 
-local has_audit, audit = pcall(require, "nika_audit")
+local has_audit, audit = pcall(require, "guaraci_audit")
 
 local function log_security(message, context)
     if has_audit and audit and type(audit.log_security) == "function" then
@@ -53,7 +53,7 @@ function M.create(opts)
     opts = opts or {}
 
     local header_name = opts.header_name or "X-CSRF-Token"
-    local cookie_name = opts.cookie_name or "nika_csrf_token"
+    local cookie_name = opts.cookie_name or "guaraci_csrf_token"
     local min_token_length = tonumber(opts.min_token_length) or 16
 
     return function(req, res, context)

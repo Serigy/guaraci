@@ -73,7 +73,7 @@ describe("Template equivalence suite (Fase 9.1)", function()
 
     it("equivalencia partial include em modo html", function()
         local rendered, render_err = compile_and_render("<% include('row', { label = Request.query.label }) %>", {
-            label = "<i>Nika</i>"
+            label = "<i>Guaraci</i>"
         }, {
             template_mode = "html",
             template_partials = {
@@ -82,12 +82,12 @@ describe("Template equivalence suite (Fase 9.1)", function()
         })
 
         assert.is_nil(render_err)
-        assert.are.equal("<li>&lt;i&gt;Nika&lt;/i&gt;</li>", rendered)
+        assert.are.equal("<li>&lt;i&gt;Guaraci&lt;/i&gt;</li>", rendered)
     end)
 
     it("equivalencia function_registry aplica transformacao", function()
         local rendered, render_err = compile_and_render("<p><%= upper(Request.query.value) %></p>", {
-            value = "nika"
+            value = "guaraci"
         }, {
             template_mode = "html",
             template_functions = {
@@ -98,7 +98,7 @@ describe("Template equivalence suite (Fase 9.1)", function()
         })
 
         assert.is_nil(render_err)
-        assert.are.equal("<p>NIKA</p>", rendered)
+        assert.are.equal("<p>GUARACI</p>", rendered)
     end)
 
     it("diferenca conhecida: js_string bloqueado em modo html", function()
@@ -108,7 +108,7 @@ describe("Template equivalence suite (Fase 9.1)", function()
             template_mode = "html"
         })
 
-        -- Go html/template tende a escapar contexto JS; Nika atualmente bloqueia por hardening.
+        -- Go html/template tende a escapar contexto JS; Guaraci atualmente bloqueia por hardening.
         assert.is_nil(rendered)
         assert.are.equal("Erro interno", render_err)
     end)
@@ -121,7 +121,7 @@ describe("Template equivalence suite (Fase 9.1)", function()
             template_mode = "html"
         })
 
-        -- Go html/template tende a escapar contexto CSS; Nika atualmente bloqueia por hardening.
+        -- Go html/template tende a escapar contexto CSS; Guaraci atualmente bloqueia por hardening.
         assert.is_nil(rendered)
         assert.are.equal("Erro interno", render_err)
     end)
@@ -133,7 +133,7 @@ describe("Template equivalence suite (Fase 9.1)", function()
             template_mode = "html"
         })
 
-        -- Difere de abordagens que sanitizam para placeholder; Nika escolhe bloqueio com erro seguro.
+        -- Difere de abordagens que sanitizam para placeholder; Guaraci escolhe bloqueio com erro seguro.
         assert.is_nil(rendered)
         assert.are.equal("Erro interno", render_err)
     end)

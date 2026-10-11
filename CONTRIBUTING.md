@@ -1,14 +1,14 @@
 # Contributing
 
 ## Objetivo
-Manter o Nika pequeno, seguro e auditavel.
+Manter o Guaraci pequeno, seguro e auditavel.
 
 ## Checklist obrigatorio para PR
 1. Nao adicionar dependencias externas no core sem aprovacao explicita.
 2. Manter contrato agnostico req/res no core.
 3. Garantir protecao contra XSS/SSTI/SQLi/Traversal quando aplicavel.
 4. Nao expor detalhes internos de erro ao usuario final.
-5. Registrar falhas de seguranca e sistema via `nika_audit`.
+5. Registrar falhas de seguranca e sistema via `guaraci_audit`.
 6. Atualizar testes quando comportamento for alterado.
 
 ## Fluxo de desenvolvimento

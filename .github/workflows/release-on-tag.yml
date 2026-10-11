@@ -60,8 +60,8 @@ jobs:
         run: |
           TAG="${{ steps.meta.outputs.tag }}"
           mkdir -p dist
-          git archive --format=zip --output "dist/nika-${TAG}.zip" "$TAG"
-          git archive --format=tar.gz --output "dist/nika-${TAG}.tar.gz" "$TAG"
+          git archive --format=zip --output "dist/guaraci-${TAG}.zip" "$TAG"
+          git archive --format=tar.gz --output "dist/guaraci-${TAG}.tar.gz" "$TAG"
 
       - name: Criar GitHub Release
         if: ${{ steps.existing.outputs.exists != 'true' }}

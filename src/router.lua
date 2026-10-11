@@ -1,6 +1,6 @@
 local M = {}
 
-local has_audit, audit = pcall(require, "nika_audit")
+local has_audit, audit = pcall(require, "guaraci_audit")
 
 local function log_security(message, context)
     if has_audit and audit and type(audit.log_security) == "function" then
@@ -73,15 +73,15 @@ local function sanitize_path(raw_path)
     end
 
     if #safe_parts == 0 then
-        return "index.nika"
+        return "index.gc"
     end
 
     local rel = table.concat(safe_parts, "/")
 
     if rel:sub(-1) == "/" then
-        rel = rel .. "index.nika"
-    elseif not rel:match("%.nika$") then
-        rel = rel .. ".nika"
+        rel = rel .. "index.gc"
+    elseif not rel:match("%.gc$") then
+        rel = rel .. ".gc"
     end
 
     return rel

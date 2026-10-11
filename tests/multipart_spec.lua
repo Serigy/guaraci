@@ -2,16 +2,16 @@ local multipart = require("multipart")
 
 describe("Multipart parser (Phase 12)", function()
     it("parseia campos e arquivo", function()
-        local boundary = "----NIKA"
+        local boundary = "----GUARACI"
         local body = table.concat({
-            "------NIKA\r\n",
+            "------GUARACI\r\n",
             "Content-Disposition: form-data; name=\"title\"\r\n\r\n",
             "Documento\r\n",
-            "------NIKA\r\n",
+            "------GUARACI\r\n",
             "Content-Disposition: form-data; name=\"file\"; filename=\"a.txt\"\r\n",
             "Content-Type: text/plain\r\n\r\n",
             "hello world\r\n",
-            "------NIKA--\r\n"
+            "------GUARACI--\r\n"
         })
 
         local parsed, err = multipart.parse(body, "multipart/form-data; boundary=" .. boundary)

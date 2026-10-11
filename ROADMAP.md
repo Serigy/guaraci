@@ -1,7 +1,7 @@
-# ROADMAP Nika
+# ROADMAP Guaraci
 
 ## Objetivo Macro
-Construir um framework web Lua minimalista e auditável, mantendo sintaxe ASP em `.nika` (`<% %>`, `<%= %>`) e atingindo paridade comportamental 1:1 com `html/template` e `text/template` do Go em segurança e previsibilidade (por fases, sem migração para `{{ }}`).
+Construir um framework web Lua minimalista e auditável, mantendo sintaxe ASP em `.gc` (`<% %>`, `<%= %>`) e atingindo paridade comportamental 1:1 com `html/template` e `text/template` do Go em segurança e previsibilidade (por fases, sem migração para `{{ }}`).
 
 ## Status Geral
 - ✅ Fases 1 a 5 concluídas (MVP funcional e publicado).
@@ -19,13 +19,13 @@ Construir um framework web Lua minimalista e auditável, mantendo sintaxe ASP em
 ### Fase 1: Fundação e Rastreabilidade (ISO 27001) — ✅ Concluída
 | Entrega | Arquivo | Evidência |
 | :--- | :--- | :--- |
-| Auditoria estruturada (`log_error`, `log_security`) | `src/nika_audit.lua` | `docs/PHASE1_A14_VALIDATION.md` |
-| Fábrica req/res com defesa básica | `src/nika_io.lua` | `docs/PHASE1_A14_VALIDATION.md` |
+| Auditoria estruturada (`log_error`, `log_security`) | `src/guaraci_audit.lua` | `docs/PHASE1_A14_VALIDATION.md` |
+| Fábrica req/res com defesa básica | `src/guaraci_io.lua` | `docs/PHASE1_A14_VALIDATION.md` |
 
 ### Fase 2: Motor ASP (Parser + Sandbox) — ✅ Concluída
 | Entrega | Arquivo | Evidência |
 | :--- | :--- | :--- |
-| Compilação `.nika` para Lua com buffer | `src/parser.lua` | `docs/PHASE2_SECURITY_VALIDATION.md` |
+| Compilação `.gc` para Lua com buffer | `src/parser.lua` | `docs/PHASE2_SECURITY_VALIDATION.md` |
 | Sandbox restrito de execução | `src/sandbox.lua` | `docs/PHASE2_SECURITY_VALIDATION.md` |
 
 ### Fase 3: Ciclo de Vida e Interceptação — ✅ Concluída
@@ -43,7 +43,7 @@ Construir um framework web Lua minimalista e auditável, mantendo sintaxe ASP em
 ### Fase 5: Integração e Lançamento do MVP — ✅ Concluída
 | Entrega | Arquivo | Evidência |
 | :--- | :--- | :--- |
-| Entrypoint orquestrando pipeline completo | `src/nika.lua` | `docs/PHASE5_FINAL_REVIEW.md` |
+| Entrypoint orquestrando pipeline completo | `src/guaraci.lua` | `docs/PHASE5_FINAL_REVIEW.md` |
 | Adapter CGI de referência | `src/adapter_cgi.lua` | `docs/PHASE5_FINAL_REVIEW.md` |
 | Quickstart, contribuição e licença | `README.md`, `CONTRIBUTING.md`, `LICENSE.txt` | Repositório |
 
@@ -81,16 +81,16 @@ Objetivo: elevar expressividade sem perder simplicidade.
 
 | Tarefa | Descrição | Definition of Done |
 | :--- | :--- | :--- |
-| 8.1 Registry de funções — ✅ Concluída | Definir registry explícito de funções de template (allow-list). | `src/template_functions.lua` com allow-list e validação de símbolos; integração em `src/sandbox.lua` e `src/nika.lua`; testes em `tests/template_functions_registry_spec.lua` validados. |
+| 8.1 Registry de funções — ✅ Concluída | Definir registry explícito de funções de template (allow-list). | `src/template_functions.lua` com allow-list e validação de símbolos; integração em `src/sandbox.lua` e `src/guaraci.lua`; testes em `tests/template_functions_registry_spec.lua` validados. |
 | 8.2 Blocos reutilizáveis — ✅ Concluída | Adicionar blocos/parciais com semântica previsível e sem ocultar fluxo. | `src/template_partials.lua` com allow-list de parciais, `include()`/`partial()` explícitos no parser e integração no sandbox com limite de profundidade; testes em `tests/template_partials_spec.lua` validados. |
-| 8.3 Modo text/template — ✅ Concluída | Criar modo sem auto-escape HTML para casos estritamente textuais. | `template_mode = "text"` implementado no sandbox/nika com isolamento explícito por opção, suporte em parciais e testes em `tests/template_text_mode_spec.lua` cobrindo não regressão de `html`. |
+| 8.3 Modo text/template — ✅ Concluída | Criar modo sem auto-escape HTML para casos estritamente textuais. | `template_mode = "text"` implementado no sandbox/guaraci com isolamento explícito por opção, suporte em parciais e testes em `tests/template_text_mode_spec.lua` cobrindo não regressão de `html`. |
 
 ## Fase 9: Validação 1:1 e Hardening Final — ✅ Concluída
 Objetivo: concluir meta de paridade comportamental.
 
 | Tarefa | Descrição | Definition of Done |
 | :--- | :--- | :--- |
-| 9.1 Suite de equivalência — ✅ Concluída | Criar suite de comparação Nika vs comportamentos esperados de Go templates. | `tests/template_equivalence_spec.lua` validando paridade em `HTML_TEXT`, `HTML_ATTR_QUOTED`, `URL_ATTR`, `text mode`, parciais e registry; diferenças conhecidas justificadas em teste: bloqueio hardening de `JS_STRING`, `CSS_STRING` e URL perigosa em modo `html`. |
+| 9.1 Suite de equivalência — ✅ Concluída | Criar suite de comparação Guaraci vs comportamentos esperados de Go templates. | `tests/template_equivalence_spec.lua` validando paridade em `HTML_TEXT`, `HTML_ATTR_QUOTED`, `URL_ATTR`, `text mode`, parciais e registry; diferenças conhecidas justificadas em teste: bloqueio hardening de `JS_STRING`, `CSS_STRING` e URL perigosa em modo `html`. |
 | 9.2 Pentest final de template engine — ✅ Concluída | Reexecutar auditoria completa XSS/SSTI em todos contextos. | `tests/template_pentest_final_spec.lua` cobrindo XSS por contexto, SSTI, evasão por registry, abuso de parciais, não-vazamento de erro e logging de segurança; suíte completa verde. |
 | 9.3 Selo 1:1 comportamental — ✅ Concluída | Publicar documento de conformidade final. | `docs/PHASE9_CONFORMITY_SEAL.md` publicado com checklist final, evidências técnicas, diferenças conhecidas e decisão de aprovação. |
 
@@ -114,7 +114,7 @@ MVP estável concluído. Fase 9 concluída com equivalência (9.1), pentest fina
 
 ## Visão Estratégica
 
-Evoluir Nika de um micro-framework template-centric para um **framework web minimalista completo**, inspirado no Gin (Go) e integrado nativamente com **REST Dataware** para abstração de dados agnóstica. Objetivos:
+Evoluir Guaraci de um micro-framework template-centric para um **framework web minimalista completo**, inspirado no Gin (Go) e integrado nativamente com **REST Dataware** para abstração de dados agnóstica. Objetivos:
 
 1. **Roteamento explícito** (`:id`, regex, método HTTP) substituindo file-system routing
 2. **Middlewares estruturados** com contexto local request-scoped
@@ -165,16 +165,16 @@ Evoluir Nika de um micro-framework template-centric para um **framework web mini
 
 | Arquivo | Mudança |
 |---------|---------|
-| `src/nika.lua` | Integrar `router_v2`, deprecate FS resolver com warning logs |
+| `src/guaraci.lua` | Integrar `router_v2`, deprecate FS resolver com warning logs |
 | `src/hooks.lua` | Manter compatibilidade; delegar para `middleware_chain` |
-| `src/nika_io.lua` | Adicionar `req.params`, `req.context` binding |
+| `src/guaraci_io.lua` | Adicionar `req.params`, `req.context` binding |
 | `src/sandbox.lua` | Estender _ENV com read-only `context_store` access |
 
-### Sintaxe Nova (Nika)
+### Sintaxe Nova (Guaraci)
 
 ```lua
 -- Novo router explícito
-local router = nika.router()
+local router = guaraci.router()
 
 -- Rotas com parâmetros
 router.get("/users/:id", function(req, res)
@@ -219,7 +219,7 @@ end)
 
 ```
     ┌──────────────────────────┐
-    │   nika.model('User')     │ Registry de modelos + schema
+    │   guaraci.model('User')     │ Registry de modelos + schema
     └──────────┬───────────────┘
                ↓
     ┌──────────────────────────┐
@@ -248,11 +248,11 @@ end)
 | `src/dataware_audit.lua` | Log automático de CRUD + tenant violation | ✅ |
 | `src/dataware_tenancy.lua` | Middleware: auto-inject `tenant_id` em todas queries | ✅ |
 
-### Sintaxe Nova (Nika)
+### Sintaxe Nova (Guaraci)
 
 ```lua
 -- Definir modelo
-local User = nika.model('User')
+local User = guaraci.model('User')
   :schema({
     id = "integer|pk",
     name = "string",
@@ -338,7 +338,7 @@ local posts = User:find(1):with("posts"):first()
 | `src/file_storage.lua` | Interface plugável (File provider default) | ✅ |
 | `src/file_manager.lua` | Wrapper: validate(), store(), cleanup() por request | ✅ |
 
-### Sintaxe Nova (Nika)
+### Sintaxe Nova (Guaraci)
 
 ```lua
 -- Handler com upload
@@ -369,7 +369,7 @@ end)
 - [x] Armazena em `uploads/id_filename` com provider local padrão
 - [x] Cleanup: remove arquivos temporários após resposta por `request_id`
 - [x] Erro handling: 413 Payload Too Large, 400 Bad Request
-- [x] Testes: `tests/multipart_spec.lua`, `tests/file_validator_spec.lua`, `tests/file_storage_spec.lua`, `tests/file_manager_spec.lua`, `tests/adapter_cgi_multipart_spec.lua`, `tests/nika_upload_flow_spec.lua`
+- [x] Testes: `tests/multipart_spec.lua`, `tests/file_validator_spec.lua`, `tests/file_storage_spec.lua`, `tests/file_manager_spec.lua`, `tests/adapter_cgi_multipart_spec.lua`, `tests/guaraci_upload_flow_spec.lua`
 - [x] ISO 27001: Filenames sanitizados; MIME verificado; path traversal bloqueado
 
 ---
@@ -403,11 +403,11 @@ end)
 | `src/error_handler.lua` | Centralizador com custom formatters (JSON, HTML, XML) | ✅ |
 | `src/error_formatter.lua` | JSON, XML, HTML; stack trace only in dev | ✅ |
 
-### Sintaxe Nova (Nika)
+### Sintaxe Nova (Guaraci)
 
 ```lua
 -- Error handler global
-nika.set_error_handler(function(err, context)
+guaraci.set_error_handler(function(err, context)
   if err.status == 401 then
     return {status = 401, body = json({error = "Unauthorized"})}
   elseif err.status == 404 then
@@ -436,7 +436,7 @@ api_v2.get("/users/:id", get_user_v2_handler)
 - [x] Route groups com prefix correto: `/api/v1/users/:id`
 - [x] Middleware por grupo (não herda global)
 - [x] Error handler responde com Content-Negotiation (Accept header)
-- [x] Testes: `tests/error_handler_spec.lua`, `tests/route_group_spec.lua`, `tests/nika_middleware_error_flow_spec.lua`, `tests/nika_stress_errors_spec.lua`
+- [x] Testes: `tests/error_handler_spec.lua`, `tests/route_group_spec.lua`, `tests/guaraci_middleware_error_flow_spec.lua`, `tests/guaraci_stress_errors_spec.lua`
 - [x] ISO 27001: Stack trace nunca exposto em produção (validado em `history/PHASE13_ISO27001_VALIDATION.md`)
 
 ---
@@ -472,7 +472,7 @@ api_v2.get("/users/:id", get_user_v2_handler)
 | `src/middleware_csrf.lua` | CSRF double-submit cookie+header para métodos mutáveis | ✅ |
 | `src/middleware_ratelimit.lua` | Rate-limit in-memory por IP com `429` + `Retry-After` | ✅ |
 
-### Sintaxe Nova (Nika)
+### Sintaxe Nova (Guaraci)
 
 ```lua
 -- Schema validator
@@ -484,7 +484,7 @@ local UserCreateSchema = validator.schema({
 
 -- Handler com validação + binding
 router.post("/api/users", function(req, res)
-  local user_data, errors = nika.validate_and_bind(req, UserCreateSchema)
+  local user_data, errors = guaraci.validate_and_bind(req, UserCreateSchema)
   if errors then
     return res.status(400).json({errors = errors})
   end
@@ -537,17 +537,17 @@ router:use(middleware_ratelimit({
 |---------|-----------|-------------------|
 | [src/router.lua](src/router.lua) | FS routing | Deprecate; manter resolver_404 |
 | [src/hooks.lua](src/hooks.lua) | 3-stage hooks | Migrar para `middleware_chain` (compat) |
-| [src/nika_io.lua](src/nika_io.lua) | Abstração req/res | Adicionar `req.params`, `req.files`, context binding |
+| [src/guaraci_io.lua](src/guaraci_io.lua) | Abstração req/res | Adicionar `req.params`, `req.files`, context binding |
 | [src/db.lua](src/db.lua) | Prepared statements | Base para `query_builder`; reuse driver interface |
 | [src/sandbox.lua](src/sandbox.lua) | Isolamento template | Estender _ENV com `context_store` (read-only) |
-| [src/nika_audit.lua](src/nika_audit.lua) | Log segurança | Reuse para audit CRUD + error handling |
+| [src/guaraci_audit.lua](src/guaraci_audit.lua) | Log segurança | Reuse para audit CRUD + error handling |
 | [src/adapter_cgi.lua](src/adapter_cgi.lua) | CGI I/O | Chamar `multipart.parse()` em Content-Type check |
 
 ---
 
 ## Verificação Não Regressão (Contínua)
 
-1. **Compatibilidade:** Templates `.nika` existentes renderizam sem quebra
+1. **Compatibilidade:** Templates `.gc` existentes renderizam sem quebra
 2. **Segurança:** Sandbox _ENV intacto; escaping contextual preservado
 3. **Auditoria:** Logs de segurança + erro continuam funcionando
 4. **Performance:** Sem degradação vs MVP atual

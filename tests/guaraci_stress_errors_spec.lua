@@ -1,22 +1,22 @@
--- tests/nika_stress_errors_spec.lua
+-- tests/guaraci_stress_errors_spec.lua
 -- Testes de stress para error handling com payloads grandes (Phase 13 Block 3)
 -- Valida robustez contra DoS via error responses
 
-local nika = require("nika")
+local guaraci = require("guaraci")
 local hooks = require("hooks")
 
-describe("Nika stress errors (Phase 13 Block 3)", function()
+describe("Guaraci stress errors (Phase 13 Block 3)", function()
     before_each(function()
         hooks.clear()
-        package.loaded["nika"] = nil
-        nika = require("nika")
-        nika.reset_error_handler()
+        package.loaded["guaraci"] = nil
+        guaraci = require("guaraci")
+        guaraci.reset_error_handler()
     end)
 
     it("error response com status 500 nao fica gigante", function()
         -- Cria middleware que simula erro com stack trace grande
         local big_stack = string.rep("x", 10000) -- 10KB stack trace
-        nika.set_error_handler(function(err, context)
+        guaraci.set_error_handler(function(err, context)
             return {
                 status = 500,
                 headers = { ["Content-Type"] = "application/json; charset=utf-8" },
@@ -24,7 +24,7 @@ describe("Nika stress errors (Phase 13 Block 3)", function()
             }
         end)
 
-        local res = nika.handle_request({
+        local res = guaraci.handle_request({
             method = "GET",
             path = "/test",
             headers = { Accept = "application/json" }
@@ -39,11 +39,11 @@ describe("Nika stress errors (Phase 13 Block 3)", function()
         -- Não quebramos com payloads grandes
         assert(#res.body < 100000, "resposta não explode (< 100KB)")
 
-        nika.reset_error_handler()
+        guaraci.reset_error_handler()
     end)
 
     it("prod mode retorna erro curto mesmo com stack trace grande", function()
-        nika.set_error_handler(function(err, context)
+        guaraci.set_error_handler(function(err, context)
             -- Simula prod mode
             return {
                 status = 500,
@@ -52,7 +52,7 @@ describe("Nika stress errors (Phase 13 Block 3)", function()
             }
         end)
 
-        local res = nika.handle_request({
+        local res = guaraci.handle_request({
             method = "GET",
             path = "/test",
             headers = { Accept = "application/json" }
@@ -67,11 +67,11 @@ describe("Nika stress errors (Phase 13 Block 3)", function()
         -- Body é curto
         assert(#res.body < 1000, "prod mode error response é curto")
 
-        nika.reset_error_handler()
+        guaraci.reset_error_handler()
     end)
 
     it("upload_error com payload grande retorna 413 com erro menor", function()
-        local res = nika.handle_request({
+        local res = guaraci.handle_request({
             method = "POST",
             path = "/upload",
             headers = {
@@ -90,7 +90,7 @@ describe("Nika stress errors (Phase 13 Block 3)", function()
 
     it("xml formatter nao produz payload > 1MB", function()
         local big_message = string.rep("error message ", 1000) -- ~14KB mensagem
-        nika.set_error_handler(function(err, context)
+        guaraci.set_error_handler(function(err, context)
             return {
                 status = 500,
                 headers = { ["Content-Type"] = "application/xml; charset=utf-8" },
@@ -98,7 +98,7 @@ describe("Nika stress errors (Phase 13 Block 3)", function()
             }
         end)
 
-        local res = nika.handle_request({
+        local res = guaraci.handle_request({
             method = "GET",
             path = "/test",
             headers = {
@@ -112,12 +112,12 @@ describe("Nika stress errors (Phase 13 Block 3)", function()
         assert.are.equal(500, res.status)
         assert(#res.body < 100000, "xml error response < 100KB")
 
-        nika.reset_error_handler()
+        guaraci.reset_error_handler()
     end)
 
     it("html formatter escapa grandes payloads sem overflow", function()
         local big_error = string.rep("<script>alert()</script>", 100) -- ~2.4KB injection
-        nika.set_error_handler(function(err, context)
+        guaraci.set_error_handler(function(err, context)
             return {
                 status = 500,
                 headers = { ["Content-Type"] = "text/html; charset=utf-8" },
@@ -125,7 +125,7 @@ describe("Nika stress errors (Phase 13 Block 3)", function()
             }
         end)
 
-        local res = nika.handle_request({
+        local res = guaraci.handle_request({
             method = "GET",
             path = "/test",
             headers = {
@@ -144,7 +144,7 @@ describe("Nika stress errors (Phase 13 Block 3)", function()
 
     it("multiple errors em cadeia nao causa memory leak", function()
         for i = 1, 100 do
-            local res = nika.handle_request({
+            local res = guaraci.handle_request({
                 method = "GET",
                 path = "/test-" .. i,
                 headers = { Accept = "application/json" }
@@ -160,7 +160,7 @@ describe("Nika stress errors (Phase 13 Block 3)", function()
     end)
 
     it("content-negotiation com Accept header malformado nao causa hang", function()
-        local res = nika.handle_request({
+        local res = guaraci.handle_request({
             method = "GET",
             path = "/test",
             headers = {
@@ -180,7 +180,7 @@ describe("Nika stress errors (Phase 13 Block 3)", function()
     it("request_id em context nao vaza em error response", function()
         local secret_request_id = "super-secret-request-id-12345"
 
-        local res = nika.handle_request({
+        local res = guaraci.handle_request({
             method = "GET",
             path = "/test",
             context_id = secret_request_id,
@@ -200,7 +200,7 @@ describe("Nika stress errors (Phase 13 Block 3)", function()
         -- Nota: Este teste valida que cleanup_uploads é chamado
         -- Mesmo que error response seja grande
 
-        local res = nika.handle_request({
+        local res = guaraci.handle_request({
             method = "POST",
             path = "/upload",
             headers = { Accept = "application/json" },
