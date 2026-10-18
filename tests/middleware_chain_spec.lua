@@ -18,7 +18,7 @@ describe("Middleware Chain (Phase 10)", function()
 
     it("rejeita stage inválido", function()
         local mid = function() end
-        local ok, err = pcall(function()
+        local ok = pcall(function()
             middleware_chain.use("invalid_stage", mid)
         end)
 
@@ -26,7 +26,7 @@ describe("Middleware Chain (Phase 10)", function()
     end)
 
     it("rejeita middleware não-function", function()
-        local ok, err = pcall(function()
+        local ok = pcall(function()
             middleware_chain.use("before_request", "not_a_function")
         end)
 
@@ -75,7 +75,7 @@ describe("Middleware Chain (Phase 10)", function()
             return false
         end, "z_mid2", 50) -- explicit name + lower priority
 
-        local is_short, err, ctx = middleware_chain.run("before_request", {}, {}, {})
+        local is_short = middleware_chain.run("before_request", {}, {}, {})
 
         assert(is_short == true, "deve retornar short-circuit flag")
         assert(execution_order[1] == "mid1", "deve executar mid1")
@@ -107,7 +107,7 @@ describe("Middleware Chain (Phase 10)", function()
             return false
         end)
 
-        local _, err, ctx = middleware_chain.run("before_request", {}, {}, {})
+        local _, _, ctx = middleware_chain.run("before_request", {}, {}, {})
 
         assert(ctx.modified == true, "deve modificar context")
         assert(ctx.value == 123, "deve armazenar valor")

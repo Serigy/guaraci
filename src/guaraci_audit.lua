@@ -1,8 +1,9 @@
 local M = {}
 
 local config = {
-    log_path = "guaraci_audit.log"
+    log_path = os.getenv("GUARACI_AUDIT_LOG") or "guaraci_audit.log"
 }
+local warned_write_failure = false
 
 local SENSITIVE_KEYS = {
     password = true,
@@ -34,11 +35,10 @@ local function json_escape(str)
     local s = tostring(str)
     s = s:gsub("\\", "\\\\")
     s = s:gsub('"', '\\"')
-    s = s:gsub("\b", "\\b")
-    s = s:gsub("\f", "\\f")
-    s = s:gsub("\n", "\\n")
-    s = s:gsub("\r", "\\r")
-    s = s:gsub("\t", "\\t")
+    s = s:gsub("%c", function(c)
+        local named = { ["\b"] = "\\b", ["\f"] = "\\f", ["\n"] = "\\n", ["\r"] = "\\r", ["\t"] = "\\t" }
+        return named[c] or string.format("\\u%04x", c:byte())
+    end)
     return s
 end
 
@@ -146,6 +146,11 @@ local function write_event(event)
     end)
 
     if not ok then
+        if not warned_write_failure then
+            warned_write_failure = true
+            io.stderr:write("guaraci: WARNING: cannot write audit log '" .. tostring(config.log_path) ..
+                "': " .. tostring(err) .. "\n")
+        end
         return false, err
     end
 

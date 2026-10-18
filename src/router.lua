@@ -63,11 +63,9 @@ local function sanitize_path(raw_path)
 
     for i = 1, #parts do
         local segment = parts[i]
-        if segment == "." or segment == "" then
-            -- ignora
-        elseif segment == ".." then
+        if segment == ".." then
             return nil, "path_traversal"
-        else
+        elseif segment ~= "." and segment ~= "" then
             safe_parts[#safe_parts + 1] = segment
         end
     end

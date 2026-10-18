@@ -95,7 +95,7 @@ function M.match(method, path)
     -- Tenta encontrar rota que faz match
     for _, route in ipairs(_routes[method]) do
         local pattern = "^" .. route.lua_pattern .. "$"
-        local matches = table.pack(path:match(pattern))
+        local matches = { path:match(pattern) }
 
         if matches[1] ~= nil then
             -- Extrai parâmetros

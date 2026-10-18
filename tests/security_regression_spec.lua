@@ -191,4 +191,139 @@ describe("Context-aware escaping (Fase 7.1)", function()
             assert.are.equal("Erro interno", render_err)
         end
     end)
+    it("security headers are still injected when hooks/ is absent from cwd", function()
+        local hooks = require("hooks")
+        local real_open = io.open
+        rawset(io, "open", function(path, ...)
+            if path == "hooks/security_headers.lua" then return nil, "missing" end
+            return real_open(path, ...)
+        end)
+        hooks.clear()
+        local ok, err = pcall(hooks.register_default_hooks)
+        rawset(io, "open", real_open)
+        assert(ok and err == true, tostring(err))
+        local res = { headers = {}, status = 200 }
+        hooks.run_stage("after_request", {}, res)
+        hooks.clear()
+        assert.are.equal("DENY", res.headers["X-Frame-Options"])
+        assert.are.equal("nosniff", res.headers["X-Content-Type-Options"])
+    end)
+    it("default error handler hides details in prod and shows them only with GUARACI_ENV=dev or opts.env", function()
+        local guaraci = require("guaraci")
+        local tmp = os.tmpname()
+        os.remove(tmp)
+        os.execute("mkdir -p " .. tmp)
+        local fh = assert(io.open(tmp .. "/index.gc", "w"))
+        fh:write("<%= 1 %>")
+        fh:close()
+
+        local function boom(extra)
+            local o = { auto_register_default_hooks = false, templates_root = tmp,
+                escape = function() error("SECRET") end }
+            for k, v in pairs(extra or {}) do o[k] = v end
+            return guaraci.handle_request({ method = "GET", path = "/", headers = {} }, o)
+        end
+
+        local real_getenv = os.getenv
+        local function with_env(value, fn)
+            rawset(os, "getenv", function(name)
+                if name == "GUARACI_ENV" then return value end
+                return real_getenv(name)
+            end)
+            local ok, res = pcall(fn)
+            rawset(os, "getenv", real_getenv)
+            assert(ok, res)
+            return res
+        end
+
+        local prod = with_env(nil, boom)
+        local dev = with_env("dev", boom)
+        local dev_opt = with_env(nil, function() return boom({ env = "dev" }) end)
+        os.execute("rm -rf " .. tmp)
+
+        assert.are.equal(500, prod.status)
+        assert.is_nil(tostring(prod.body):find("details", 1, true))
+        assert.is_not_nil(tostring(dev.body):find("details", 1, true))
+        assert.is_not_nil(tostring(dev_opt.body):find("details", 1, true))
+    end)
+    it("explicit routes never match traversal-shaped paths", function()
+        local guaraci = require("guaraci")
+        local router_v2 = require("router_v2")
+        router_v2.clear()
+        local hit
+        router_v2.get("/files/:name", function() hit = true end)
+        local ok_res = guaraci.handle_request({ method = "GET", path = "/files/ok", headers = {} },
+            { auto_register_default_hooks = false })
+        assert.are.equal(200, ok_res.status)
+        hit = false
+        for _, path in ipairs({ "/files/..", "/files/%2e%2e", "/files/a%00b", "/files/..\\x" }) do
+            local res = guaraci.handle_request({ method = "GET", path = path, headers = {} },
+                { auto_register_default_hooks = false })
+            assert.are.equal(404, res.status, path)
+        end
+        router_v2.clear()
+        assert.are.equal(false, hit)
+    end)
+
+    it("csrf middleware registered via guaraci.use blocks unsafe explicit routes", function()
+        local guaraci = require("guaraci")
+        local router_v2 = require("router_v2")
+        local middleware_chain = require("middleware_chain")
+        router_v2.clear()
+        middleware_chain.clear()
+        local hit = false
+        router_v2.post("/danger", function() hit = true end)
+        guaraci.use(guaraci.middleware_csrf(), "csrf")
+        local res = guaraci.handle_request({ method = "POST", path = "/danger", headers = {} },
+            { auto_register_default_hooks = false })
+        router_v2.clear()
+        middleware_chain.clear()
+        assert.are.equal(403, res.status)
+        assert.are.equal(false, hit)
+    end)
+    it("global short-circuit rejections still get security headers", function()
+        local guaraci = require("guaraci")
+        local router_v2 = require("router_v2")
+        local middleware_chain = require("middleware_chain")
+        local hooks = require("hooks")
+        router_v2.clear(); middleware_chain.clear(); hooks.clear()
+        router_v2.post("/danger", function() end)
+        guaraci.use(guaraci.middleware_csrf(), "csrf")
+        local res = guaraci.handle_request({ method = "POST", path = "/danger", headers = {} }, {})
+        router_v2.clear(); middleware_chain.clear(); hooks.clear()
+        assert.are.equal(403, res.status)
+        assert.are.equal("DENY", res.headers["X-Frame-Options"])
+        assert.are.equal("nosniff", res.headers["X-Content-Type-Options"])
+    end)
+
+    it("a middleware short-circuit that sets no response fails closed with 403", function()
+        local guaraci = require("guaraci")
+        local router_v2 = require("router_v2")
+        local middleware_chain = require("middleware_chain")
+        router_v2.clear(); middleware_chain.clear()
+        router_v2.get("/g", function(req, res) res.body = "reached" end)
+        local g = guaraci.group("/grp")
+        g.use(function() return true end, "silent")
+        g.get("/x", function(req, res) res.body = "reached" end)
+        local grouped = guaraci.handle_request({ method = "GET", path = "/grp/x", headers = {} },
+            { auto_register_default_hooks = false })
+        guaraci.use(function() return true end, "silent_global")
+        local global = guaraci.handle_request({ method = "GET", path = "/g", headers = {} },
+            { auto_register_default_hooks = false })
+        router_v2.clear(); middleware_chain.clear()
+        assert.are.equal(403, grouped.status)
+        assert.are.equal(403, global.status)
+        assert.is_true(grouped.body ~= "reached")
+    end)
+    it("a before_request hook stop without status fails closed: 403 with security headers", function()
+        local guaraci = require("guaraci")
+        local hooks = require("hooks")
+        hooks.clear()
+        hooks.register("before_request", function() return true end, "silent_stop")
+        local res = guaraci.handle_request({ method = "GET", path = "/", headers = {} }, {})
+        hooks.clear()
+        assert.are.equal(403, res.status)
+        assert.are.equal("DENY", res.headers["X-Frame-Options"])
+        assert.are.equal("nosniff", res.headers["X-Content-Type-Options"])
+    end)
 end)

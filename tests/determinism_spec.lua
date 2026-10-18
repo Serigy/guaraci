@@ -1,5 +1,4 @@
 local parser = require("parser")
-local sandbox = require("sandbox")
 
 describe("Deterministic context selection (Fase 7.2)", function()
     local function extract_contexts_from_compiled(compiled)

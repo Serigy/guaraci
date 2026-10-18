@@ -1,5 +1,5 @@
 std = "lua54"
-globals = { "describe", "it", "before_each", "after_each", "assert" }
-max_line_length = false
+max_line_length = 140
 unused_args = false
-exclude_files = { "tests/fixtures/**", ".luarocks/**" }
+globals = { "describe", "it", "before_each", "after_each", "assert" }
+exclude_files = { "tests/fixtures/**", "openwiki/**", "docs/**", "history/**" }

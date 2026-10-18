@@ -159,7 +159,7 @@ function Builder:where(column, operator, value)
             error("invalid_in_values")
         end
         local holders = {}
-        for i = 1, #value do
+        for _ = 1, #value do
             holders[#holders + 1] = "?"
         end
         self._where[#self._where + 1] = {

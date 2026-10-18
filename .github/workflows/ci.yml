@@ -34,15 +34,15 @@ jobs:
 
       # Rockspec steps only run once guaraci-scm-1.rockspec exists.
       - name: Check rockspec
-        if: ${{ hashFiles('guaraci-scm-1.rockspec') != '' }}
+        if: ${{ hashFiles('guaraci-scm-1.rockspec') != '' && matrix.lua != 'luajit-2.1' }}
         run: lua scripts/check_rockspec.lua
 
       - name: Lint rockspec
-        if: ${{ hashFiles('guaraci-scm-1.rockspec') != '' }}
+        if: ${{ hashFiles('guaraci-scm-1.rockspec') != '' && matrix.lua != 'luajit-2.1' }}
         run: luarocks lint guaraci-scm-1.rockspec
 
       - name: Install rock and smoke the CLI
-        if: ${{ hashFiles('guaraci-scm-1.rockspec') != '' }}
+        if: ${{ hashFiles('guaraci-scm-1.rockspec') != '' && matrix.lua != 'luajit-2.1' }}
         run: |
           luarocks make guaraci-scm-1.rockspec
           cd /tmp

@@ -17,45 +17,70 @@ local function create_group(prefix, router_v2, middleware_chain)
         _route_names = {}  -- names das rotas registradas neste grupo
     }
 
+    -- Wraps a handler so group middlewares (kept sorted by use()) run first.
+    -- A middleware returning true short-circuits and the handler is skipped; an empty
+    -- default 200 is turned into 403 (fail closed). Errors are logged and re-raised.
+    local function with_group_middleware(handler)
+        return function(req, res, context)
+            for _, mid in ipairs(group._middlewares) do
+                local ok, result = pcall(mid.fn, req, res, context)
+                if not ok then
+                    local audit = package.loaded["guaraci_audit"]
+                    if audit and audit.log_error then
+                        audit.log_error("group_middleware_error", { middleware = mid.name, error = tostring(result) })
+                    end
+                    error("group_middleware_error:" .. mid.name, 0)
+                end
+                if result == true then
+                    if res.status == nil or (res.status == 200 and (res.body == nil or res.body == "")) then
+                        res.status = 403
+                    end
+                    return nil
+                end
+            end
+            return handler(req, res, context)
+        end
+    end
+
     -- DSL helpers: registra rotas prefixadas
     function group.get(pattern, handler, name)
         local full_pattern = group._prefix .. pattern
-        local route_name = group._router.register("GET", full_pattern, handler, name)
+        local route_name = group._router.register("GET", full_pattern, with_group_middleware(handler), name)
         table.insert(group._route_names, route_name)
         return route_name
     end
 
     function group.post(pattern, handler, name)
         local full_pattern = group._prefix .. pattern
-        local route_name = group._router.register("POST", full_pattern, handler, name)
+        local route_name = group._router.register("POST", full_pattern, with_group_middleware(handler), name)
         table.insert(group._route_names, route_name)
         return route_name
     end
 
     function group.put(pattern, handler, name)
         local full_pattern = group._prefix .. pattern
-        local route_name = group._router.register("PUT", full_pattern, handler, name)
+        local route_name = group._router.register("PUT", full_pattern, with_group_middleware(handler), name)
         table.insert(group._route_names, route_name)
         return route_name
     end
 
     function group.delete(pattern, handler, name)
         local full_pattern = group._prefix .. pattern
-        local route_name = group._router.register("DELETE", full_pattern, handler, name)
+        local route_name = group._router.register("DELETE", full_pattern, with_group_middleware(handler), name)
         table.insert(group._route_names, route_name)
         return route_name
     end
 
     function group.patch(pattern, handler, name)
         local full_pattern = group._prefix .. pattern
-        local route_name = group._router.register("PATCH", full_pattern, handler, name)
+        local route_name = group._router.register("PATCH", full_pattern, with_group_middleware(handler), name)
         table.insert(group._route_names, route_name)
         return route_name
     end
 
     function group.head(pattern, handler, name)
         local full_pattern = group._prefix .. pattern
-        local route_name = group._router.register("HEAD", full_pattern, handler, name)
+        local route_name = group._router.register("HEAD", full_pattern, with_group_middleware(handler), name)
         table.insert(group._route_names, route_name)
         return route_name
     end
@@ -75,6 +100,12 @@ local function create_group(prefix, router_v2, middleware_chain)
             name = name,
             priority = priority
         })
+        table.sort(group._middlewares, function(a, b)
+            if a.priority ~= b.priority then
+                return a.priority > b.priority
+            end
+            return a.name < b.name
+        end)
 
         return name
     end

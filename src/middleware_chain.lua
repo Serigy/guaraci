@@ -86,6 +86,8 @@ local function get_sorted_middlewares(stage)
     return list
 end
 
+-- Contract: a before_* middleware returns true to short-circuit; it should set res.status/body.
+-- If it leaves the default empty 200, the chain turns it into 403 (fail closed).
 -- Executa middlewares de um stage
 -- Retorna: (is_shortcircuit, error, context)
 function M.run(stage, req, res, context)
@@ -94,6 +96,7 @@ function M.run(stage, req, res, context)
     end
 
     context = context or {}
+    local guaraci_audit = package.loaded["guaraci_audit"]
     local middlewares = get_sorted_middlewares(stage)
 
     for _, mid in ipairs(middlewares) do
@@ -101,7 +104,6 @@ function M.run(stage, req, res, context)
 
         if not ok then
             -- Middleware error: log via guaraci_audit if available
-            local guaraci_audit = package.loaded["guaraci_audit"]
             if guaraci_audit and guaraci_audit.log_error then
                 guaraci_audit.log_error("middleware_error", {
                     stage = stage,
@@ -119,6 +121,11 @@ function M.run(stage, req, res, context)
                     stage = stage,
                     middleware = mid.name
                 })
+            end
+            -- Fail closed: a short-circuit that set no response gets 403, not an empty 200.
+            if type(res) == "table" and (res.status == nil or res.status == 200)
+                and (res.body == nil or res.body == "") then
+                res.status = 403
             end
             return true -- short-circuit flag
         end
