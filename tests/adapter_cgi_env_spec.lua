@@ -43,3 +43,40 @@ describe("adapter_cgi.env_from_os", function()
         assert(text:find("Env", 1, true))
     end)
 end)
+
+describe("adapter_cgi request hardening", function()
+    local function req_with(env)
+        env.REQUEST_METHOD = env.REQUEST_METHOD or "GET"
+        env.PATH_INFO = env.PATH_INFO or "/"
+        return adapter.request_from_cgi(env, function() return "" end)
+    end
+
+    it("accepts well-formed X-Request-Id and rejects hostile ones", function()
+        assert.are.equal("req-abc_123", req_with({ HTTP_X_REQUEST_ID = "req-abc_123" }).context_id)
+        for _, bad in ipairs({ "short", "../../etc/passwd", string.rep("a", 65), 'a"b<script>12345', "abc def 1234" }) do
+            local id = req_with({ HTTP_X_REQUEST_ID = bad }).context_id
+            assert.is_true(id ~= bad, bad)
+            assert.is_not_nil(id:match("^[%w%-_]+$"))
+        end
+    end)
+
+    it("takes remote_addr from REMOTE_ADDR, not from headers", function()
+        local req = req_with({ REMOTE_ADDR = "203.0.113.9", HTTP_X_FORWARDED_FOR = "1.2.3.4" })
+        assert.are.equal("203.0.113.9", req.remote_addr)
+    end)
+
+    it("HTTP_CONTENT_LENGTH cannot shadow CONTENT_LENGTH", function()
+        local read = nil
+        local req = adapter.request_from_cgi({
+            REQUEST_METHOD = "POST", PATH_INFO = "/", CONTENT_LENGTH = "3", HTTP_CONTENT_LENGTH = "999"
+        }, function(len) read = len; return "abc" end)
+        assert.are.equal(3, read)
+        assert.are.equal("abc", req.body)
+        assert.are.equal("3", req.headers["Content-Length"])
+    end)
+
+    it("env_from_os passes X-Forwarded-For through as plain header data", function()
+        local env = adapter.env_from_os({ getenv = function(n) return ({ HTTP_X_FORWARDED_FOR = "9.9.9.9" })[n] end })
+        assert.are.equal("9.9.9.9", env.HTTP_X_FORWARDED_FOR)
+    end)
+end)

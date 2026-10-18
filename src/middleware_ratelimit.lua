@@ -8,19 +8,30 @@ local function log_security(message, context)
     end
 end
 
-local function extract_client_ip(req)
-    local headers = req.headers or {}
-    local forwarded = headers["x-forwarded-for"] or headers["X-Forwarded-For"]
-    if type(forwarded) == "string" and forwarded ~= "" then
-        local ip = forwarded:match("^%s*([^,%s]+)")
-        if ip and ip ~= "" then
-            return ip
+local function header_value(headers, wanted)
+    for name, value in pairs(headers) do
+        if type(name) == "string" and name:lower() == wanted then
+            return value
         end
     end
+end
 
-    local real_ip = headers["x-real-ip"] or headers["X-Real-Ip"]
-    if type(real_ip) == "string" and real_ip ~= "" then
-        return real_ip
+-- Forwarded headers are client-controlled: they count only behind a proxy you trust.
+local function extract_client_ip(req, trusted_proxy)
+    if trusted_proxy then
+        local headers = req.headers or {}
+        local forwarded = header_value(headers, "x-forwarded-for")
+        if type(forwarded) == "string" and forwarded ~= "" then
+            local ip = forwarded:match("^%s*([^,%s]+)")
+            if ip and ip ~= "" then
+                return ip
+            end
+        end
+
+        local real_ip = header_value(headers, "x-real-ip")
+        if type(real_ip) == "string" and real_ip ~= "" then
+            return real_ip
+        end
     end
 
     if type(req.remote_addr) == "string" and req.remote_addr ~= "" then
@@ -40,10 +51,11 @@ function M.create(opts)
     local window_seconds = tonumber(opts.window_seconds) or 60
     local max_requests = tonumber(opts.max_requests) or 100
     local bucket = {}
+    local trusted_proxy = opts.trusted_proxy == true
 
     return function(req, res, context)
         local now = os.time()
-        local ip = extract_client_ip(req)
+        local ip = extract_client_ip(req, trusted_proxy)
 
         local entry = bucket[ip]
         if entry == nil or now >= entry.reset_at then

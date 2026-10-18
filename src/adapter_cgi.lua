@@ -102,6 +102,11 @@ local function read_body(env, stdin_reader)
     return body_or_err
 end
 
+-- Client-supplied ids key uploads and contexts and are echoed in errors: accept only a safe shape.
+local function is_valid_request_id(value)
+    return type(value) == "string" and #value >= 8 and #value <= 64 and value:match("^[%w%-_]+$") ~= nil
+end
+
 function M.request_from_cgi(env, stdin_reader)
     env = env or {}
     stdin_reader = stdin_reader or function(len)
@@ -117,7 +122,14 @@ function M.request_from_cgi(env, stdin_reader)
     end
 
     local headers = parse_headers(env)
-    local context_id = env.HTTP_X_REQUEST_ID or env.REQUEST_ID or env.UNIQUE_ID or generate_request_id()
+    local context_id
+    for _, candidate in ipairs({ env.HTTP_X_REQUEST_ID, env.REQUEST_ID, env.UNIQUE_ID }) do
+        if is_valid_request_id(candidate) then
+            context_id = candidate
+            break
+        end
+    end
+    context_id = context_id or generate_request_id()
     local query = parse_query(env.QUERY_STRING or "")
     local body = read_body(env, stdin_reader)
 
@@ -159,6 +171,7 @@ function M.request_from_cgi(env, stdin_reader)
         files = files,
         body_table = body_table,
         context_id = context_id,
+        remote_addr = type(env.REMOTE_ADDR) == "string" and env.REMOTE_ADDR or nil,
         upload_error = upload_error
     }
 end

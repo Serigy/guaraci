@@ -123,3 +123,27 @@ describe("Security middlewares (Phase 14)", function()
         assert.is_true(res3.body:find('"retryable":true', 1, true) ~= nil)
     end)
 end)
+
+describe("Rate-limit client identity", function()
+    local function hit(rate, remote, xff)
+        local res = { status = 200, headers = {}, body = "" }
+        local short = rate({ method = "GET", remote_addr = remote, headers = { ["X-Forwarded-For"] = xff } }, res, {})
+        return short, res
+    end
+
+    it("ignores X-Forwarded-For by default: rotating it shares one bucket", function()
+        local rate = middleware_ratelimit.create({ max_requests = 2, window_seconds = 60 })
+        assert.is_true(hit(rate, "198.51.100.1", "1.1.1.1") == false)
+        assert.is_true(hit(rate, "198.51.100.1", "2.2.2.2") == false)
+        local short, res = hit(rate, "198.51.100.1", "3.3.3.3")
+        assert.is_true(short == true)
+        assert.are.equal(429, res.status)
+    end)
+
+    it("honours X-Forwarded-For only with trusted_proxy = true", function()
+        local rate = middleware_ratelimit.create({ max_requests = 1, window_seconds = 60, trusted_proxy = true })
+        assert.is_true(hit(rate, "10.0.0.1", "1.1.1.1") == false)
+        assert.is_true(hit(rate, "10.0.0.1", "2.2.2.2") == false)
+        assert.is_true(hit(rate, "10.0.0.1", "1.1.1.1") == true)
+    end)
+end)

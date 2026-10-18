@@ -235,12 +235,14 @@ function M.handle_request(raw_req, opts)
             return finalize_response(false)
         end
         if short_circuit == true then
-            return finalize_response(false)
+            return finalize_response(true)
         end
 
         local route_handler, _, route_params
         if is_safe_route_path(req.path) then
             route_handler, _, route_params = router_v2.match(req.method, req.path)
+        elseif has_audit and audit and type(audit.log_security) == "function" then
+            audit.log_security("route_path_refused", { path = tostring(req.path), context_id = req.context_id })
         end
         if route_handler then
             request_context.params = route_params
@@ -312,7 +314,7 @@ function M.handle_request(raw_req, opts)
             return finalize_response(false)
         end
         if render_short == true then
-            return finalize_response(false)
+            return finalize_response(true)
         end
 
         local compiled_lua, compile_err = parser.compile(template_source)

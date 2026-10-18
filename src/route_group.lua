@@ -17,22 +17,24 @@ local function create_group(prefix, router_v2, middleware_chain)
         _route_names = {}  -- names das rotas registradas neste grupo
     }
 
-    -- Wraps a handler so group middlewares (priority desc, then name) run first.
-    -- A middleware returning true short-circuits and the handler is skipped.
+    -- Wraps a handler so group middlewares (kept sorted by use()) run first.
+    -- A middleware returning true short-circuits and the handler is skipped; an empty
+    -- default 200 is turned into 403 (fail closed). Errors are logged and re-raised.
     local function with_group_middleware(handler)
         return function(req, res, context)
-            local ordered = {}
             for _, mid in ipairs(group._middlewares) do
-                ordered[#ordered + 1] = mid
-            end
-            table.sort(ordered, function(a, b)
-                if a.priority ~= b.priority then
-                    return a.priority > b.priority
+                local ok, result = pcall(mid.fn, req, res, context)
+                if not ok then
+                    local audit = package.loaded["guaraci_audit"]
+                    if audit and audit.log_error then
+                        audit.log_error("group_middleware_error", { middleware = mid.name, error = tostring(result) })
+                    end
+                    error("group_middleware_error:" .. mid.name, 0)
                 end
-                return a.name < b.name
-            end)
-            for _, mid in ipairs(ordered) do
-                if mid.fn(req, res, context) == true then
+                if result == true then
+                    if res.status == nil or (res.status == 200 and (res.body == nil or res.body == "")) then
+                        res.status = 403
+                    end
                     return nil
                 end
             end
@@ -98,6 +100,12 @@ local function create_group(prefix, router_v2, middleware_chain)
             name = name,
             priority = priority
         })
+        table.sort(group._middlewares, function(a, b)
+            if a.priority ~= b.priority then
+                return a.priority > b.priority
+            end
+            return a.name < b.name
+        end)
 
         return name
     end
