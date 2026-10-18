@@ -40,13 +40,14 @@ Requirements: Docker is installed and running, and the project has `cgi-bin/app.
 Behavior:
 
 - builds the image `guaraci-dev` from an embedded Dockerfile: Alpine 3.20 + `lua5.4` + lighttpd (`mod_cgi`)
-- creates `uploads/` and `public/` when missing
-- mounts the project at `/app` read-only with a writable `/app/uploads` volume, the installed core at `/guaraci` read-only, and a temporary lighttpd config
+- creates `uploads/`, `logs/`, and `public/` when missing; the scaffold's `.gitignore` covers `logs/`
+- mounts the project at `/app` read-only with writable `/app/uploads` and `/app/logs` volumes, the installed core at `/guaraci` read-only, and a temporary lighttpd config
 - lighttpd listens on port 80 inside the container with `public/` as its document root, so `app.lua`, `views/`, and `hooks/` are never served as files; existing static files are served directly and other paths go to `/cgi-bin/app.cgi`
+- dotfiles under `public/` are denied with 403 via `mod_access`
 - static files bypass app middleware and hooks, as in the local dev server
 - publishes on `127.0.0.1:<port>` by default; `--host` overrides it with a network-exposure warning
 - `guaraci dev --container --port 3000` is served at `http://127.0.0.1:3000/`
-- sets `GUARACI_ENV=dev` and `LUA_PATH=/guaraci/?.lua;;` for the container process
+- sets `GUARACI_ENV=dev`, `LUA_PATH=/guaraci/?.lua;;`, and `GUARACI_AUDIT_LOG=/app/logs/guaraci_audit.log` for the container process; audit write failures warn once on stderr
 - `app.cgi` uses `adapter_cgi.env_from_os()` and the project's `app.lua` options
 
 The scaffold's `Dockerfile.dev` mirrors this image for use outside the CLI:

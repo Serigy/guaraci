@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:7479d61547ac10de821928ccb3a40fef02b4406fbb64c77dbbcd29d9bd6c60dd",
+  "pageVersion": "sha256:29ea0035093d66f7e7611fc54075fedd0436ff1eb61a699f5bfa8a78fc4c5ef1",
   "claims": [
     {
       "id": "claim_f4b22870d0054f4f9bea87c6c5b46f92",
@@ -14,7 +14,7 @@
     },
     {
       "id": "claim_449a01c03d3b45dfa717baea16f536bc",
-      "statement": "The request context_id comes from X-Request-Id, REQUEST_ID, or UNIQUE_ID only when the value matches ^[%w%-_]{8,64}$; otherwise a generated id is used.",
+      "statement": "The request context_id uses the first valid candidate in order X-Request-Id header, REQUEST_ID, UNIQUE_ID, accepting only values matching ^[%w%-_@]{8,64}$; otherwise a generated id is used.",
       "evidence": [
         {
           "resource": "repo://src/adapter_cgi.lua#L120-L120",

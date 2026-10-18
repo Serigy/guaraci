@@ -81,11 +81,11 @@ Error handler masks internal details in production (`src/error_handler.lua`):
 
 ## Rate Limiting Identity
 
-`middleware_ratelimit` keys its in-memory bucket on `req.remote_addr`, which the CGI adapter sets from `REMOTE_ADDR` and the dev server from the socket peer. The `X-Forwarded-For` and `X-Real-Ip` headers are client-controlled and are honoured only when the middleware option `trusted_proxy = true` is set. Behind a reverse proxy without that option, every client shares the proxy's bucket, so the configured limit becomes global; enable the option only when the proxy is trusted and rewrites forwarded headers.
+`middleware_ratelimit` keys its in-memory bucket on `req.remote_addr`, which the CGI adapter sets from `REMOTE_ADDR` and the dev server from the socket peer. The `X-Forwarded-For` and `X-Real-Ip` headers are client-controlled and are honoured only when the middleware option `trusted_proxy = true` is set. With that option, `X-Real-Ip` is preferred; otherwise the rightmost `X-Forwarded-For` token is used, the hop appended by the trusted proxy, never the leftmost client-supplied token. Behind a reverse proxy without the option, every client shares the proxy's bucket, so the configured limit becomes global; enable it only when the proxy is trusted and rewrites forwarded headers.
 
 ## Short-circuit Contract
 
-A middleware that returns `true` must set `res.status` and `res.body`. If it leaves the default empty 200, the framework changes the response to 403 (fail closed), in both the global chain and group middleware. Global short-circuits still run `after_request` hooks, so security headers are present on 403/429 responses. Refused route paths (traversal, backslash, NUL, including percent-encoded) emit `route_path_refused` and end as 404.
+A middleware or `before_*` hook that returns `true` must set `res.status` and `res.body`. If it leaves the default empty 200, the framework changes the response to 403 (fail closed), in the global chain, in group middleware, and in `before_request`/`before_render` hooks. Global short-circuits and hook stops still run `after_request` hooks, so security headers are present on 403/429 responses. Refused route paths (traversal, backslash, NUL, including percent-encoded) emit `route_path_refused` and end as 404.
 
 ## ISO 27001 Annexe A.14 Conformance
 

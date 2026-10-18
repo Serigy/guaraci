@@ -25,7 +25,7 @@ end, "auth_gate")
 - `list(stage)`, `clear(stage)`, and `clear()` inspect and reset the registry.
 - `run_stage(stage, req, res, context)` returns `(stopped, reason)`, where reason is `short_circuit`, `hook_error`, or `invalid_stage`.
 - A hook that raises makes `run_stage` mark the response as 500 and return `hook_error`; inside `handle_request` the error handler rewrites the body with code `hook_error`.
-- A hook returning `true` stops the stage. If it did not set a status, the default is 403 (or 401 when the hook set 401), with a matching default body.
+- A hook returning `true` stops the stage. If it left status 200 with an empty body, the response becomes 403 (fail closed); if it set no status, the default is 403 (or 401 when the hook set 401), with a matching default body. A stop in `before_request` or `before_render` still runs the `after_request` hooks, so security headers are present.
 
 ### Default security-headers hook
 
@@ -45,13 +45,13 @@ The hook injects `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `St
 
 ## Audit log
 
-`src/guaraci_audit.lua` appends one JSON object per event to `guaraci_audit.log` (configurable with `set_log_path`):
+`src/guaraci_audit.lua` appends one JSON object per event to the path from `GUARACI_AUDIT_LOG` (or `guaraci_audit.log` in the working directory; `set_log_path` overrides it). A write failure leaves the request untouched and prints one warning per process to stderr:
 
 ```json
 { "timestamp": "2026-10-18T20:00:00Z", "level": "security", "message": "csrf_validation_failed", "context": { "method": "POST" } }
 ```
 
-Public entry points: `log_error(message, context)` and `log_security(message, context)`. Write failures do not interrupt the request.
+Public entry points: `log_error(message, context)` and `log_security(message, context)`. Write failures do not interrupt the request and warn on stderr once per process (`guaraci: WARNING: cannot write audit log ...`).
 
 Redaction and bounds:
 - Sensitive keys are replaced with `<redacted>`: `password`, `passwd`, `pwd`, `token`, `access_token`, `refresh_token`, `authorization`, `cookie`, `secret`, `api_key`, `apikey`.
