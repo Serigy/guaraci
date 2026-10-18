@@ -3,3 +3,6 @@ guaraci_audit.log
 uploads_test/
 tests/guaraci_audit_dataware_*.log
 .pi/
+uploads/
+*.rock
+dist/

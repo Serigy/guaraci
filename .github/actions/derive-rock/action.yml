@@ -1,0 +1,72 @@
+name: Derive rock
+description: >
+  Derive a versioned rockspec from guaraci-scm-1.rockspec for a tag, lint it,
+  install it (luarocks make) and smoke-test require. Optionally pack the
+  .src.rock (needs the tag to exist on the remote). Requires Lua and LuaRocks
+  to be set up by the caller and the repository checked out.
+inputs:
+  tag:
+    description: "Release tag, e.g. v0.0.5-alpha.1"
+    required: true
+  pack:
+    description: "Also run luarocks pack (the tag must already be pushed)"
+    required: false
+    default: "false"
+outputs:
+  rock_version:
+    description: "LuaRocks version, e.g. 0.0.5.pre.alpha.1-1"
+    value: ${{ steps.derive.outputs.rock_version }}
+  rockspec:
+    description: "Path to the derived rockspec"
+    value: ${{ steps.derive.outputs.rockspec }}
+runs:
+  using: composite
+  steps:
+    - name: Derive rockspec
+      id: derive
+      shell: bash
+      env:
+        TAG: ${{ inputs.tag }}
+      run: |
+        VERSION_NO_V="${TAG#v}"
+        # LuaRocks versions must match [%w.]+-%d+; semver pre-release becomes
+        # 0.0.1-alpha.1 -> 0.0.1.pre.alpha.1-1
+        VERSION_NO_BUILD="${VERSION_NO_V%%+*}"
+        CORE="${VERSION_NO_BUILD%%-*}"
+        if [[ "$VERSION_NO_BUILD" == *-* ]]; then
+          PRE="${VERSION_NO_BUILD#*-}"
+          PRE="$(echo "$PRE" | sed -E 's/[^A-Za-z0-9.]+/./g; s/\.+/./g; s/^\.|\.$//g')"
+          ROCK_BASE="${CORE}.pre.${PRE}"
+        else
+          ROCK_BASE="$CORE"
+        fi
+        ROCK_BASE="$(echo "$ROCK_BASE" | sed -E 's/[^A-Za-z0-9.]+/./g; s/\.+/./g; s/^\.|\.$//g')"
+        ROCK_VERSION="${ROCK_BASE}-1"
+
+        mkdir -p dist
+        cp guaraci-scm-1.rockspec dist/
+        (cd dist && luarocks new_version guaraci-scm-1.rockspec "$ROCK_VERSION" --tag "$TAG")
+        rm dist/guaraci-scm-1.rockspec
+        ROCKSPEC="dist/guaraci-${ROCK_VERSION}.rockspec"
+        test -f "$ROCKSPEC"
+        echo "rock_version=$ROCK_VERSION" >> "$GITHUB_OUTPUT"
+        echo "rockspec=$ROCKSPEC" >> "$GITHUB_OUTPUT"
+
+    - name: Lint rockspec
+      shell: bash
+      run: luarocks lint "${{ steps.derive.outputs.rockspec }}"
+
+    - name: Install and smoke test
+      shell: bash
+      run: |
+        luarocks make guaraci-scm-1.rockspec
+        cd /tmp
+        lua -e 'assert(require"guaraci")'
+        guaraci version
+
+    - name: Pack source rock
+      if: ${{ inputs.pack == 'true' }}
+      shell: bash
+      run: |
+        cd dist
+        luarocks pack "$(basename "${{ steps.derive.outputs.rockspec }}")"
