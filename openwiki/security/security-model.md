@@ -79,13 +79,15 @@ Error handler masks internal details in production (`src/error_handler.lua`):
 - **Detail Exposure Control** (`src/error_handler.lua#L77-L79`): Stack traces and `details` field only exposed when `env == "dev"`
 - **Error Normalization** (`src/error_handler.lua#L43-L52`): Unhandled errors wrapped with default status 500 and generic message
 
-## Rate Limiting Identity
+## Rate Limiting Identity and Store
 
-`middleware_ratelimit` keys its in-memory bucket on `req.remote_addr`, which the CGI adapter sets from `REMOTE_ADDR` and the dev server from the socket peer. The `X-Forwarded-For` and `X-Real-Ip` headers are client-controlled and are honoured only when the middleware option `trusted_proxy = true` is set. With that option, `X-Real-Ip` is preferred; otherwise the rightmost `X-Forwarded-For` token is used, the hop appended by the trusted proxy, never the leftmost client-supplied token. Behind a reverse proxy without the option, every client shares the proxy's bucket, so the configured limit becomes global; enable it only when the proxy is trusted and rewrites forwarded headers.
+`middleware_ratelimit` keys counters on `req.remote_addr`, which the CGI adapter sets from `REMOTE_ADDR` and the dev server from the socket peer. The `X-Forwarded-For` and `X-Real-Ip` headers are client-controlled: declare a proxy with `client_ip_header` (`x-forwarded-for` default, or `x-real-ip`) and `trusted_hops` (default 1, counted from the right), or use the `trusted_proxy = true` alias for XFF with one hop. The rightmost entry is the hop the trusted proxy appended; earlier tokens are client-supplied. Without a declaration, every client behind a reverse proxy shares its bucket.
+
+Counters live in a pluggable store (`ratelimit_store`): an injected `store`, a process default (the dev server installs a memory store), or a file store when `GATEWAY_INTERFACE`, `store_path`, or `GUARACI_RATELIMIT_STORE` is set. The file store uses atomic renames, so counts are approximate under concurrency; a memory store inside CGI warns once on stderr because counters reset per request, and a store write failure is audited as `rate_limit_store_failed` without blocking all clients.
 
 ## Short-circuit Contract
 
-A middleware or `before_*` hook that returns `true` must set `res.status` and `res.body`. If it leaves the default empty 200, the framework changes the response to 403 (fail closed), in the global chain, in group middleware, and in `before_request`/`before_render` hooks. Global short-circuits and hook stops still run `after_request` hooks, so security headers are present on 403/429 responses. Refused route paths (traversal, backslash, NUL, including percent-encoded) emit `route_path_refused` and end as 404.
+`before_request` hooks run before the global middleware chain, so a hook stop skips all middleware. A middleware or `before_*` hook that returns `true` must set `res.status` and `res.body`; for an intentional empty body (health check) return 204, because the default empty 200 becomes 403 (fail closed) in the global chain, in group middleware, and in hooks. The `after_request` chain and hooks run on every response — success, 404, 500, upload errors, and short-circuits — and cannot be stopped by a user `true` return or a failing hook/middleware, so security headers are always applied. Response headers are validated before writing: an invalid name or a value containing CR/LF/NUL becomes a generic 500 with a `response_header_rejected` event. Refused route paths (traversal, backslash, NUL, including percent-encoded) emit `route_path_refused` and end as 404.
 
 ## ISO 27001 Annexe A.14 Conformance
 

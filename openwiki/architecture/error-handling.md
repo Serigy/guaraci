@@ -66,7 +66,7 @@ XML wraps `status`, `code`, and `message` in an `<error>` element. HTML renders 
 
 `guaraci.set_error_handler(fn)` accepts a function only and returns `nil, "error_handler_must_be_function"` otherwise; `guaraci.reset_error_handler()` restores the production default. `error_handler.apply` calls the active handler under `pcall`; if the handler throws or returns a non-table, it falls back to a production handler with code `error_handler_failure` and status 500.
 
-Failures inside hooks produce `hook_error`; failures inside `middleware_chain` are logged as `middleware_error` and abort the remaining chain.
+Failures inside hooks produce `hook_error`; failures inside `middleware_chain` are logged as `middleware_error` and abort the remaining chain. A failing custom error handler is caught inside `handle_request`, which returns a generic 500 and still runs cleanup. Upload failures answer `413 Payload too large` or `400 Invalid upload`, keeping the raw reason in `details` (dev only) and the audit log. `response_to_cgi` validates response headers and turns an invalid name or a CR/LF/NUL value into a generic 500 with a `response_header_rejected` event. The `after_request` chain and hooks (security headers) run on every response, including errors and short-circuits.
 
 ## Related code and tests
 

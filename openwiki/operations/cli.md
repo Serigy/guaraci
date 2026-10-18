@@ -102,7 +102,9 @@ guaraci dev --port 3000
 - luasocket-based server on `http://127.0.0.1:8080` by default
 - reloads `app.lua` per request and resets routes, middleware, hooks, and models
 - fills `REMOTE_ADDR` from the socket peer, so the rate limiter keys on the real client
-- serves `public/` **before** app middleware and hooks, so static files bypass auth/CSRF/rate-limit/security headers; refused static paths are audit-logged as `route_path_refused`
+- caps request/header lines at 8 KB (431), answers 501 for `Transfer-Encoding: chunked`, strips control characters from logged paths, and enforces a 15-second per-connection deadline
+- keeps rate-limit counters in the server process (`ratelimit_store.memory`), so limits survive app reloads
+- serves `public/` **before** app middleware and hooks, so static files bypass auth/CSRF/rate-limit/security headers; dotfile paths return 403 and refused static paths are audit-logged as `route_path_refused`
 - runs with `env = "dev"`, so error details are visible; production hides them
 - warns when `--host` is not loopback, because that exposes dev error details to the network
 - `--app` selects a different entry file

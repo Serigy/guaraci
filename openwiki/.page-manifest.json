@@ -11,7 +11,7 @@
     "/openwiki/architecture/file-uploads.md": {
       "gitHead": "c36c22cb1a0f223fd20151b8b9fa4f638eafa602",
       "sourceFingerprint": "sha256:e277dbd166e30445650f7b94880cb78b22f7e237109c3746f7c6baec0e439b0e",
-      "pageVersion": "sha256:ce30c6cdc446ee9149fd75e34b38bfcfe914ac4e2331a2408ad4e8c30fbf2944",
+      "pageVersion": "sha256:3843b7ed22421af19a8bf94ea482e5dea389ef83b020207d4b1b92228500f35f",
       "completedBy": "pi",
       "completedRunId": "76c6e8eb-9320-46ce-b591-5380f91967d0"
     },
@@ -32,7 +32,7 @@
     "/openwiki/architecture/routing-middleware.md": {
       "gitHead": "c36c22cb1a0f223fd20151b8b9fa4f638eafa602",
       "sourceFingerprint": "sha256:e277dbd166e30445650f7b94880cb78b22f7e237109c3746f7c6baec0e439b0e",
-      "pageVersion": "sha256:a467b8ece53d624aba120cf0bca0def7025fea4c4d084534c4bb166b6dda8839",
+      "pageVersion": "sha256:9fa2939c9ee977f01ff0397800015e478c4dc10669819a89650819ed37eab6c3",
       "completedBy": "pi",
       "completedRunId": "76c6e8eb-9320-46ce-b591-5380f91967d0"
     },
@@ -46,14 +46,14 @@
     "/openwiki/architecture/validation-security-middleware.md": {
       "gitHead": "c36c22cb1a0f223fd20151b8b9fa4f638eafa602",
       "sourceFingerprint": "sha256:e277dbd166e30445650f7b94880cb78b22f7e237109c3746f7c6baec0e439b0e",
-      "pageVersion": "sha256:d3751ddacdf62b45ff150e6b003390440460e612698294cd4fc83065af0b06cd",
+      "pageVersion": "sha256:61de6713b4e37135d758b10d8c371d90e7e12306edc76623d2f693bfc06e5eab",
       "completedBy": "pi",
       "completedRunId": "76c6e8eb-9320-46ce-b591-5380f91967d0"
     },
     "/openwiki/integrations/cgi-adapter.md": {
       "gitHead": "c36c22cb1a0f223fd20151b8b9fa4f638eafa602",
       "sourceFingerprint": "sha256:e277dbd166e30445650f7b94880cb78b22f7e237109c3746f7c6baec0e439b0e",
-      "pageVersion": "sha256:29ea0035093d66f7e7611fc54075fedd0436ff1eb61a699f5bfa8a78fc4c5ef1",
+      "pageVersion": "sha256:8763ed4a9a6109f5a729602a4590cbe5e75640b8f80295c840f4438af1b603e8",
       "completedBy": "pi",
       "completedRunId": "76c6e8eb-9320-46ce-b591-5380f91967d0"
     },

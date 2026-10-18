@@ -22,8 +22,10 @@ Every upload passes `file_validator`, which enforces three limits by default: 25
 
 ## Storage (`file_storage`)
 
-Storage is pluggable through a provider registry. `new_registry(default_provider)` holds named providers with `set_provider`, `use`, and `active`, and forwards `put`/`get`/`delete` to the active provider. The built-in local provider writes each file as `{random_id}_{sanitized filename}` under a configurable `root_dir` (default `uploads`), and keeps an in-memory index of stored files for retrieval and deletion.
+Storage is pluggable through a provider registry. `new_registry(default_provider)` holds named providers with `set_provider`, `use`, and `active`, and forwards `put`/`get`/`delete` to the active provider. The built-in local provider writes each file as `{random_id}_{sanitized filename}` under a configurable `root_dir` (default `uploads`, overridable with `GUARACI_UPLOAD_DIR`), and keeps an in-memory index of stored files for retrieval and deletion. The random id comes from `guaraci_random` (`/dev/urandom` with a seeded fallback), so ids are not predictable across CGI processes.
 
 ## Orchestration and cleanup (`file_manager`)
 
 `file_manager.process_files(files, opts)` first runs the full payload through `file_validator` (logging a security event on rejection), then stores each file and records the returned metadata. When a `request_id` is supplied, the stored ids are indexed against it so `cleanup_request(request_id)` can delete every file from that request after the response, preventing orphaned uploads.
+
+When validation fails, `handle_request` answers `413 Payload too large` or `400 Invalid upload`; the raw reason is only exposed in `details` (dev) and in the audit log.

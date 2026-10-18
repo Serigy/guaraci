@@ -25,7 +25,9 @@ end, "auth_gate")
 - `list(stage)`, `clear(stage)`, and `clear()` inspect and reset the registry.
 - `run_stage(stage, req, res, context)` returns `(stopped, reason)`, where reason is `short_circuit`, `hook_error`, or `invalid_stage`.
 - A hook that raises makes `run_stage` mark the response as 500 and return `hook_error`; inside `handle_request` the error handler rewrites the body with code `hook_error`.
-- A hook returning `true` stops the stage. If it left status 200 with an empty body, the response becomes 403 (fail closed); if it set no status, the default is 403 (or 401 when the hook set 401), with a matching default body. A stop in `before_request` or `before_render` still runs the `after_request` hooks, so security headers are present.
+- `before_request` hooks run before the global middleware chain, so a hook stop skips all middleware.
+- A hook returning `true` stops the stage. If it left status 200 with an empty body, the response becomes 403 (fail closed); use 204 for an intentional empty body. If it set no status, the default is 403 (or 401 when the hook set 401), with a matching default body.
+- `after_request` hooks run on every response (success, 404, 500, upload errors, short-circuits) and cannot be stopped: a `true` return does not skip later hooks, and a failing hook or middleware still lets the security-headers hook run.
 
 ### Default security-headers hook
 
@@ -57,7 +59,9 @@ Redaction and bounds:
 - Sensitive keys are replaced with `<redacted>`: `password`, `passwd`, `pwd`, `token`, `access_token`, `refresh_token`, `authorization`, `cookie`, `secret`, `api_key`, `apikey`.
 - Depth beyond 6 becomes `<max-depth>`; functions, threads, and userdata become `<function>`, `<thread>`, `<userdata>`; cycles become `<cycle>`.
 
-Events already emitted include hook failures and short-circuits, `route_path_refused` for refused route/static paths, `group_middleware_error` for group middleware exceptions, CSRF/CORS/rate-limit blocks, `file_upload_blocked`, SQL policy rejections, driver errors, and Dataware CRUD/tenant events (`dataware_create`, `dataware_update`, `dataware_delete`, `dataware_tenant_violation`).
+Events already emitted include hook failures and short-circuits, `route_path_refused` for refused route/static paths, `group_middleware_error` for group middleware exceptions, `response_header_rejected` for invalid response headers, `rate_limit_store_failed` for counter-store write failures, CSRF/CORS/rate-limit blocks, `file_upload_blocked`, SQL policy rejections, driver errors, and Dataware CRUD/tenant events (`dataware_create`, `dataware_update`, `dataware_delete`, `dataware_tenant_violation`).
+
+Rejected uploads also log the raw reason (`file_upload_blocked`, upload error details); the HTTP body only carries `Payload too large` or `Invalid upload`.
 
 ## Operational notes
 
