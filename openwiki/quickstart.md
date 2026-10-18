@@ -135,7 +135,7 @@ From this release, `handle_request` runs `before_request` hooks and the global m
 
 - **middleware_cors(opts)**: CORS allow-list + OPTIONS preflight.
 - **middleware_csrf(opts)**: CSRF double-submit cookie + header (default cookie `guaraci_csrf_token`).
-- **middleware_ratelimit(opts)**: Rate limiting keyed on `req.remote_addr`, with a 429 response and `Retry-After`. Declare a proxy with `client_ip_header`/`trusted_hops` (`trusted_proxy = true` is the XFF/1-hop alias); otherwise all clients behind a reverse proxy share its bucket. Counters use a pluggable `ratelimit_store` (file store automatically in CGI). `before_request` hooks run before the global chain; an empty-200 short-circuit becomes 403 (use 204 for intentional empty bodies), and security headers still run on every response.
+- **middleware_ratelimit(opts)**: Rate limiting keyed on `req.remote_addr`, with a 429 response and `Retry-After`. Declare a proxy with `client_ip_header`/`trusted_hops` (`trusted_proxy = true` is the XFF/1-hop alias); otherwise all clients behind a reverse proxy share its bucket. Counters use a pluggable `ratelimit_store` (file store automatically in CGI, defaulting to a temp path and rewriting the file per request; a store failure answers 429 fail-closed unless `fail_open = true`). `before_request` hooks run before the global chain; an empty-200 short-circuit becomes 403 (use 204 for intentional empty bodies), and security headers still run on every response.
 
 ### Error Handling
 

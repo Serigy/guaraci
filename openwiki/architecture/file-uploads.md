@@ -28,4 +28,4 @@ Storage is pluggable through a provider registry. `new_registry(default_provider
 
 `file_manager.process_files(files, opts)` first runs the full payload through `file_validator` (logging a security event on rejection), then stores each file and records the returned metadata. When a `request_id` is supplied, the stored ids are indexed against it so `cleanup_request(request_id)` can delete every file from that request after the response, preventing orphaned uploads.
 
-When validation fails, `handle_request` answers `413 Payload too large` or `400 Invalid upload`; the raw reason is only exposed in `details` (dev) and in the audit log.
+When validation fails, `handle_request` answers `413 Payload too large` for client size errors, `400 Invalid upload` for other client errors, and `500` for server-side storage failures; the raw reason is only exposed in `details` (dev) and in the audit log, never in the HTTP body. Each stored file is indexed as soon as it is written, so if a later file in a multi-file upload fails, the earlier files are cleaned up and no orphans remain.

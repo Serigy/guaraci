@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:8763ed4a9a6109f5a729602a4590cbe5e75640b8f80295c840f4438af1b603e8",
+  "pageVersion": "sha256:8390616b4dffbd3a5381323576746719fa4d20ce152f51dae2b4dfdbb071432b",
   "claims": [
     {
       "id": "claim_f4b22870d0054f4f9bea87c6c5b46f92",
@@ -14,7 +14,7 @@
     },
     {
       "id": "claim_449a01c03d3b45dfa717baea16f536bc",
-      "statement": "The request context_id prefers server-provided REQUEST_ID and UNIQUE_ID over the client X-Request-Id, accepting only values matching ^[%w%-_@]{8,64}$; a valid non-winning client header is kept as client_request_id, and otherwise an id is generated.",
+      "statement": "The request context_id comes only from server-provided REQUEST_ID or UNIQUE_ID (validated as ^[%w%-_@]{8,64}$); the client X-Request-Id is never used as context_id and is exposed only as client_request_id, and an id is generated otherwise.",
       "evidence": [
         {
           "resource": "repo://src/adapter_cgi.lua#L120-L120",

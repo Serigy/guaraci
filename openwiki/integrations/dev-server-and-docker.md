@@ -22,7 +22,7 @@ guaraci dev --port 3000 --host 0.0.0.0
 - each request reloads `app.lua` and resets `router_v2`, `middleware_chain`, `hooks`, and the model registry, mirroring a fresh CGI process
 - serves static files from `public/` when present, **before** app middleware and hooks; dotfiles, backslashes, and traversal are refused, and refused paths are audit-logged as `route_path_refused`
 - sets `REMOTE_ADDR` from the socket peer for the rate limiter and keeps counters in the server process (`ratelimit_store.memory`)
-- caps request/header lines at 8 KB (431), answers 501 for `Transfer-Encoding: chunked`, strips control characters from logged paths, and enforces a 15-second per-connection deadline
+- reads request/header lines byte by byte with a hard 8 KB cap (431), answers 501 for `Transfer-Encoding: chunked`, strips control characters from logged paths, and enforces a 15-second deadline covering the request line, headers, and body
 - dotfile paths under `public/` return 403; refused paths are audit-logged as `route_path_refused`
 - warns when `--host` is not loopback, because it exposes dev error details to the network
 - passes `env = "dev"` to `handle_request`, so error bodies include details
@@ -45,6 +45,7 @@ Behavior:
 - creates `uploads/`, `logs/`, and `public/` when missing; the scaffold's `.gitignore` covers `logs/`
 - mounts the project at `/app` read-only with writable `/app/uploads` and `/app/logs` volumes, the installed core at `/guaraci` read-only, and a temporary lighttpd config
 - runs as the host `uid:gid` with `--cap-drop ALL` and `--security-opt no-new-privileges`; project paths containing `:` are refused (a `docker -v` limitation)
+- if the host uid is 0, it runs as `65534:65534` with a warning and makes `uploads/` and `logs/` world-writable
 - lighttpd listens on internal port 8080 (mapped to `<host>:<port>`) with `public/` as its document root, so `app.lua`, `views/`, and `hooks/` are never served as files; existing static files are served directly and other paths go to `/cgi-bin/app.cgi`
 - dotfiles under `public/` are denied with 403 via `mod_access`
 - static files bypass app middleware and hooks, as in the local dev server
@@ -59,7 +60,7 @@ The scaffold's `Dockerfile.dev` mirrors this image for use outside the CLI:
 FROM alpine:3.20
 RUN apk add --no-cache lua5.4 lighttpd
 WORKDIR /app
-EXPOSE 80
+EXPOSE 8080
 CMD ["lighttpd", "-D", "-f", "/etc/lighttpd/lighttpd.conf"]
 ```
 

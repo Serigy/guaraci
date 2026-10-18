@@ -11,7 +11,7 @@
     "/openwiki/architecture/file-uploads.md": {
       "gitHead": "c36c22cb1a0f223fd20151b8b9fa4f638eafa602",
       "sourceFingerprint": "sha256:e277dbd166e30445650f7b94880cb78b22f7e237109c3746f7c6baec0e439b0e",
-      "pageVersion": "sha256:3843b7ed22421af19a8bf94ea482e5dea389ef83b020207d4b1b92228500f35f",
+      "pageVersion": "sha256:cb7712ed49a6bf42ba664091a9887f96eab814b0c71db1a1f80ec59b7f7ab8ef",
       "completedBy": "pi",
       "completedRunId": "76c6e8eb-9320-46ce-b591-5380f91967d0"
     },
@@ -46,14 +46,14 @@
     "/openwiki/architecture/validation-security-middleware.md": {
       "gitHead": "c36c22cb1a0f223fd20151b8b9fa4f638eafa602",
       "sourceFingerprint": "sha256:e277dbd166e30445650f7b94880cb78b22f7e237109c3746f7c6baec0e439b0e",
-      "pageVersion": "sha256:61de6713b4e37135d758b10d8c371d90e7e12306edc76623d2f693bfc06e5eab",
+      "pageVersion": "sha256:983eda0c14caf2ae0af66470ff0072fe144c68e430c886d02328caf1e90ec39a",
       "completedBy": "pi",
       "completedRunId": "76c6e8eb-9320-46ce-b591-5380f91967d0"
     },
     "/openwiki/integrations/cgi-adapter.md": {
       "gitHead": "c36c22cb1a0f223fd20151b8b9fa4f638eafa602",
       "sourceFingerprint": "sha256:e277dbd166e30445650f7b94880cb78b22f7e237109c3746f7c6baec0e439b0e",
-      "pageVersion": "sha256:8763ed4a9a6109f5a729602a4590cbe5e75640b8f80295c840f4438af1b603e8",
+      "pageVersion": "sha256:8390616b4dffbd3a5381323576746719fa4d20ce152f51dae2b4dfdbb071432b",
       "completedBy": "pi",
       "completedRunId": "76c6e8eb-9320-46ce-b591-5380f91967d0"
     },

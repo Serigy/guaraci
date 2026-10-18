@@ -59,9 +59,9 @@ Redaction and bounds:
 - Sensitive keys are replaced with `<redacted>`: `password`, `passwd`, `pwd`, `token`, `access_token`, `refresh_token`, `authorization`, `cookie`, `secret`, `api_key`, `apikey`.
 - Depth beyond 6 becomes `<max-depth>`; functions, threads, and userdata become `<function>`, `<thread>`, `<userdata>`; cycles become `<cycle>`.
 
-Events already emitted include hook failures and short-circuits, `route_path_refused` for refused route/static paths, `group_middleware_error` for group middleware exceptions, `response_header_rejected` for invalid response headers, `rate_limit_store_failed` for counter-store write failures, CSRF/CORS/rate-limit blocks, `file_upload_blocked`, SQL policy rejections, driver errors, and Dataware CRUD/tenant events (`dataware_create`, `dataware_update`, `dataware_delete`, `dataware_tenant_violation`).
+Events already emitted include hook failures and short-circuits, `route_path_refused` for refused route/static paths, `group_middleware_error` for group middleware exceptions, `response_header_rejected` for invalid response headers, `ratelimit_store_write_failed` for counter-store write/read failures, CSRF/CORS/rate-limit blocks, `file_upload_blocked`, SQL policy rejections, driver errors, and Dataware CRUD/tenant events (`dataware_create`, `dataware_update`, `dataware_delete`, `dataware_tenant_violation`).
 
-Rejected uploads also log the raw reason (`file_upload_blocked`, upload error details); the HTTP body only carries `Payload too large` or `Invalid upload`.
+Rejected uploads also log the raw reason (`file_upload_blocked`, upload error details); the HTTP body only carries `Payload too large`, `Invalid upload`, or a generic 500. Every control byte in an audit value is JSON-escaped as `\b`, `\f`, `\n`, `\r`, `\t`, or `\u00XX`.
 
 ## Operational notes
 

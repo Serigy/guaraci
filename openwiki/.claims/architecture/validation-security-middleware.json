@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:61de6713b4e37135d758b10d8c371d90e7e12306edc76623d2f693bfc06e5eab",
+  "pageVersion": "sha256:983eda0c14caf2ae0af66470ff0072fe144c68e430c886d02328caf1e90ec39a",
   "claims": [
     {
       "id": "claim_4197d3df0f7947e49a91f8a620267525",
@@ -94,7 +94,7 @@
     },
     {
       "id": "claim_f67d090c5f7748a38e3804acc1449f5c",
-      "statement": "The rate limiter keys on req.remote_addr and, when a proxy is declared via client_ip_header/trusted_hops (or the trusted_proxy alias), picks the Nth X-Forwarded-For entry from the right or the X-Real-IP value; counters use a pluggable ratelimit_store, defaulting to a file store in CGI.",
+      "statement": "The rate limiter keys on req.remote_addr and, when a proxy is declared via client_ip_header/trusted_hops (or the trusted_proxy alias), picks the Nth X-Forwarded-For entry from the right or the X-Real-IP value; counters use a pluggable ratelimit_store (file store in CGI, default temp path, fail-closed 429 on store failure unless fail_open).",
       "evidence": [
         {
           "resource": "repo://src/middleware_ratelimit.lua#L11-L31",

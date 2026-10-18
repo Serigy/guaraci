@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:3843b7ed22421af19a8bf94ea482e5dea389ef83b020207d4b1b92228500f35f",
+  "pageVersion": "sha256:cb7712ed49a6bf42ba664091a9887f96eab814b0c71db1a1f80ec59b7f7ab8ef",
   "claims": [
     {
       "id": "claim_76a3ad6a5fab4be8a8af6c65cb33c38d",
@@ -104,7 +104,7 @@
     },
     {
       "id": "claim_950d2ee2798549559f3904d41bdb1f79",
-      "statement": "cleanup_request deletes every file indexed for a request, preventing orphaned uploads.",
+      "statement": "cleanup_request deletes every file indexed for a request; each file is indexed as soon as it is written, so a failure mid-batch cleans up the earlier files and prevents orphaned uploads.",
       "evidence": [
         {
           "resource": "repo://src/file_manager.lua#L90-L107",
