@@ -199,10 +199,62 @@ function M.response_to_cgi(res, stdout_writer)
     stdout_writer(body)
 end
 
+local CGI_VARS = {
+    "REQUEST_METHOD", "PATH_INFO", "REQUEST_URI", "QUERY_STRING",
+    "CONTENT_TYPE", "CONTENT_LENGTH", "REMOTE_ADDR", "SERVER_NAME",
+    "SERVER_PORT", "SCRIPT_NAME", "REQUEST_ID", "UNIQUE_ID", "HTTPS"
+}
+
+-- Pure Lua cannot enumerate the environment, so only these headers are read.
+local ALLOWED_HEADERS = {
+    "Accept", "Cookie", "Authorization", "Origin", "Host", "Referer",
+    "User-Agent", "X-Requested-With", "X-CSRF-Token", "X-Request-Id",
+    "X-Tenant-Id", "X-Forwarded-For", "X-Forwarded-Proto",
+    "X-Forwarded-Host", "X-Forwarded-Port", "X-Forwarded-Prefix"
+}
+
+local function header_env_name(header)
+    return "HTTP_" .. header:upper():gsub("-", "_")
+end
+
+-- Builds a CGI env table from the process environment (opts.getenv overrides os.getenv).
+function M.env_from_os(opts)
+    opts = opts or {}
+    local getenv = opts.getenv or os.getenv
+    local env = {}
+
+    for _, name in ipairs(CGI_VARS) do
+        local value = getenv(name)
+        if value ~= nil then
+            env[name] = value
+        end
+    end
+
+    local function add_header(header)
+        if type(header) ~= "string" or header == "" then
+            return
+        end
+        local name = header_env_name(header)
+        local value = getenv(name)
+        if value ~= nil then
+            env[name] = value
+        end
+    end
+
+    for _, header in ipairs(ALLOWED_HEADERS) do
+        add_header(header)
+    end
+    for _, header in ipairs(opts.extra_headers or {}) do
+        add_header(header)
+    end
+
+    return env
+end
+
 function M.run_cgi(opts)
     opts = opts or {}
 
-    local req = M.request_from_cgi(opts.env or _G, opts.stdin_reader)
+    local req = M.request_from_cgi(opts.env or M.env_from_os(opts), opts.stdin_reader)
     local res = guaraci.handle_request(req, opts.guaraci_options)
     M.response_to_cgi(res, opts.stdout_writer)
     return true
