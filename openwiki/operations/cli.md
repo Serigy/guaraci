@@ -101,8 +101,10 @@ guaraci dev --port 3000
 
 - luasocket-based server on `http://127.0.0.1:8080` by default
 - reloads `app.lua` per request and resets routes, middleware, hooks, and models
-- serves files from `public/` when it exists, refusing dotfiles and traversal
+- fills `REMOTE_ADDR` from the socket peer, so the rate limiter keys on the real client
+- serves `public/` **before** app middleware and hooks, so static files bypass auth/CSRF/rate-limit/security headers; refused static paths are audit-logged as `route_path_refused`
 - runs with `env = "dev"`, so error details are visible; production hides them
+- warns when `--host` is not loopback, because that exposes dev error details to the network
 - `--app` selects a different entry file
 
 See [Dev Server and Docker](../integrations/dev-server-and-docker.md) for the container mode.

@@ -21,7 +21,7 @@ From this version, a request handled by `handle_request` runs in this order:
 3. if an explicit route matches: group middleware, then the handler
 4. otherwise: fallback to the file-system router (`router.resolve_or_404`)
 
-When an explicit route matches, its handler receives `(req, res, context)` and returns the response; matched `:param` segments are available in `ctx.params` (the third argument). Explicit routing refuses paths containing `..`, a backslash, or NUL, including percent-encoded forms, so those paths fall through to the fallback and end as 404. When no route matches, the legacy template flow continues with `before_render`, `parser.compile`, `sandbox.render_template`, and `after_request`; the `after_request` chain and hooks also run for explicit routes. Before this version, `handle_request` dispatched only the file-system router, while `router_v2`, route groups, and `middleware_chain` were registered but never executed.
+When an explicit route matches, its handler receives `(req, res, context)` and returns the response; matched `:param` segments are available in `ctx.params` (the third argument). Explicit routing refuses paths containing `..`, a backslash, or NUL, including percent-encoded forms; those paths fall through to the fallback, end as 404, and emit the `route_path_refused` security event. When no route matches, the legacy template flow continues with `before_render`, `parser.compile`, `sandbox.render_template`, and `after_request`; the `after_request` chain and hooks also run for explicit routes. Before this version, `handle_request` dispatched only the file-system router, while `router_v2`, route groups, and `middleware_chain` were registered but never executed.
 
 ## Explicit router (`router_v2`)
 
@@ -29,11 +29,11 @@ When an explicit route matches, its handler receives `(req, res, context)` and r
 
 ## Route groups (`route_group`)
 
-A group wraps a prefix (e.g. `/api/v1`) and registers its routes with that prefix, while keeping a group-local middleware list via `group.use`. Each registered handler is wrapped: group middleware runs before the handler in descending priority and then by name, and a middleware returning `true` short-circuits the handler. `route_group.subgroup` composes prefixes for nested namespaces such as `/api/v1/users`.
+A group wraps a prefix (e.g. `/api/v1`) and registers its routes with that prefix, while keeping a group-local middleware list via `group.use`. Each registered handler is wrapped: group middleware runs before the handler in descending priority and then by name. A middleware returning `true` short-circuits the handler; if it left the default empty 200, the wrapper sets 403 (fail closed). Each group middleware runs under `pcall`; an error is audited as `group_middleware_error` and re-raised. `route_group.subgroup` composes prefixes for nested namespaces such as `/api/v1/users`.
 
 ## Middleware chain (`middleware_chain`)
 
-The chain runs three stages — `before_request`, `before_render`, `after_request`. Each middleware is registered with a priority (default 50), and `run` executes them in descending priority order under `pcall`. A middleware returning `true` short-circuits `before_request`/`before_render` (not `after_request`), and a middleware returning a table replaces the current context. `run_legacy` delegates to `hooks.run_stage` for backward compatibility.
+The chain runs three stages — `before_request`, `before_render`, `after_request`. Each middleware is registered with a priority (default 50), and `run` executes them in descending priority order under `pcall`. A middleware returning `true` short-circuits `before_request`/`before_render` (not `after_request`); a short-circuit that leaves the default empty 200 is turned into 403 (fail closed), and global short-circuits still run the `after_request` hooks so security headers are present. A middleware returning a table replaces the current context. `run_legacy` delegates to `hooks.run_stage` for backward compatibility.
 
 ## Request-scoped context (`context_store`)
 

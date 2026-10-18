@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:0e19a6b49cfedac3ef03710265232016607571bf81b0ee852c3f6c106de24c06",
+  "pageVersion": "sha256:75c9da61fcac30a85c8b6aff53850d0ca75b99c50a695aeb073d6aa1fea7d13b",
   "claims": [
     {
       "id": "claim_4197d3df0f7947e49a91f8a620267525",
@@ -94,7 +94,7 @@
     },
     {
       "id": "claim_f67d090c5f7748a38e3804acc1449f5c",
-      "statement": "The rate limiter identifies the client by X-Forwarded-For, then X-Real-Ip, then remote_addr.",
+      "statement": "The rate limiter identifies the client by req.remote_addr and honours X-Forwarded-For/X-Real-Ip only when trusted_proxy is true.",
       "evidence": [
         {
           "resource": "repo://src/middleware_ratelimit.lua#L11-L31",

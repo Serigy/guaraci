@@ -135,7 +135,7 @@ From this release, `handle_request` runs `before_request` hooks and the global m
 
 - **middleware_cors(opts)**: CORS allow-list + OPTIONS preflight.
 - **middleware_csrf(opts)**: CSRF double-submit cookie + header (default cookie `guaraci_csrf_token`).
-- **middleware_ratelimit(opts)**: In-memory rate limiting by IP with a 429 response and `Retry-After`.
+- **middleware_ratelimit(opts)**: In-memory rate limiting keyed on `req.remote_addr`, with a 429 response and `Retry-After`. `X-Forwarded-For`/`X-Real-Ip` are honoured only with `trusted_proxy = true`; behind a reverse proxy without it, all clients share the proxy's bucket. A short-circuit that leaves an empty 200 becomes 403 (fail closed).
 
 ### Error Handling
 

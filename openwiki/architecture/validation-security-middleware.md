@@ -30,4 +30,8 @@ For the unsafe methods `POST`, `PUT`, `PATCH`, and `DELETE`, the CSRF middleware
 
 ## Rate limiting (`middleware_ratelimit`)
 
-The rate limiter keeps an in-memory bucket per client within a window (default 60 s, 100 requests). The client is identified by `X-Forwarded-For`, then `X-Real-Ip`, then `remote_addr`. When a bucket exceeds the limit, the middleware returns 429 with a `Retry-After` header and logs `rate_limit_exceeded`.
+The rate limiter keeps an in-memory bucket per client within a window (default 60 s, 100 requests). The client is identified by `req.remote_addr`, which the CGI adapter sets from `REMOTE_ADDR` and the dev server sets from the socket peer. `X-Forwarded-For` and `X-Real-Ip` are client-controlled and count only when the middleware option `trusted_proxy = true` is set; behind a reverse proxy without that option all clients share the proxy's bucket. When a bucket exceeds the limit, the middleware returns 429 with a `Retry-After` header and logs `rate_limit_exceeded`.
+
+## Short-circuit contract (fail closed)
+
+A middleware that returns `true` short-circuits the stage and should set `res.status` and `res.body` explicitly. If it leaves the default empty 200, the chain turns the response into 403 in both the global chain and group middleware. Global short-circuits still run the `after_request` hooks, so security headers are present on 403/429 responses. Group middleware runs under `pcall`; an error is audited as `group_middleware_error` and re-raised.

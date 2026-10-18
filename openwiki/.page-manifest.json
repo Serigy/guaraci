@@ -32,7 +32,7 @@
     "/openwiki/architecture/routing-middleware.md": {
       "gitHead": "c36c22cb1a0f223fd20151b8b9fa4f638eafa602",
       "sourceFingerprint": "sha256:e277dbd166e30445650f7b94880cb78b22f7e237109c3746f7c6baec0e439b0e",
-      "pageVersion": "sha256:0cf8694e9c437e24e3276d47c9980e9229379f22081f89ceb6eef112672ee52e",
+      "pageVersion": "sha256:daa2ef55acb64cdea48ac457b0a630c4b84a324f88768d1d1332925758e8e005",
       "completedBy": "pi",
       "completedRunId": "76c6e8eb-9320-46ce-b591-5380f91967d0"
     },
@@ -46,14 +46,14 @@
     "/openwiki/architecture/validation-security-middleware.md": {
       "gitHead": "c36c22cb1a0f223fd20151b8b9fa4f638eafa602",
       "sourceFingerprint": "sha256:e277dbd166e30445650f7b94880cb78b22f7e237109c3746f7c6baec0e439b0e",
-      "pageVersion": "sha256:0e19a6b49cfedac3ef03710265232016607571bf81b0ee852c3f6c106de24c06",
+      "pageVersion": "sha256:75c9da61fcac30a85c8b6aff53850d0ca75b99c50a695aeb073d6aa1fea7d13b",
       "completedBy": "pi",
       "completedRunId": "76c6e8eb-9320-46ce-b591-5380f91967d0"
     },
     "/openwiki/integrations/cgi-adapter.md": {
       "gitHead": "c36c22cb1a0f223fd20151b8b9fa4f638eafa602",
       "sourceFingerprint": "sha256:e277dbd166e30445650f7b94880cb78b22f7e237109c3746f7c6baec0e439b0e",
-      "pageVersion": "sha256:bad9109c74e414fa9fff64aa9a5d67bcb4435dc74568b52739d1ff73ca3181a0",
+      "pageVersion": "sha256:7479d61547ac10de821928ccb3a40fef02b4406fbb64c77dbbcd29d9bd6c60dd",
       "completedBy": "pi",
       "completedRunId": "76c6e8eb-9320-46ce-b591-5380f91967d0"
     },

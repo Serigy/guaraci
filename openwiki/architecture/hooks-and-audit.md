@@ -57,7 +57,7 @@ Redaction and bounds:
 - Sensitive keys are replaced with `<redacted>`: `password`, `passwd`, `pwd`, `token`, `access_token`, `refresh_token`, `authorization`, `cookie`, `secret`, `api_key`, `apikey`.
 - Depth beyond 6 becomes `<max-depth>`; functions, threads, and userdata become `<function>`, `<thread>`, `<userdata>`; cycles become `<cycle>`.
 
-Events already emitted include hook failures and short-circuits, CSRF/CORS/rate-limit blocks, `file_upload_blocked`, SQL policy rejections, driver errors, and Dataware CRUD/tenant events (`dataware_create`, `dataware_update`, `dataware_delete`, `dataware_tenant_violation`).
+Events already emitted include hook failures and short-circuits, `route_path_refused` for refused route/static paths, `group_middleware_error` for group middleware exceptions, CSRF/CORS/rate-limit blocks, `file_upload_blocked`, SQL policy rejections, driver errors, and Dataware CRUD/tenant events (`dataware_create`, `dataware_update`, `dataware_delete`, `dataware_tenant_violation`).
 
 ## Operational notes
 

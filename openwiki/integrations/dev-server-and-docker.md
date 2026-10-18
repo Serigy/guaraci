@@ -20,7 +20,9 @@ guaraci dev --port 3000 --host 0.0.0.0
 - listens on `127.0.0.1:8080` by default; `--port` and `--host` override it
 - `--app` selects the entry file (default `app.lua`)
 - each request reloads `app.lua` and resets `router_v2`, `middleware_chain`, `hooks`, and the model registry, mirroring a fresh CGI process
-- serves static files from `public/` when present; dotfiles, backslashes, and traversal are refused
+- serves static files from `public/` when present, **before** app middleware and hooks; dotfiles, backslashes, and traversal are refused, and refused paths are audit-logged as `route_path_refused`
+- sets `REMOTE_ADDR` from the socket peer for the rate limiter
+- warns when `--host` is not loopback, because it exposes dev error details to the network
 - passes `env = "dev"` to `handle_request`, so error bodies include details
 - reads the request into CGI variables and reuses `adapter_cgi`, so the dev path matches production
 - luasocket is an optional, CLI-only dependency; the framework core stays dependency-free
@@ -38,9 +40,12 @@ Requirements: Docker is installed and running, and the project has `cgi-bin/app.
 Behavior:
 
 - builds the image `guaraci-dev` from an embedded Dockerfile: Alpine 3.20 + `lua5.4` + lighttpd (`mod_cgi`)
-- mounts the project at `/app`, the installed core at `/guaraci` read-only, and a temporary lighttpd config
-- lighttpd listens on port 80 inside the container and rewrites every path to `/cgi-bin/app.cgi`
-- maps `<port>:80`, so `guaraci dev --container --port 3000` is served at `http://localhost:3000/`
+- creates `uploads/` and `public/` when missing
+- mounts the project at `/app` read-only with a writable `/app/uploads` volume, the installed core at `/guaraci` read-only, and a temporary lighttpd config
+- lighttpd listens on port 80 inside the container with `public/` as its document root, so `app.lua`, `views/`, and `hooks/` are never served as files; existing static files are served directly and other paths go to `/cgi-bin/app.cgi`
+- static files bypass app middleware and hooks, as in the local dev server
+- publishes on `127.0.0.1:<port>` by default; `--host` overrides it with a network-exposure warning
+- `guaraci dev --container --port 3000` is served at `http://127.0.0.1:3000/`
 - sets `GUARACI_ENV=dev` and `LUA_PATH=/guaraci/?.lua;;` for the container process
 - `app.cgi` uses `adapter_cgi.env_from_os()` and the project's `app.lua` options
 

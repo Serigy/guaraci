@@ -14,7 +14,7 @@ Guaraci is server-agnostic; the reference `adapter_cgi` is the bridge between th
 
 ## Request construction (`request_from_cgi`)
 
-The adapter reads the CGI environment into the agnostic request shape: `REQUEST_METHOD` → `method`, `PATH_INFO`/`REQUEST_URI` → `path` (query stripped), every `HTTP_*` variable → a normalized header, and `QUERY_STRING` → `query`. The request `context_id` comes from `X-Request-Id`, `REQUEST_ID`, or `UNIQUE_ID`, falling back to a generated `req-...` id. The body is read up to `CONTENT_LENGTH`.
+The adapter reads the CGI environment into the agnostic request shape: `REQUEST_METHOD` → `method`, `PATH_INFO`/`REQUEST_URI` → `path` (query stripped), every `HTTP_*` variable → a normalized header, `QUERY_STRING` → `query`, and `REMOTE_ADDR` → `remote_addr` (used by rate limiting). The request `context_id` comes from `X-Request-Id`, `REQUEST_ID`, or `UNIQUE_ID` only when the candidate matches `^[%w%-_]{8,64}$`; otherwise a generated `req-...` id is used. The body is read up to `CONTENT_LENGTH`.
 
 For `multipart/form-data` the adapter calls `multipart.parse`, then `file_manager.process_files` to validate and store uploaded files, populating `files` and `form_data` — or `upload_error` on failure. `application/x-www-form-urlencoded` bodies become `form_data`/`body_table`.
 

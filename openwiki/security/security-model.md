@@ -79,6 +79,14 @@ Error handler masks internal details in production (`src/error_handler.lua`):
 - **Detail Exposure Control** (`src/error_handler.lua#L77-L79`): Stack traces and `details` field only exposed when `env == "dev"`
 - **Error Normalization** (`src/error_handler.lua#L43-L52`): Unhandled errors wrapped with default status 500 and generic message
 
+## Rate Limiting Identity
+
+`middleware_ratelimit` keys its in-memory bucket on `req.remote_addr`, which the CGI adapter sets from `REMOTE_ADDR` and the dev server from the socket peer. The `X-Forwarded-For` and `X-Real-Ip` headers are client-controlled and are honoured only when the middleware option `trusted_proxy = true` is set. Behind a reverse proxy without that option, every client shares the proxy's bucket, so the configured limit becomes global; enable the option only when the proxy is trusted and rewrites forwarded headers.
+
+## Short-circuit Contract
+
+A middleware that returns `true` must set `res.status` and `res.body`. If it leaves the default empty 200, the framework changes the response to 403 (fail closed), in both the global chain and group middleware. Global short-circuits still run `after_request` hooks, so security headers are present on 403/429 responses. Refused route paths (traversal, backslash, NUL, including percent-encoded) emit `route_path_refused` and end as 404.
+
 ## ISO 27001 Annexe A.14 Conformance
 
 Guaraci meets ISO 27001 A.14 (Secure Development) controls (`history/PHASE13_ISO27001_VALIDATION.md`):
