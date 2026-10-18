@@ -54,10 +54,14 @@ describe("error responses", function()
             method = "POST", path = "/", headers = {},
             upload_error = "storage_open_failed:uploads/abc_x.txt: Permission denied"
         }, {})
-        assert.are.equal(400, res.status)
+        assert.are.equal(500, res.status)
         assert.is_nil(res.body:find("Permission", 1, true))
         assert.is_nil(res.body:find("uploads/", 1, true))
-        assert.is_not_nil(res.body:find("Invalid upload", 1, true))
+        local client = guaraci.handle_request({ method = "POST", path = "/", headers = {},
+            upload_error = "invalid_multipart: bad boundary at /tmp/x" }, {})
+        assert.are.equal(400, client.status)
+        assert.is_nil(client.body:find("/tmp/x", 1, true))
+        assert.is_not_nil(client.body:find("Invalid upload", 1, true))
     end)
 
     it("survives a custom error handler that returns garbage", function()
@@ -150,5 +154,121 @@ describe("persistent rate limiting (CGI)", function()
         local res = { status = 200, headers = {}, body = "" }
         assert.is_true(limiter({ headers = {} }, res, {}) == true)
         assert.are.equal(1, calls)
+    end)
+end)
+
+describe("re-check fixes", function()
+    it("storage failures are 500, client upload errors stay 400", function()
+        local function status(code)
+            return guaraci.handle_request({ method = "POST", path = "/", headers = {}, upload_error = code }, {}).status
+        end
+        assert.are.equal(500, status("storage_open_failed:uploads/x: Permission denied"))
+        assert.are.equal(400, status("invalid_multipart"))
+        assert.are.equal(413, status("file_too_large"))
+    end)
+
+    it("a failed second put removes the first stored file", function()
+        local file_manager = require("file_manager")
+        local deleted = {}
+        local puts = 0
+        local original = file_manager.get_registry()
+        file_manager.set_registry({
+            put = function()
+                puts = puts + 1
+                if puts == 2 then return nil, "storage_write_failed:disk full" end
+                return "id" .. puts, { filename = "f", content_type = "text/plain", size = 1, path = "p" }
+            end,
+            delete = function(_, id) deleted[#deleted + 1] = id end
+        })
+        local files = {
+            { field = "a", filename = "a.txt", content_type = "text/plain", content = "x", size = 1 },
+            { field = "b", filename = "b.txt", content_type = "text/plain", content = "y", size = 1 }
+        }
+        local stored, err = file_manager.process_files(files, { request_id = "req-partial-1" })
+        file_manager.set_registry(original)
+        assert.is_nil(stored)
+        assert.is_not_nil(err)
+        assert.are.equal("id1", deleted[1])
+    end)
+
+    it("audit JSON escapes every control byte", function()
+        local path = os.tmpname()
+        package.loaded["guaraci_audit"] = nil
+        local audit = require("guaraci_audit")
+        audit.set_log_path(path)
+        audit.log_security("ctl\1\31\127x", {})
+        local fh = io.open(path, "r")
+        local line = fh:read("a")
+        fh:close()
+        os.remove(path)
+        package.loaded["guaraci_audit"] = nil
+        assert.is_not_nil(line:find("\\u0001", 1, true))
+        assert.is_nil(line:find("[%z\1-\8\11\12\14-\31]"))
+    end)
+end)
+
+describe("rate-limit store failures", function()
+    local ratelimit = require("middleware_ratelimit")
+    local ratelimit_store = require("ratelimit_store")
+    local function call(limiter)
+        local res = { status = 200, headers = {}, body = "" }
+        local short = limiter({ remote_addr = "198.51.100.9", headers = {} }, res, {})
+        return short, res
+    end
+
+    it("fails closed (429) when the store cannot be updated, open with fail_open", function()
+        local broken = { kind = "custom", incr = function() error("disk full", 0) end }
+        local short, res = call(ratelimit.create({ store = broken }))
+        assert.is_true(short == true)
+        assert.are.equal(429, res.status)
+        local open_short = call(ratelimit.create({ store = broken, fail_open = true }))
+        assert.is_true(open_short == false)
+    end)
+
+    it("a failed write (ENOSPC) never renames a truncated file over the store", function()
+        local path = os.tmpname()
+        local store = ratelimit_store.file(path)
+        assert.are.equal(1, (store.incr("k", 60, os.time())))
+        local before = io.open(path, "r"):read("a")
+        local real_open = io.open
+        rawset(io, "open", function(p, mode)
+            if mode == "w" and p:find(path .. ".tmp", 1, true) then
+                return { write = function() return nil, "No space left on device" end,
+                    close = function() return true end }
+            end
+            return real_open(p, mode)
+        end)
+        local ok = pcall(store.incr, "k", 60, os.time())
+        rawset(io, "open", real_open)
+        local after = io.open(path, "r"):read("a")
+        os.remove(path)
+        assert.is_false(ok)
+        assert.are.equal(before, after)
+    end)
+
+    it("a corrupt store file is a store failure, not an empty store", function()
+        local path = os.tmpname()
+        local fh = io.open(path, "w")
+        fh:write("this is not a counter file\n")
+        fh:close()
+        local short, res = call(ratelimit.create({ store_path = path }))
+        os.remove(path)
+        assert.is_true(short == true)
+        assert.are.equal(429, res.status)
+    end)
+
+    it("an unwritable store path is reported once at startup", function()
+        local seen = {}
+        local real_stderr = io.stderr
+        rawset(io, "stderr", { write = function(_, ...) seen[#seen + 1] = table.concat({ ... }) end })
+        ratelimit.create({ store_path = "/nonexistent-dir-xyz/rl.db" })
+        rawset(io, "stderr", real_stderr)
+        assert.are.equal(1, #seen)
+        assert.is_not_nil(seen[1]:find("not usable", 1, true))
+    end)
+
+    it("rejects an unknown client_ip_header", function()
+        assert.is_false((pcall(ratelimit.create, { client_ip_header = "x-forwared-for" })))
+        assert.is_true((pcall(ratelimit.create, { client_ip_header = "X-Real-IP" })))
     end)
 end)

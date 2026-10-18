@@ -82,7 +82,7 @@ M.dockerfile = [==[
 FROM alpine:3.20
 RUN apk add --no-cache lua5.4 lighttpd
 WORKDIR /app
-EXPOSE 80
+EXPOSE 8080
 CMD ["lighttpd", "-D", "-f", "/etc/lighttpd/lighttpd.conf"]
 ]==]
 

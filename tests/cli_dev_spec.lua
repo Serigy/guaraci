@@ -125,19 +125,25 @@ describe("guaraci dev", function()
 end)
 
 describe("guaraci dev request limits", function()
-    local function lines_client(lines)
-        local i = 0
+    local function lines_client(lines, counter)
+        local raw = table.concat(lines, "\r\n") .. "\r\n"
+        local pos = 1
         return {
-            receive = function()
-                i = i + 1
-                return lines[i]
+            receive = function(_, n)
+                if counter then counter.reads = counter.reads + 1 end
+                local chunk = raw:sub(pos, pos + n - 1)
+                pos = pos + n
+                if chunk == "" then return nil, "closed" end
+                return chunk
             end
         }
     end
 
-    it("rejects over-long lines with 431", function()
-        local _, status = dev.read_request(lines_client({ "GET /" .. string.rep("a", 9000) .. " HTTP/1.1" }))
+    it("rejects over-long lines with 431 without buffering them", function()
+        local counter = { reads = 0 }
+        local _, status = dev.read_request(lines_client({ "GET /" .. string.rep("a", 1000000) .. " HTTP/1.1" }, counter))
         assert.are.equal(431, status)
+        assert.is_true(counter.reads < 9000)
         local _, status2 = dev.read_request(lines_client({ "GET / HTTP/1.1", "X: " .. string.rep("a", 9000) }))
         assert.are.equal(431, status2)
     end)
@@ -147,8 +153,17 @@ describe("guaraci dev request limits", function()
         assert.are.equal(501, status)
     end)
 
-    it("enforces a total deadline", function()
-        local _, status = dev.read_request(lines_client({ "GET / HTTP/1.1", "A: b", "" }), -1)
-        assert.are.equal(408, status)
+    it("enforces the deadline on the request line, headers and body", function()
+        local _, s1 = dev.read_request(lines_client({ "GET / HTTP/1.1", "" }), -1)
+        assert.are.equal(408, s1)
+        local slow = { receive = function() return "G" end }
+        local _, s2 = dev.read_request(slow, -1)
+        assert.are.equal(408, s2)
+    end)
+
+    it("reads large bodies in chunks", function()
+        local body = string.rep("b", 30000)
+        local req = dev.read_request(lines_client({ "POST / HTTP/1.1", "Content-Length: 30000", "", body }))
+        assert.are.equal(30000, #req.body)
     end)
 end)

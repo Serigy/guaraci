@@ -52,11 +52,14 @@ describe("adapter_cgi request hardening", function()
     end
 
     it("accepts well-formed X-Request-Id and rejects hostile ones", function()
-        assert.are.equal("req-abc_123", req_with({ HTTP_X_REQUEST_ID = "req-abc_123" }).context_id)
+        local ok_req = req_with({ HTTP_X_REQUEST_ID = "req-abc_123" })
+        assert.is_true(ok_req.context_id ~= "req-abc_123")
+        assert.are.equal("req-abc_123", ok_req.client_request_id)
         for _, bad in ipairs({ "short", "../../etc/passwd", string.rep("a", 65), 'a"b<script>12345', "abc def 1234" }) do
-            local id = req_with({ HTTP_X_REQUEST_ID = bad }).context_id
-            assert.is_true(id ~= bad, bad)
-            assert.is_not_nil(id:match("^[%w%-_]+$"))
+            local req = req_with({ HTTP_X_REQUEST_ID = bad, REQUEST_ID = bad })
+            assert.is_true(req.context_id ~= bad, bad)
+            assert.is_nil(req.client_request_id)
+            assert.is_not_nil(req.context_id:match("^[%w%-_]+$"))
         end
     end)
 
@@ -69,6 +72,8 @@ describe("adapter_cgi request hardening", function()
         local req = req_with({ UNIQUE_ID = "server-id-123456", HTTP_X_REQUEST_ID = "client-id-123456" })
         assert.are.equal("server-id-123456", req.context_id)
         assert.are.equal("client-id-123456", req.client_request_id)
+        local only_client = req_with({ HTTP_X_REQUEST_ID = "client-id-123456" })
+        assert.is_true(only_client.context_id ~= "client-id-123456")
     end)
 
     it("takes remote_addr from REMOTE_ADDR, not from headers", function()
@@ -103,6 +108,7 @@ describe("adapter_cgi response splitting", function()
         local text = render({ status = 302, headers = { Location = "/x\r\nSet-Cookie: pwn=1" }, body = "b" })
         assert.is_not_nil(text:find("^Status: 500"))
         assert.is_nil(text:find("pwn", 1, true))
+        assert.is_not_nil(text:find("X-Frame-Options: DENY", 1, true))
     end)
 
     it("rejects NUL, LF and bad header names", function()

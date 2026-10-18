@@ -130,6 +130,13 @@ function M.run(opts, io_streams)
         uid_pipe:close()
     end
     opts.user = (uid and gid) and (uid .. ":" .. gid) or "1000:1000"
+    if uid == "0" then
+        -- Never run the server as root; bind-mounted uploads/logs must then be world-writable.
+        err:write("guaraci dev --container: running as root on the host; the container will use 65534:65534 " ..
+            "(chmod a+rwx uploads logs if writes fail)\n")
+        opts.user = "65534:65534"
+        os.execute("chmod a+rwx uploads logs 2>/dev/null")
+    end
 
     local conf_path = os.tmpname()
     util.write_file(conf_path, M.lighttpd_conf())

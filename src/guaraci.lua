@@ -183,6 +183,10 @@ function M.handle_request(raw_req, opts)
         if normalized == "file_too_large" or normalized == "payload_too_large" then
             return 413
         end
+        -- Server-side storage failures are not the client's fault.
+        if normalized:match("^storage_") or normalized == "no_active_provider" or normalized == "provider_not_found" then
+            return 500
+        end
         return 400
     end
 
@@ -208,7 +212,7 @@ function M.handle_request(raw_req, opts)
             apply_error({
                 status = status,
                 code = "upload_error",
-                message = status == 413 and "Payload too large" or "Invalid upload",
+                message = status == 413 and "Payload too large" or status == 500 and "Internal Error" or "Invalid upload",
                 details = tostring(req.upload_error)
             })
             log_error("Upload rejeitado", { context_id = req.context_id, error = tostring(req.upload_error) })

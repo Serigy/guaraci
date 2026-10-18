@@ -35,11 +35,10 @@ local function json_escape(str)
     local s = tostring(str)
     s = s:gsub("\\", "\\\\")
     s = s:gsub('"', '\\"')
-    s = s:gsub("\b", "\\b")
-    s = s:gsub("\f", "\\f")
-    s = s:gsub("\n", "\\n")
-    s = s:gsub("\r", "\\r")
-    s = s:gsub("\t", "\\t")
+    s = s:gsub("%c", function(c)
+        local named = { ["\b"] = "\\b", ["\f"] = "\\f", ["\n"] = "\\n", ["\r"] = "\\r", ["\t"] = "\\t" }
+        return named[c] or string.format("\\u%04x", c:byte())
+    end)
     return s
 end
 

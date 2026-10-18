@@ -30,16 +30,45 @@ local function url_decode(value)
     end))
 end
 
--- Reads one HTTP/1.x request from `client` (receive(pattern_or_len) -> data|nil, err).
+-- Reads one line byte by byte with a hard cap, so an endless line is never buffered.
+-- Returns line | nil, "closed"|"too_long"|"timeout".
+local function read_line(client, deadline)
+    local buffer = {}
+    local size = 0
+    while true do
+        if os.time() > deadline then
+            return nil, "timeout"
+        end
+        local ch = client:receive(1)
+        if not ch then
+            return nil, "closed"
+        end
+        if ch == "\n" then
+            local line = table.concat(buffer)
+            return (line:gsub("\r$", ""))
+        end
+        size = size + 1
+        if size > MAX_LINE then
+            return nil, "too_long"
+        end
+        buffer[size] = ch
+    end
+end
+
+local LINE_ERRORS = {
+    closed = { 400, "truncated request" },
+    too_long = { 431, "line too long" },
+    timeout = { 408, "request took too long" }
+}
+
+-- Reads one HTTP/1.x request from `client` (receive(len) -> data|nil, err).
 -- Returns { method, target, path, query, headers = {lowercase = value}, body } or nil, status, message.
 function M.read_request(client, deadline_seconds)
     local deadline = os.time() + (deadline_seconds or CONNECTION_DEADLINE)
-    local line = client:receive("*l")
+    local line, line_err = read_line(client, deadline)
     if not line then
-        return nil, 400, "empty request"
-    end
-    if #line > MAX_LINE then
-        return nil, 431, "request line too long"
+        local mapped = LINE_ERRORS[line_err]
+        return nil, mapped[1], mapped[2]
     end
     local method, target = line:match("^(%u+) (%S+) HTTP/1%.[01]$")
     if not method then
@@ -48,15 +77,10 @@ function M.read_request(client, deadline_seconds)
 
     local headers = {}
     for _ = 1, MAX_HEADER_LINES do
-        local header_line = client:receive("*l")
+        local header_line, header_err = read_line(client, deadline)
         if not header_line then
-            return nil, 400, "truncated headers"
-        end
-        if #header_line > MAX_LINE then
-            return nil, 431, "header line too long"
-        end
-        if os.time() > deadline then
-            return nil, 408, "request took too long"
+            local mapped = LINE_ERRORS[header_err]
+            return nil, mapped[1], mapped[2]
         end
         if header_line == "" then
             break
@@ -80,10 +104,19 @@ function M.read_request(client, deadline_seconds)
         return nil, 413, "body too large"
     end
     if length > 0 then
-        body = client:receive(length)
-        if not body then
-            return nil, 400, "truncated body"
+        local parts, remaining = {}, length
+        while remaining > 0 do
+            if os.time() > deadline then
+                return nil, 408, "request took too long"
+            end
+            local chunk = client:receive(math.min(remaining, 8192))
+            if not chunk then
+                return nil, 400, "truncated body"
+            end
+            parts[#parts + 1] = chunk
+            remaining = remaining - #chunk
         end
+        body = table.concat(parts)
     end
 
     local raw_path, query = target:match("^([^?]*)%??(.*)$")

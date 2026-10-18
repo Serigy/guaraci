@@ -63,6 +63,23 @@ end
 
 local warned_memory_in_cgi = false
 
+local function djb2(text)
+    local h = 5381
+    for i = 1, #text do
+        h = (h * 33 + text:byte(i)) % 4294967296
+    end
+    return string.format("%08x", h)
+end
+
+-- Default location is outside the docroot and per working directory.
+local function default_store_path()
+    local tmp = os.getenv("TMPDIR")
+    if not tmp or tmp == "" then
+        tmp = "/tmp"
+    end
+    return tmp .. "/guaraci_ratelimit_" .. djb2(os.getenv("PWD") or "default") .. ".db"
+end
+
 local function resolve_store(opts)
     if opts.store then
         return opts.store
@@ -73,7 +90,7 @@ local function resolve_store(opts)
     local in_cgi = os.getenv("GATEWAY_INTERFACE") ~= nil
     local path = opts.store_path or os.getenv("GUARACI_RATELIMIT_STORE")
     if in_cgi or opts.store_path or os.getenv("GUARACI_RATELIMIT_STORE") then
-        return ratelimit_store.file(path or "guaraci_ratelimit.db")
+        return ratelimit_store.file(path or default_store_path())
     end
     return ratelimit_store.memory()
 end
@@ -87,7 +104,19 @@ function M.create(opts)
 
     local window_seconds = tonumber(opts.window_seconds) or 60
     local max_requests = tonumber(opts.max_requests) or 100
+    local allowed_headers = { ["x-forwarded-for"] = true, ["x-real-ip"] = true }
+    if opts.client_ip_header ~= nil and not allowed_headers[tostring(opts.client_ip_header):lower()] then
+        error("client_ip_header must be 'x-forwarded-for' or 'x-real-ip'", 2)
+    end
     local store = resolve_store(opts)
+    if store.kind == "file" and type(store.check) == "function" then
+        local ok_check, check_err = store.check()
+        if not ok_check then
+            log_security("ratelimit_store_write_failed", { phase = "startup", error = tostring(check_err) })
+            io.stderr:write("guaraci: WARNING: rate-limit store '" .. tostring(store.path) ..
+                "' is not usable (" .. tostring(check_err) .. "); requests will be rejected unless fail_open = true\n")
+        end
+    end
     local cfg = {
         header = opts.client_ip_header and tostring(opts.client_ip_header):lower()
             or (opts.trusted_proxy == true and "x-forwarded-for" or nil),
@@ -102,14 +131,23 @@ function M.create(opts)
         if store.kind == "memory" and os.getenv("GATEWAY_INTERFACE") and not warned_memory_in_cgi then
             warned_memory_in_cgi = true
             io.stderr:write("guaraci: WARNING: rate limit uses an in-memory store in a CGI process; " ..
-                "counters reset on every request. Pass a persistent `store` (ratelimit_store.file).\n")
+                "counters reset on every request (repeats per request under CGI). " ..
+                "Pass a persistent `store` (ratelimit_store.file).\n")
         end
 
         local ok_incr, count, reset_at = pcall(store.incr, prefix .. ip, window_seconds, now)
         if not ok_incr then
-            log_security("rate_limit_store_failed", { error = tostring(count) })
-            -- Fail closed would lock everyone out on a full disk; keep serving but make it visible.
-            return false
+            log_security("ratelimit_store_write_failed", { error = tostring(count) })
+            if opts.fail_open == true then
+                return false
+            end
+            -- Fail closed: a limiter that cannot count must not silently allow unlimited requests.
+            res.status = 429
+            res.headers = res.headers or {}
+            res.headers["Content-Type"] = "application/json; charset=utf-8"
+            res.headers["Retry-After"] = "5"
+            res.body = error_payload("rate_limit_unavailable", "Too many requests", true)
+            return true
         end
         local entry = { count = count, reset_at = reset_at }
 

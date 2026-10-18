@@ -1,5 +1,6 @@
 -- Unpredictable ids. Lua 5.3 and LuaJIT start math.random from a fixed seed, so every CGI process would
--- draw the same sequence. Prefer /dev/urandom; otherwise seed math.random once per process.
+-- draw the same sequence. Strong ids need /dev/urandom; otherwise math.random is seeded once per process
+-- (that fallback only avoids identical sequences and is not cryptographic).
 local M = {}
 
 local seeded = false
@@ -10,8 +11,13 @@ local function seed_once()
     end
     seeded = true
     local seed = os.time() * 1000003 + math.floor(os.clock() * 1000000)
-    local addr = tostring({}):match("0x(%x+)") or tostring({}):match("(%x+)$")
-    seed = seed + (tonumber(addr or "0", 16) or 0)
+    -- Table addresses vary with ASLR and allocation history; mix several. This is NOT cryptographic:
+    -- strong ids require /dev/urandom.
+    for _ = 1, 4 do
+        local addr = tostring({}):match("0x(%x+)") or tostring({}):match("(%x+)$")
+        seed = seed * 31 + (tonumber(addr or "0", 16) or 0) % 1000003
+    end
+    seed = seed + #tostring(print) + (tonumber((tostring(print):match("0x(%x+)") or "0"), 16) or 0) % 65521
     math.randomseed(seed % 2147483647)
     for _ = 1, 8 do
         math.random()

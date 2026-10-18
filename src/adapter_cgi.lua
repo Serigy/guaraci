@@ -129,7 +129,7 @@ function M.request_from_cgi(env, stdin_reader)
 
     local headers = parse_headers(env)
     local context_id
-    for _, key in ipairs({ "REQUEST_ID", "UNIQUE_ID", "HTTP_X_REQUEST_ID" }) do
+    for _, key in ipairs({ "REQUEST_ID", "UNIQUE_ID" }) do
         local candidate = env[key]
         if is_valid_request_id(candidate) then
             context_id = candidate
@@ -137,7 +137,7 @@ function M.request_from_cgi(env, stdin_reader)
         end
     end
     context_id = context_id or generate_request_id()
-    -- Server-provided ids win; the client's X-Request-Id is kept only as a correlation hint.
+    -- Only server-provided ids become context_id; the client's X-Request-Id is just a correlation hint.
     local client_request_id = is_valid_request_id(env.HTTP_X_REQUEST_ID) and env.HTTP_X_REQUEST_ID or nil
     local query = parse_query(env.QUERY_STRING or "")
     local body = read_body(env, stdin_reader)
@@ -222,7 +222,12 @@ function M.response_to_cgi(res, stdout_writer)
         if not valid_header(k, v) then
             log_security("response_header_rejected", { header = tostring(k):sub(1, 64) })
             status = 500
-            headers = { ["Content-Type"] = "text/plain; charset=utf-8" }
+            headers = {
+                ["Content-Type"] = "text/plain; charset=utf-8",
+                ["X-Frame-Options"] = "DENY",
+                ["X-Content-Type-Options"] = "nosniff",
+                ["Content-Security-Policy"] = "default-src 'self'"
+            }
             body = "Internal Error"
             break
         end

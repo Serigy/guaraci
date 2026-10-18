@@ -46,12 +46,22 @@ function M.process_files(files, opts)
     end
 
     local stored = {}
+    local request_key = safe_opts.request_id ~= nil and safe_opts.request_id ~= "" and tostring(safe_opts.request_id) or nil
     for i = 1, #safe_files do
         local file = safe_files[i]
         local id, meta = default_registry:put(file)
         if not id then
             log_error("file_store_failed", { reason = meta })
+            -- Do not orphan files stored earlier in this request.
+            M.cleanup(stored)
+            if request_key then
+                request_index[request_key] = nil
+            end
             return nil, meta
+        end
+        if request_key then
+            request_index[request_key] = request_index[request_key] or {}
+            request_index[request_key][#request_index[request_key] + 1] = id
         end
 
         stored[#stored + 1] = {
@@ -63,14 +73,6 @@ function M.process_files(files, opts)
             size = meta.size,
             path = meta.path
         }
-    end
-
-    if safe_opts.request_id ~= nil and safe_opts.request_id ~= "" then
-        local request_id = tostring(safe_opts.request_id)
-        request_index[request_id] = request_index[request_id] or {}
-        for i = 1, #stored do
-            request_index[request_id][#request_index[request_id] + 1] = stored[i].id
-        end
     end
 
     return stored, nil
