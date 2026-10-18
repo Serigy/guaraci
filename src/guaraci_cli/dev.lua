@@ -82,6 +82,7 @@ function M.cgi_env(request, host, port)
         PATH_INFO = url_decode(request.path),
         QUERY_STRING = request.query,
         REQUEST_URI = request.target,
+        REMOTE_ADDR = request.remote_addr,
         SERVER_NAME = host,
         SERVER_PORT = tostring(port),
         CONTENT_LENGTH = tostring(#request.body)
@@ -124,6 +125,7 @@ local function simple_response(status, body, content_type)
         status, REASONS[status] or "Error", content_type or "text/plain; charset=utf-8", #body, body)
 end
 
+-- Note: public/ is served before app middleware and hooks (no CSRF/rate limit/headers) in dev.
 -- Serves a file from public/ for GET/HEAD; returns nil when the path is not a safe existing file.
 function M.static_response(request, public_dir)
     if request.method ~= "GET" and request.method ~= "HEAD" then
@@ -131,12 +133,12 @@ function M.static_response(request, public_dir)
     end
     local decoded = url_decode(request.path)
     if decoded:find("\0", 1, true) or decoded:find("\\", 1, true) then
-        return nil
+        return nil, "refused"
     end
     local parts = {}
     for segment in decoded:gmatch("[^/]+") do
         if segment:sub(1, 1) == "." then
-            return nil
+            return nil, "refused"
         end
         parts[#parts + 1] = segment
     end
@@ -177,9 +179,8 @@ end
 
 -- Runs one request through app.lua + adapter_cgi and returns the HTTP response text.
 function M.dispatch(request, config)
-    reset_app_state(config.baseline)
-
     local ok, result = xpcall(function()
+        reset_app_state(config.baseline)
         local adapter = require("adapter_cgi")
         local options = dofile(config.app_path) or {}
         options.env = "dev"
@@ -217,15 +218,27 @@ function M.handle_client(client, config)
         response = simple_response(status, message .. "\n")
         config.log("-- " .. status .. " " .. message)
     else
-        response = (config.public_dir and M.static_response(request, config.public_dir))
-            or M.dispatch(request, config)
+        request.remote_addr = type(client.getpeername) == "function" and client:getpeername() or nil
+        local static, refused
+        if config.public_dir then
+            static, refused = M.static_response(request, config.public_dir)
+            if refused then
+                config.log("public/ path refused: " .. request.path)
+                local audit = package.loaded["guaraci_audit"]
+                if audit and audit.log_security then
+                    audit.log_security("route_path_refused", { path = request.path, source = "dev_static" })
+                end
+            end
+        end
+        response = static or M.dispatch(request, config)
         config.log(request.method .. " " .. request.target .. " -> " .. (response:match("^HTTP/1%.1 (%d+)") or "?"))
     end
     client:send(response)
     client:close()
 end
 
-local USAGE = "usage: guaraci dev [--port 8080] [--host 127.0.0.1] [--app app.lua] [--container]\n"
+local USAGE = "usage: guaraci dev [--port 8080] [--host 127.0.0.1] [--app app.lua] [--container]\n" ..
+    "(dev serves public/ before app middleware and hooks; --container with --host publishes on that address)\n"
 
 function M.run(args, io_streams)
     local out, err = io_streams.stdout, io_streams.stderr
@@ -245,7 +258,7 @@ function M.run(args, io_streams)
     end
 
     if parsed.flags.container then
-        return require("guaraci_cli.container").run({ port = port, app = parsed.flags.app }, io_streams)
+        return require("guaraci_cli.container").run({ port = port, host = parsed.flags.host }, io_streams)
     end
 
     local app_path = parsed.flags.app or "app.lua"
@@ -284,6 +297,9 @@ function M.run(args, io_streams)
         end
     }
 
+    if host ~= "127.0.0.1" and host ~= "localhost" then
+        err:write("WARNING: listening on " .. host .. " exposes dev error details and tracebacks to the network.\n")
+    end
     out:write("Guaraci dev server on http://" .. host .. ":" .. port .. "/  (Ctrl-C to stop)\n")
     out:flush()
     while true do

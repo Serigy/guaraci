@@ -14,8 +14,9 @@ local function directory_is_empty(dir)
         return false
     end
     local first = pipe:read("l")
-    pipe:close()
-    return first == nil
+    local ok = pipe:close()
+    -- A failed listing counts as non-empty: never scaffold over something we cannot inspect.
+    return first == nil and ok == true
 end
 
 -- The security headers hook is copied from the installed core so projects can customise it.

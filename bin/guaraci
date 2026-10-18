@@ -1,13 +1,30 @@
 #!/usr/bin/env lua5.4
 -- When run from a checkout (not installed through LuaRocks) put <root>/src on package.path.
-local script = arg and arg[0] or ""
-local dir = script:match("^(.*)/[^/]*$")
-if dir then
+local function add_checkout_paths(script)
+    local dir = script:match("^(.*)/[^/]*$")
+    if not dir then
+        return false
+    end
     local root = dir .. "/.."
     local probe = io.open(root .. "/src/guaraci_cli/main.lua", "r")
-    if probe then
-        probe:close()
-        package.path = root .. "/src/?.lua;" .. root .. "/?.lua;" .. package.path
+    if not probe then
+        return false
+    end
+    probe:close()
+    package.path = root .. "/src/?.lua;" .. root .. "/?.lua;" .. package.path
+    return true
+end
+
+local script = arg and arg[0] or ""
+if not add_checkout_paths(script) then
+    -- Symlinked launcher: retry with the resolved path.
+    local pipe = io.popen("readlink -f '" .. script:gsub("'", "'\\''") .. "' 2>/dev/null")
+    local resolved = pipe and pipe:read("l")
+    if pipe then
+        pipe:close()
+    end
+    if resolved and resolved ~= "" then
+        add_checkout_paths(resolved)
     end
 end
 

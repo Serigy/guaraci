@@ -62,20 +62,39 @@ local function count_newlines(str)
     return n
 end
 
--- Returns line and column (1-based) of byte position `pos` in `source`.
-local function position_of(source, pos)
-    local line, line_start = 1, 1
-    local i = 1
-    while true do
-        local nl = string.find(source, "\n", i, true)
-        if not nl or nl >= pos then
-            break
+-- Line-start offsets for the source being compiled (built once per compile, not per tag).
+local cached_source, cached_starts
+
+local function line_starts_of(source)
+    if cached_source ~= source then
+        local starts = { 1 }
+        local i = 1
+        while true do
+            local nl = string.find(source, "\n", i, true)
+            if not nl then
+                break
+            end
+            starts[#starts + 1] = nl + 1
+            i = nl + 1
         end
-        line = line + 1
-        line_start = nl + 1
-        i = nl + 1
+        cached_source, cached_starts = source, starts
     end
-    return line, pos - line_start + 1
+    return cached_starts
+end
+
+-- Returns line and column (1-based) of byte position `pos` in `source` (binary search).
+local function position_of(source, pos)
+    local starts = line_starts_of(source)
+    local lo, hi = 1, #starts
+    while lo < hi do
+        local mid = math.floor((lo + hi + 1) / 2)
+        if starts[mid] <= pos then
+            lo = mid
+        else
+            hi = mid - 1
+        end
+    end
+    return lo, pos - starts[lo] + 1
 end
 
 local function compile_tokens(template)
@@ -173,7 +192,9 @@ function M.compile(template_source)
         return nil, "Template invalido: esperado string"
     end
 
-    return compile_tokens(template_source)
+    local code, meta, pos = compile_tokens(template_source)
+    cached_source, cached_starts = nil, nil
+    return code, meta, pos
 end
 
 return M

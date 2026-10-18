@@ -10,8 +10,10 @@ M.IMAGE = "guaraci-dev"
 -- Runtime config. GUARACI_ENV=dev turns on detailed error responses; LUA_PATH exposes the mounted core.
 function M.lighttpd_conf()
     return [==[
-server.modules = ( "mod_rewrite", "mod_setenv", "mod_cgi", "mod_accesslog" )
-server.document-root = "/app"
+server.modules = ( "mod_alias", "mod_rewrite", "mod_setenv", "mod_cgi", "mod_accesslog" )
+# Only public/ is a document root: app.lua, views/ and hooks/ are never served as files.
+server.document-root = "/app/public"
+alias.url = ( "/cgi-bin/" => "/app/cgi-bin/" )
 server.port = 80
 server.errorlog = "/dev/stderr"
 accesslog.filename = "/dev/stdout"
@@ -23,8 +25,10 @@ setenv.add-environment = (
 
 cgi.assign = ( ".cgi" => "/usr/bin/lua5.4" )
 
-url.rewrite-once = (
-    "^/(.*)$" => "/cgi-bin/app.cgi/$1"
+# Existing files (public/ assets) are served directly; everything else goes to the CGI.
+# Like `guaraci dev`, public/ files bypass app middleware and hooks.
+url.rewrite-if-not-file = (
+    "^/(?!cgi-bin/)(.*)$" => "/cgi-bin/app.cgi/$1"
 )
 ]==]
 end
@@ -42,8 +46,9 @@ end
 function M.run_args(opts)
     return {
         "docker", "run", "--rm", "--init",
-        "-p", string.format("%d:80", opts.port),
-        "-v", opts.project_dir .. ":/app",
+        "-p", string.format("%s:%d:80", opts.host or "127.0.0.1", opts.port),
+        "-v", opts.project_dir .. ":/app:ro",
+        "-v", opts.project_dir .. "/uploads:/app/uploads",
         "-v", opts.core_dir .. ":/guaraci:ro",
         "-v", opts.conf_path .. ":/etc/lighttpd/lighttpd.conf:ro",
         M.IMAGE
@@ -90,6 +95,7 @@ function M.run(opts, io_streams)
     end
 
     out:write("Building image " .. M.IMAGE .. " (alpine + lua5.4 + lighttpd)...\n")
+    os.execute("mkdir -p uploads public")
     local build = io.popen("docker build -q -t " .. M.IMAGE .. " - >/dev/null", "w")
     if not build then
         err:write("guaraci dev --container: cannot start docker build\n")
@@ -103,10 +109,13 @@ function M.run(opts, io_streams)
 
     local conf_path = os.tmpname()
     util.write_file(conf_path, M.lighttpd_conf())
-    out:write("Guaraci dev (container) on http://localhost:" .. opts.port .. "/  (Ctrl-C to stop)\n")
+    if opts.host and opts.host ~= "127.0.0.1" then
+        err:write("WARNING: publishing on " .. opts.host .. " exposes dev error details to the network.\n")
+    end
+    out:write("Guaraci dev (container) on http://" .. (opts.host or "127.0.0.1") .. ":" .. opts.port .. "/  (Ctrl-C to stop)\n")
     out:flush()
     local ok = os.execute(join(M.run_args({
-        port = opts.port, project_dir = project_dir, core_dir = core_dir, conf_path = conf_path
+        port = opts.port, host = opts.host, project_dir = project_dir, core_dir = core_dir, conf_path = conf_path
     })))
     os.remove(conf_path)
     return ok and 0 or 1

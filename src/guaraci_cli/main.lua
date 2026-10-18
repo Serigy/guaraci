@@ -9,7 +9,11 @@ local COMMANDS = {
     { name = "new", module = "guaraci_cli.new", summary = "create a new project: guaraci new <name>" },
     { name = "check", module = "guaraci_cli.check", summary = "lint .gc templates: guaraci check [--json] [--mode text] <files>" },
     { name = "test", module = "guaraci_cli.test", summary = "run spec/*_spec.lua (fallback tests/)" },
-    { name = "dev", module = "guaraci_cli.dev", summary = "dev server: guaraci dev [--port 8080] [--container]" },
+    {
+        name = "dev", module = "guaraci_cli.dev",
+        summary = "dev server: guaraci dev [--port 8080] [--host H] [--container]\n" ..
+            "             (public/ bypasses app middleware)"
+    },
     { name = "version", summary = "print the version" },
     { name = "help", summary = "show this help" }
 }

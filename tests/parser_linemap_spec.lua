@@ -41,4 +41,15 @@ describe("parser line map", function()
         assert(meta.contexts[1] == "JS_STRING")
         assert(meta.context_info[1].line == 2 and meta.context_info[1].col == 9)
     end)
+
+    it("compiles large templates quickly (line table built once)", function()
+        local parts = {}
+        for i = 1, 3000 do parts[i] = "line <%= x %>\n" end
+        local started = os.clock()
+        local code, meta = parser.compile(table.concat(parts))
+        assert.is_not_nil(code)
+        assert.are.equal(3000, #meta.context_info)
+        assert.is_true(os.clock() - started < 5)
+        assert.are.equal(3000, meta.context_info[3000].line)
+    end)
 end)

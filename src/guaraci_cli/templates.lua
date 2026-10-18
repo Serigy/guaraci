@@ -97,6 +97,8 @@ Guaraci app.
 
 Layout: `app.lua` (routes), `views/*.gc` (templates), `hooks/` (request hooks),
 `cgi-bin/app.cgi` (CGI entrypoint for production servers).
+
+Note: in `guaraci dev`, files under `public/` are served before app middleware and hooks.
 ]==]
 
 return M
