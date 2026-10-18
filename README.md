@@ -8,33 +8,49 @@ Framework web minimalista em Lua, agnostico de servidor e orientado a seguranca 
 - Templates estilo ASP Classico (`.gc`)
 - Defesa nativa contra XSS, SSTI, SQLi e Path Traversal
 
+## Requisitos
+- Lua **5.3 ou superior** (recomendado 5.4). Lua 5.1 nao e suportado: o core usa `table.pack`, `table.unpack` e `goto`.
+- Nenhuma dependencia externa no core. `lsqlite3` e opcional, apenas para o driver SQLite.
+
+## Instalacao
+<!-- TODO(WP2): preencher apos CLI -->
+```bash
+# TODO(WP2): comando de instalacao via LuaRocks sera publicado aqui
+```
+
+Enquanto o pacote nao estiver publicado, clone o repositorio e use `package.path`:
+
+```bash
+git clone https://github.com/Serigy/guaraci
+cd guaraci
+```
+
 ## Estrutura
 - `src/`: core do framework
 - `hooks/`: hooks nativos de runtime
 - `views/`: templates `.gc`
 - `tests/`: suite de testes estilo Busted (runner local)
 - `scripts/`: utilitarios de smoke/execucao
-- `docs/`: relatorios de validacao por fase
+- `docs/`: wiki do projeto (submodulo Git)
+- `history/`: relatorios de validacao por fase
+- `openwiki/`: indice de evidencias em ingles (gerado)
 
 ## Quickstart
-### 1) Requisitos
-- Lua 5.4+ (compativel com fallback 5.1 em partes do sandbox)
-
-### 2) Smoke test do adapter CGI
+### 1) Smoke test do adapter CGI
 ```bash
-lua scripts/smoke_cgi.lua
+lua5.4 scripts/smoke_cgi.lua
 ```
 Resultado esperado:
 - `SMOKE CGI: OK`
 
-### 3) Rodar suite de testes (integracao + regressao de seguranca)
+### 2) Rodar suite de testes (integracao + regressao de seguranca)
 ```bash
-lua tests/run_all.lua
+lua5.4 tests/run_all.lua
 ```
 Resultado esperado:
 - `ALL SPECS PASSED`
 
-### 4) Exemplo minimo de uso no seu adapter
+### 3) Exemplo minimo de uso no seu adapter
 ```lua
 package.path = "./src/?.lua;./?.lua;" .. package.path
 
@@ -63,4 +79,5 @@ print(res.body)
 
 ## Documentacao adicional
 - Roadmap do MVP: `ROADMAP.md`
-- Revisoes por fase: `docs/`
+- Wiki (pt-BR): `docs/`
+- Indice de evidencias (en): `openwiki/quickstart.md`
