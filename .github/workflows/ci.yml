@@ -57,7 +57,8 @@ jobs:
           luaVersion: "5.4"
       - uses: leafo/gh-actions-luarocks@v5
       - run: luarocks install luacheck
-      - run: luacheck src hooks scripts tests
+      - name: luacheck (static analysis)
+        run: luacheck --no-color src hooks scripts tests
 
   sqlite:
     name: sqlite integration (lsqlite3)
