@@ -18,18 +18,18 @@ Framework web minimalista em Lua, agnostico de servidor e orientado a seguranca 
 
 ## Quickstart
 ### 1) Requisitos
-- Lua 5.4+ (compativel com fallback 5.1 em partes do sandbox)
+- Lua 5.3+ (recomendado 5.4)
 
 ### 2) Smoke test do adapter CGI
 ```bash
-lua scripts/smoke_cgi.lua
+lua5.4 scripts/smoke_cgi.lua
 ```
 Resultado esperado:
 - `SMOKE CGI: OK`
 
 ### 3) Rodar suite de testes (integracao + regressao de seguranca)
 ```bash
-lua tests/run_all.lua
+lua5.4 tests/run_all.lua
 ```
 Resultado esperado:
 - `ALL SPECS PASSED`
@@ -81,6 +81,9 @@ Ordem: hooks `before_request` rodam antes do middleware global; um stop de hook 
 - Sempre escapar output dinamico em HTML
 - Templates rodam em sandbox restrito
 - Hooks e fluxo do request executam com tratamento defensivo e logs de auditoria
+
+## Automação
+O workflow `openwiki-update.yml` atualiza o OpenWiki diariamente e exige o secret de repositório `OPENAI_API_KEY` (configurado manualmente em Settings > Secrets).
 
 ## Documentacao adicional
 - Roadmap do MVP: `ROADMAP.md`

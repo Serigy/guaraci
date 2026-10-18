@@ -9,6 +9,10 @@ permissions:
   contents: write
   pull-requests: write
 
+concurrency:
+  group: openwiki-update
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
