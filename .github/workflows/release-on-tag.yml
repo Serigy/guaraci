@@ -16,8 +16,12 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  release:
+  ci:
     if: ${{ github.actor != 'github-actions[bot]' }}
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    needs: ci
     runs-on: ubuntu-latest
 
     steps:
@@ -26,24 +30,16 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Resolver nome da tag
-        id: meta
-        shell: bash
-        run: |
-          TAG="${GITHUB_REF_NAME}"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-
       - name: Verificar se release ja existe
         id: existing
         uses: actions/github-script@v7
         with:
           script: |
-            const tag = '${{ steps.meta.outputs.tag }}';
             try {
               await github.rest.repos.getReleaseByTag({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                tag
+                tag: process.env.GITHUB_REF_NAME
               });
               core.setOutput('exists', 'true');
             } catch (err) {
@@ -54,12 +50,26 @@ jobs:
               throw err;
             }
 
+      - uses: leafo/gh-actions-lua@v11
+        if: ${{ steps.existing.outputs.exists != 'true' }}
+        with:
+          luaVersion: "5.4"
+      - uses: leafo/gh-actions-luarocks@v5
+        if: ${{ steps.existing.outputs.exists != 'true' }}
+
+      # Same derivation as release.yml, so manual tags yield identical artifacts.
+      - name: Derivar, validar e empacotar rock
+        if: ${{ steps.existing.outputs.exists != 'true' }}
+        uses: ./.github/actions/derive-rock
+        with:
+          tag: ${{ github.ref_name }}
+          pack: "true"
+
       - name: Gerar pacotes da release
         if: ${{ steps.existing.outputs.exists != 'true' }}
         shell: bash
         run: |
-          TAG="${{ steps.meta.outputs.tag }}"
-          mkdir -p dist
+          TAG="${GITHUB_REF_NAME}"
           git archive --format=zip --output "dist/guaraci-${TAG}.zip" "$TAG"
           git archive --format=tar.gz --output "dist/guaraci-${TAG}.tar.gz" "$TAG"
 
@@ -67,12 +77,14 @@ jobs:
         if: ${{ steps.existing.outputs.exists != 'true' }}
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.meta.outputs.tag }}
+          tag_name: ${{ github.ref_name }}
           generate_release_notes: true
           files: |
             dist/*.zip
             dist/*.tar.gz
+            dist/*.rockspec
+            dist/*.src.rock
 
       - name: Release ja existente
         if: ${{ steps.existing.outputs.exists == 'true' }}
-        run: echo "Release para a tag ${{ steps.meta.outputs.tag }} ja existe. Fluxo automatico ignorado sem erro."
+        run: echo "Release para a tag ${GITHUB_REF_NAME} ja existe. Fluxo automatico ignorado sem erro."
