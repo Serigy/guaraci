@@ -17,16 +17,11 @@ local function list_specs(dir)
     return specs
 end
 
-local function directory_exists(dir)
-    local ok, _, code = os.rename(dir, dir)
-    return ok == true or code == 13
-end
-
 -- Returns module names (spec.index_spec) for the specs found in the first existing candidate dir.
 function M.discover(dir)
     local candidates = dir and { dir } or { "spec", "tests" }
     for _, candidate in ipairs(candidates) do
-        if directory_exists(candidate) then
+        if util.directory_exists(candidate) then
             local modules = {}
             for _, path in ipairs(list_specs(candidate)) do
                 local name = path:gsub("^%./", ""):gsub("%.lua$", ""):gsub("/", ".")

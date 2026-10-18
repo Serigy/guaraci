@@ -42,6 +42,7 @@ build = {
         guaraci = "src/guaraci.lua",
         guaraci_audit = "src/guaraci_audit.lua",
         ["guaraci_cli.check"] = "src/guaraci_cli/check.lua",
+        ["guaraci_cli.dev"] = "src/guaraci_cli/dev.lua",
         ["guaraci_cli.main"] = "src/guaraci_cli/main.lua",
         ["guaraci_cli.new"] = "src/guaraci_cli/new.lua",
         ["guaraci_cli.spec_runner"] = "src/guaraci_cli/spec_runner.lua",

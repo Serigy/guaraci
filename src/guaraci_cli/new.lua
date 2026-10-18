@@ -18,11 +18,6 @@ local function directory_is_empty(dir)
     return first == nil
 end
 
-local function exists(path)
-    local ok, _, code = os.rename(path, path)
-    return ok == true or code == 13
-end
-
 -- The security headers hook is copied from the installed core so projects can customise it.
 local function security_headers_source()
     local path = package.searchpath("hooks.security_headers", package.path)
@@ -48,7 +43,7 @@ function M.run(args, io_streams)
         return 2
     end
 
-    if exists(target) and not directory_is_empty(target) then
+    if util.directory_exists(target) and not directory_is_empty(target) then
         err:write("guaraci new: '" .. target .. "' already exists and is not empty\n")
         return 1
     end
