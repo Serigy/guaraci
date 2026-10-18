@@ -18,10 +18,10 @@ Guaraci ships its own Busted-style test harness (no external Busted dependency) 
 
 ## Local runner (`tests/busted_runner.lua` + `tests/run_all.lua`)
 
-`busted_runner.SPEC_MODULES` lists 33 spec modules across the template, routing/middleware/context, Dataware ORM, validation/security, file-upload, and error-handling phases. `run_all` resets the harness, installs globals, `require`s every spec under `pcall` (counting load failures), then runs each suite; `run_suite` runs each test under `pcall`, counting failures from the test body, `before_each`, and `after_each`. It prints `ALL SPECS PASSED` or `TOTAL FAILURES`. `tests/run_all.lua` sets `package.path`, calls `runner.run()`, and exits 1 on failure.
+`busted_runner.SPEC_MODULES` lists 34 spec modules across the template, routing/middleware/context, Dataware ORM, validation/security, file-upload, and error-handling phases. The count is derived from the `SPEC_MODULES` table, so the page stays correct if a spec is added or removed. `run_all` resets the harness, installs globals, `require`s every spec under `pcall` (counting load failures), then runs each suite; `run_suite` runs each test under `pcall`, counting failures from the test body, `before_each`, and `after_each`. It prints `ALL SPECS PASSED` or `TOTAL FAILURES`. `tests/run_all.lua` sets `package.path`, calls `runner.run()`, and exits 1 on failure.
 
 ## Release pipeline (`.github/workflows`)
 
 Two workflows produce GitHub Releases. `release-on-tag.yml` triggers on pushed `v*.*.*`-shaped tags, archives the tree (`zip` + `tar.gz`) and creates the release. `release.yml` is a manual (`workflow_dispatch`) pipeline that validates a semver version, normalizes the tag, converts it to a LuaRocks-compatible rockspec version, creates/pushes the tag, generates archive packages, creates the GitHub Release, and — when `publish_luarocks` is true — generates a `guaraci-<version>.rockspec` (mapping every module to its source path) and publishes it via `luarocks pack` + `luarocks upload` using the `LUAROCKS_API_KEY` secret.
 
-`ROADMAP.md` records phases 1-13 complete, the active integration + security-regression suite, and the configured release pipeline (GitHub Release + LuaRocks package).
+`ROADMAP.md` records phases 1-14 complete, the active integration + security-regression suite, and the configured release pipeline (GitHub Release + LuaRocks package).

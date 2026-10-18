@@ -34,7 +34,7 @@
     },
     {
       "id": "claim_93a36f73c5a441449e4ddee40901abf6",
-      "statement": "busted_runner declares 33 spec modules across the template, routing/middleware, Dataware, validation/security, upload, and error-handling phases.",
+      "statement": "busted_runner declares 34 spec modules across the template, routing/middleware, Dataware, validation/security, upload, and error-handling phases.",
       "evidence": [
         {
           "resource": "repo://tests/busted_runner.lua#L3-L44",
@@ -108,7 +108,7 @@
     },
     {
       "id": "claim_dd46213afdba4e8c984a2b34de3264c2",
-      "statement": "ROADMAP records phases 1-13 complete and the release pipeline (GitHub Release + LuaRocks package) configured.",
+      "statement": "ROADMAP records phases 1-14 complete and the release pipeline (GitHub Release + LuaRocks package) configured.",
       "evidence": [
         {
           "resource": "repo://ROADMAP.md#L7-L13",

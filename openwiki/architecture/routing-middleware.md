@@ -12,6 +12,16 @@ verified:
 
 Guaraci has two routers: the original file-system router (`router`) and the explicit, Gin-style router (`router_v2`), plus a `route_group` abstraction, a priority-ordered `middleware_chain`, and a request-scoped `context_store`.
 
+## Dispatch in `handle_request`
+
+From this version, a request handled by `handle_request` runs in this order:
+
+1. the global middleware chain (`middleware_chain`, `before_request` stage, descending priority)
+2. `router_v2.match(method, path)`
+3. fallback to the file-system router (`router.resolve_or_404`) when no explicit route matches
+
+When an explicit route matches, its handler receives `(req, res, context)` and returns the response; matched `:param` segments are available in `req.params`. When no route matches, the legacy template flow continues with `before_render`, `parser.compile`, `sandbox.render_template`, and `after_request`. Before this version, `handle_request` dispatched only the file-system router, while `router_v2`, route groups, and `middleware_chain` were registered but never executed.
+
 ## Explicit router (`router_v2`)
 
 `router_v2` stores routes per HTTP method, so `GET /users` and `POST /users` are distinct. Patterns support `:param` segments (compiled to `([^/]+)` capture groups) and inline `{regex}` constraints. `match(method, path)` walks the method's route list, anchors the compiled pattern, and extracts named parameters into a `params` table. DSL helpers `get`, `post`, `put`, `delete`, `patch`, and `head` wrap `register`.
