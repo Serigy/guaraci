@@ -85,8 +85,7 @@ local function normalize_schema(schema_def)
             return nil, "invalid_schema_field"
         end
 
-        local rule = nil
-        local err = nil
+        local rule, err
 
         if type(def) == "string" then
             rule, err = parse_rule_string(def)
@@ -174,8 +173,7 @@ function M.validate(payload, schema_def, opts)
 
     local compiled = schema_def
     if type(schema_def) ~= "table" or schema_def.__guaraci_validator_schema ~= true then
-        compiled = nil
-        local compile_err = nil
+        local compile_err
         compiled, compile_err = normalize_schema(schema_def)
         if not compiled then
             return nil, {

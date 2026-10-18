@@ -439,8 +439,7 @@ end
 function M.init_dataware_sqlite(opts)
     opts = opts or {}
 
-    local driver = nil
-    local err = nil
+    local driver, err
 
     if opts.connection ~= nil then
         driver, err = sqlite_driver.new(opts.connection)

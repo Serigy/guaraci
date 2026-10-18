@@ -1,3 +1,6 @@
+-- LuaJIT exposes unpack instead of table.unpack.
+local unpack_args = table.unpack or rawget(_G, "unpack")
+
 local M = {}
 
 local function map_sqlite_error(raw_err, fallback)
@@ -35,15 +38,21 @@ local function is_dense_array(tbl)
     return true
 end
 
+-- lsqlite3 connections and statements are userdata with methods, not plain tables.
+local function is_object(value)
+    local kind = type(value)
+    return kind == "table" or kind == "userdata"
+end
+
 local function finalize_stmt(stmt)
-    if type(stmt) == "table" and type(stmt.finalize) == "function" then
+    if is_object(stmt) and type(stmt.finalize) == "function" then
         pcall(stmt.finalize, stmt)
     end
 end
 
 local function bind_params(stmt, params)
     if type(stmt.bind_values) == "function" then
-        local ok, err = pcall(stmt.bind_values, stmt, table.unpack(params))
+        local ok, err = pcall(stmt.bind_values, stmt, unpack_args(params))
         if not ok then
             return nil, map_sqlite_error(err, "sqlite_bind_failed")
         end
@@ -81,7 +90,7 @@ local function read_rows(stmt)
 end
 
 function M.new(connection)
-    if type(connection) ~= "table" or type(connection.prepare) ~= "function" then
+    if not is_object(connection) or type(connection.prepare) ~= "function" then
         return nil, "invalid_sqlite_connection"
     end
 
@@ -121,7 +130,7 @@ function M.new(connection)
         end
 
         local ok_prepare, stmt_or_err = pcall(connection.prepare, connection, sql)
-        if not ok_prepare or type(stmt_or_err) ~= "table" then
+        if not ok_prepare or not is_object(stmt_or_err) then
             return nil, map_sqlite_error(stmt_or_err, "sqlite_prepare_failed")
         end
 
@@ -177,7 +186,7 @@ function M.from_lsqlite3(db_path, sqlite_module)
     end
 
     local ok_open, connection = pcall(mod.open, db_path or ":memory:")
-    if not ok_open or type(connection) ~= "table" then
+    if not ok_open or not is_object(connection) then
         return nil, "sqlite_open_failed"
     end
 

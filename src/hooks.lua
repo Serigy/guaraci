@@ -103,7 +103,7 @@ local function apply_short_circuit_defaults(res)
 end
 
 function M.run_stage(stage, req, res, context)
-    local valid_stage, err = ensure_stage(stage)
+    local valid_stage = ensure_stage(stage)
     if not valid_stage then
         return true, "invalid_stage"
     end

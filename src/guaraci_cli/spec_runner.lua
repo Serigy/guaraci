@@ -209,11 +209,11 @@ function M.run(spec_modules)
         return false
     end
 
-    local suites = busted.get_suites()
+    local loaded_suites = busted.get_suites()
     local failures = 0
 
-    for i = 1, #suites do
-        failures = failures + run_suite(suites[i])
+    for i = 1, #loaded_suites do
+        failures = failures + run_suite(loaded_suites[i])
     end
 
     restore()

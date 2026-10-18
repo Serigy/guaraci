@@ -48,9 +48,9 @@ describe("guaraci check", function()
 
     it("emits the documented JSON contract", function()
         local _, out = run({ "--json", FIXTURES .. "lua_syntax.gc" })
-        assert.are.equal(
-            '{"file":"tests/fixtures/gc/lua_syntax.gc","diagnostics":[{"line":4,"col":10,"end_line":4,' ..
-            '"severity":"error","code":"lua-syntax","message":"<name> expected near \'=\'"}]}\n', out)
+        local expected_shape = '^{"file":"tests/fixtures/gc/lua_syntax.gc","diagnostics":%[{"line":4,"col":10,"end_line":4,'
+            .. '"severity":"error","code":"lua%-syntax","message":"[^"]+"}%]}\n$'
+        assert.is_not_nil(out:match(expected_shape), out)
         local _, clean = run({ "--json", FIXTURES .. "ok.gc" })
         assert.are.equal('{"file":"tests/fixtures/gc/ok.gc","diagnostics":[]}\n', clean)
     end)

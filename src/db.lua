@@ -1,3 +1,6 @@
+-- LuaJIT exposes unpack instead of table.unpack.
+local unpack_args = table.unpack or rawget(_G, "unpack")
+
 local M = {}
 
 local has_audit, audit = pcall(require, "guaraci_audit")
@@ -196,7 +199,7 @@ function M.execute(sql, params)
             return driver.execute_prepared(sql, params)
         end
 
-        return driver.execute(sql, table.unpack(params))
+        return driver.execute(sql, unpack_args(params))
     end)
 
     if not call_ok then
