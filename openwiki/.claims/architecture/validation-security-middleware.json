@@ -1,0 +1,110 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:0e19a6b49cfedac3ef03710265232016607571bf81b0ee852c3f6c106de24c06",
+  "claims": [
+    {
+      "id": "claim_4197d3df0f7947e49a91f8a620267525",
+      "statement": "validator.validate rejects a payload whose serialized size exceeds 1 MB by default.",
+      "evidence": [
+        {
+          "resource": "repo://src/validator.lua#L191-L200",
+          "version": "repo-lines-v1:sha256:c8d0d03f58d71538e4c74c61c55d89850ad85d5b040086357030d6bd4fa857aa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdjMjFkN2QwMDJjM2RlMjkwODlmYzI0ZTk1NTYyMWUyOWNjMTFjZTg0ZmE4YmZhMzIzMDg3OGIyOTY2OWQ4ZjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0ZDM4OTdhMGY5ZDY5YzlkYjgxYmM5Nzc0MTVlNDBiNzIyYTVkNDRkZGU1YmQ4ZjcyNjQ1MWJhZWQyNDhhNDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk1OTRmNjE3N2NiMjZjNThmMTQxMmI0Y2E3YWEyOTA5NTA1MTQyMTY4ZWZkMjQ4MWZjNDEzMDljYTQ0OWRjZjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVmMDMwOGM2MDQ4ZGY3MjBiOTllMjEzNjVkYWQwZjI1NmI0ZDM3NTgyYTJjNThiODAyNDVjMGZjMjE3ZmYzYWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a141639a587f4fb4bd937c30efe7a48d",
+      "statement": "The validator supports the types string, number, integer, boolean, and table.",
+      "evidence": [
+        {
+          "resource": "repo://src/validator.lua#L116-L138",
+          "version": "repo-lines-v1:sha256:3c3ee73b98d39e9a3c5236a887fa94ad9eb9098bf062e5832c6cb22fcc363caa:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViOTZlMDQxMDU5MTlkNjRlNGMyZjNmMjMxN2M3MTdiY2FjOGZlMDJjMmNiMmYzYjlmZjM0NzNlYmI2ZTE1MDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY5YjUxNmNjNDNjZmJjODhlMjJjM2RkODQ4NmY0ZmZjMjZkNmVkM2ZkYzlmNDgxNTUwMmFiOWYwMDU2ZDBhOTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIzY2EzY2EwNWNhNmExYWM5NWYwZGZlNmZmNDhhZTAxMDExNGYyZjgwZmM5Y2Q2M2IxNDFiYTNmNmI2MGZhZDcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0883a9be7d9f4be6a95e00cf42065463",
+      "statement": "Schema rules are declarative strings such as string|required|min:3|max:100|email parsed into a rule object.",
+      "evidence": [
+        {
+          "resource": "repo://src/validator.lua#L34-L71",
+          "version": "repo-lines-v1:sha256:cc7acb7957b1d75dfa875e85b0f0829f89dd51d6be73a99d4a30669f9489aaa7:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5NzU3ZjY5MWQ4MzQ5NDQ5YjlhNDE2Y2Y1OTNkNzExZTAyZGU3NzdiNWFmNzkwMWQwNzdjNmUzNzZkOTc1YzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwOThjYzU2MmYyNjJkODZmMzQzY2JkYThiOWI5NTM3NzU4NDcyZDMzZGU1OTUyYzA3NmU2MGEyOWExYjMzZWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZjOWExMDE5MzY3ZWQ1ZWY1MTYzZGZiNzcxYmQ2M2MxYTNjYjBkYzgwMGE3NmEzMDZiYjNiYjNjOGU1YzVlZjgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5e407e85e85a4e7990923d771296d6c6",
+      "statement": "binder coerces each field to the schema's declared type, including boolean words true/1/yes/on and false/0/no/off.",
+      "evidence": [
+        {
+          "resource": "repo://src/binder.lua#L13-L72",
+          "version": "repo-lines-v1:sha256:8567971aaaf7d03c371eb1aca1ccc1daf37d795fef883f9de461f3d10001ca48:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE5NjRjMjEzNWUwZmViYmViZDNlYTU2NDZhYzRjMjFiNTFmODI5ZGVmNTA1MzEyYjhkM2Q0ZTQyZWQ2YTExMjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwOThjYzU2MmYyNjJkODZmMzQzY2JkYThiOWI5NTM3NzU4NDcyZDMzZGU1OTUyYzA3NmU2MGEyOWExYjMzZWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM0MDU5ZWNkODhkYmJiYmI1YmYxMDY1MGRlMjExMWZmNDA3NDA0ZmI5N2U1NGQzZWYyM2NhYTlmNGZlN2M0MzMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2b669bdcb3f842ae8930096a79b2d442",
+      "statement": "binder validates the coerced payload against the schema after binding.",
+      "evidence": [
+        {
+          "resource": "repo://src/binder.lua#L153-L158",
+          "version": "repo-lines-v1:sha256:ed4fba3c5d17f8848c6a2b51f2f0bc71b7f3a2e68d1075c7bef7dbffe9f5bd62:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjllZGQyZjViMDA0MmMwNmQ2NzJkZjk3NGVhNTRlZmRlZjU4MGM2MTY4ZjIwODA3ZmQ4MTg1MjFjMDA3OThhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDExMjUyNjlmNjNjOGUwOGZkN2Q1OGFmODdkYzFhYWMwZWE2M2M1MjA1MmYxMTJkNzg1NjlkMzdhOTViZjQ2YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGQwM2YxZjlhZjdmYmViZjY4MGRkNjAyYjk5NmRkMTg4MTNjNTYxZmY3NGJmMmQyYzgzYjhhZDBiNDM1ZTFjYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjc0YTE1MDcwMDRkYmM4ZWVhMTZhNTMzMjQzMzE3MzFkMzA2NDAwMzZiNTMyY2RiMGE0Y2Q0ZmQzYmRjYmY5NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_321d035c89f74af9a1b2d0eab3fa241b",
+      "statement": "The CORS middleware returns 403 for an origin outside the allow-list and answers OPTIONS preflight with 204.",
+      "evidence": [
+        {
+          "resource": "repo://src/middleware_cors.lua#L50-L74",
+          "version": "repo-lines-v1:sha256:a042683b30cb0529c8513e042a4e1c794150e2048e91378ea6d75546a7f8d238:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdmNmMyZTQzYTQwMzlhNzcyNTgxYWNjMzQxNzY2ZGZmNmI2MzcxODQ1ZGFmMGY3ZGU3ZGUzY2E2YmJjZmRlMDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1YTM5NjY5NGRjMTEyZjI4OGEzZTI3MzBkYTQ4YzhkMGJmMzUzOTdmNjRjZWQyYTdhZGQ1ZjcwMzE0NTA0OTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcxOTRmOGJmZTdlZDE3MGI2OTM5ZmJhNmMyOTFiYTJmNzZlMThjMzdkZjZmZmI0NjIwMmE2ZmRlMDRkNDY3OTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyN2E2ZjdiM2JjMjkzMDAwMGU5ZjlmY2I5ZTZkYzRlMTNkZDMwMzUwMWY5MzgxZTY0NjE5YWE5NzVhYmYyMDkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_72a3e1150a63484489d6c42c3f712e4a",
+      "statement": "CSRF double-submit checking applies only to POST, PUT, PATCH, and DELETE.",
+      "evidence": [
+        {
+          "resource": "repo://src/middleware_csrf.lua#L11-L16",
+          "version": "repo-lines-v1:sha256:8c76ca4ec2bc0ad4d8e9f381c4e9914250b07a5df41a0bf64c39aa3916b42467:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzY0OTJmYzY0OTFmMTUzZjM2ZDhkMWY5NzFhMDhhN2VlNzY0ZWU3NDQzNDdjY2VhMjdlN2Q2YjIwNjg3OGEzMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWIzYzRjNGEyY2FhZTFiNTI0NjExYWU1ZGQ3ZGVlNGI1NmQ4NDFlY2JkY2JhMGJiOWExM2I4MjYwN2FhNzU4YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTI4OWE2NzlkNDhkNDJjOGUwYTU2ZGI2NTRjYWZlZjU1NGIyOGViZGQwOWViN2Q1Y2NhMzk2NjJlNDY0ZjJmNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_d0ea806dce3c47f894bf4ceacf646213",
+      "statement": "CSRF compares the header token to the cookie token using a length-plus-byte-difference scan rather than early-exit equality.",
+      "evidence": [
+        {
+          "resource": "repo://src/middleware_csrf.lua#L32-L46",
+          "version": "repo-lines-v1:sha256:87a70f52979ae7fb8cbc4ae2bad558bac667d741617e7170b2de0f569632879c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1MWFhZmNmZmUzMTBiMzIxOTIyYzRjY2I1YzBiODc0YWRkMDZiNjU0ZmEyNjE0ZmFjNzExYTI4MzJiYzdiZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImEwOThjYzU2MmYyNjJkODZmMzQzY2JkYThiOWI5NTM3NzU4NDcyZDMzZGU1OTUyYzA3NmU2MGEyOWExYjMzZWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZjNWVmODM2OTYxMmU1ZTIxOWUyYTlmMDNjOGRlZDljZTdiODcyZDMxNTI4MDYyMmFlNzI0OWY5OWJlNTA0ZWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c12e00e0d757436b95f61943015a7931",
+      "statement": "The rate limiter returns 429 with a Retry-After header when a per-IP bucket exceeds its window limit.",
+      "evidence": [
+        {
+          "resource": "repo://src/middleware_ratelimit.lua#L44-L75",
+          "version": "repo-lines-v1:sha256:bf356d9aaca3f0c566a41d9539a9dc81861e970288b7366402a267e8b1fc8f1d:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjNjRlMmQ1Y2JmNTdhZGJhZmIyYWE2NmYyYTA2YWI3ZDUzYzRhOWFlM2Q5ZDdkOWY0YmJlNWFmNjcyMmVkMDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1YTM5NjY5NGRjMTEyZjI4OGEzZTI3MzBkYTQ4YzhkMGJmMzUzOTdmNjRjZWQyYTdhZGQ1ZjcwMzE0NTA0OTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRlYmEwOThlOGIzODFmZGY2YzQ5NGI1OWExNzgwYmMwYzhmMmU5MTFkODNlOWZiNWUyNWFjYmEwNTAwOGVhNTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyN2E2ZjdiM2JjMjkzMDAwMGU5ZjlmY2I5ZTZkYzRlMTNkZDMwMzUwMWY5MzgxZTY0NjE5YWE5NzVhYmYyMDkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f67d090c5f7748a38e3804acc1449f5c",
+      "statement": "The rate limiter identifies the client by X-Forwarded-For, then X-Real-Ip, then remote_addr.",
+      "evidence": [
+        {
+          "resource": "repo://src/middleware_ratelimit.lua#L11-L31",
+          "version": "repo-lines-v1:sha256:f57333f8cb1d46bc47495ff5bfcb7045346f04bbe27d94b2fd5f5d210d833905:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVjMTBhMzFjNjdmZGMwZGMzZTBmYmVkNjIyNjc0ZTZkNjM1MDg2OTc3MTBmNDg0MDlmNDE0MWEwMDdlZDI0MGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFiM2M0YzRhMmNhYWUxYjUyNDYxMWFlNWRkN2RlZTRiNTZkODQxZWNiZGNiYTBiYjlhMTNiODI2MDdhYTc1OGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE0MWEyOWM3MWNhOGFmZDgzMThhOWU2MjViOTg0ZmJmY2Q3NjFlNGJiZWQ0Mzg5ODJiYmVjNTdjZWE0OTc3ZWEifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-16T16:12:57.544Z"
+  }
+}

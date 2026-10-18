@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:cb16cc73a91fefa2345579d62c52c1c4453e0f560d654b4e3fc88b8e77bf7df8",
+  "claims": [
+    {
+      "id": "claim_f7aaa02c631342199a82bd148224b3b8",
+      "statement": "Every query passes through db.execute's validate_sql gate, which rejects SQL lacking a ? placeholder or whose placeholder count does not match the parameter count.",
+      "evidence": [
+        {
+          "resource": "repo://src/db.lua#L65-L72",
+          "version": "repo-lines-v1:sha256:60c9173bf1038567266c9f7e92b8ee844855589ae9d103a51bee34e2a2a6054f:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjU3NmI5YzhjNzgxNGYzNTk1NzU0YzE3ZjNmYWY5YzFjMTdmMmJkMmRkY2IyOTE2Y2M3ZTNmZmZiZTRjY2ZkMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTRkMzg5N2EwZjlkNjljOWRiODFiYzk3NzQxNWU0MGI3MjJhNWQ0NGRkZTViZDhmNzI2NDUxYmFlZDI0OGE0MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDZiYTNmZWJmYzU0N2UzNzQyNmIyMzlkNGZhMDIxZmQ3ZjNhMGYwN2U1NDc4ZWYzNjFhNDExODZhYzFmY2YzYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjE5ZjZjMTgwYTJmNDc5NjU3ZjNkYTQwYjE2MmRhMDc4M2VhYjMxZmE0Y2I2ZmUyMGFkMDU4NjljZjA1ZDQyNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_77eefe10236f401891f415af0aa7bfdd",
+      "statement": "db.execute rejects any SQL containing a semicolon, preventing stacked-query SQL injection.",
+      "evidence": [
+        {
+          "resource": "repo://src/db.lua#L74-L76",
+          "version": "repo-lines-v1:sha256:3d0fc0f0966e5b5e89ca898714afe7d975e652f3f03a4766405f6870cb439a31:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWNkYmMxYjU0M2M3OTJiNmIzMGY5ZjUxMjVmNzY0Y2UzYzZmYzUyODNlMTg1OTJiYjU0MTk3ZmM3ODgxNDRkNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTRkMzg5N2EwZjlkNjljOWRiODFiYzk3NzQxNWU0MGI3MjJhNWQ0NGRkZTViZDhmNzI2NDUxYmFlZDI0OGE0MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTM4Mjc2MTRiNzU5YTYzZDM3OWY1YWMwNmIyY2VjZmM1N2ZjYjczMDEyNWY0NTgxMWFhM2Q3MDQ3YThmNDRlOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODM5YWMyYjQ2MDI1NzNjMWRjMjVlYzUyNWRiMGM1MDllNDVlYzNmMWQzYjY5MGFlNTEwZThjY2YyMWJlOGNjNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_91a7774add4e426cbd8d6a2af7b2d1b6",
+      "statement": "db.execute only accepts scalar parameter values (nil, boolean, number, string), rejecting tables and functions.",
+      "evidence": [
+        {
+          "resource": "repo://src/db.lua#L44-L50",
+          "version": "repo-lines-v1:sha256:6b9cd6d8e3d4c6873189ff2b244d292389e4b4d71206e9b88f8e2dd109eff17b:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTgxMWQyZTdmYjg5YjkzMzljYTA5OTg2MjJlYzI3YzdiYWJjZjM3NjgwOGQyZmE0NmQ5ZmM1NmYwMmE4NzE5MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDgzMzJmZTY2N2JjNTFhYzRhNTFiYTBlZmU3MzQ0NDFjOTBkZWY1NWM2MGEyNmQ3ZGIyNzVlY2JiY2Y0MmYxNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmU0YTIzN2E1M2RiNTY4OTRkMmU4MzEwOWJhZDExNWM3NzBiYTE5ZTI4YzBmOWNmMzUwYjRhNzUyOTk2YmNiNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWU1MzM4NzFhYTQ4MjUwYWYzZDQzZTJmZjFmZWJlZjlmNzIxMmRjZWZlNjYyNWQ1ZjI2NzNlODU3ZThkNGIzZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0a7c7dfaa8754cc3905f8b36ceb1dacb",
+      "statement": "db.with_transaction rolls back automatically when the work function throws, returns an error, or the commit fails.",
+      "evidence": [
+        {
+          "resource": "repo://src/db.lua#L225-L264",
+          "version": "repo-lines-v1:sha256:7d60e4d51d5a210507734e5eff7548e55f66b60f09c512ca8ca769633d4b27e1:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlZTE1ZjZjMmIzMGU4YWQ2OTU4ZGQ5MmZkNjg3OGNlNmU3Nzk3MDc1MzJmMzcxYTIyNGRiN2Q1ODlkYzE4ZmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYzZTJhNDAxZjc0ZjMzYmIwNTgzMTgwNDhmM2E1M2MzYTZhNjY3Y2M0NzZmYTQyZDI5MmE2YmE1ZDBmMTVhNjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMzM2VlYWI1Zjc3MTRhZTkyOWEwNTY5OTMxNDkzYzU5MjZkNDMyODM4Mjc0OWU1NzY0ZTFhODEzN2FlMDNhYWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI3NGExNTA3MDA0ZGJjOGVlYTE2YTUzMzI0MzMxNzMxZDMwNjQwMDM2YjUzMmNkYjBhNGNkNGZkM2JkY2JmOTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d6f0c318a3a94798baaf536013b51ab5",
+      "statement": "The SQLite driver prepares, binds, reads and finalizes every statement, so bound values never enter the SQL text.",
+      "evidence": [
+        {
+          "resource": "repo://src/sqlite_driver.lua#L114-L143",
+          "version": "repo-lines-v1:sha256:87fb6c054b979b50e63885be81d111b87b6c21b13bd557995864ce27b13cd48a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNhM2QxYTQyYTU0YTU4NTBkNjRjY2MwNjdkZjhjOGZmODBjMjZjMTc2NjNjOGIxNDdjZmQ2YTIyZjZkMDgyY2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0ZDM4OTdhMGY5ZDY5YzlkYjgxYmM5Nzc0MTVlNDBiNzIyYTVkNDRkZGU1YmQ4ZjcyNjQ1MWJhZWQyNDhhNDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJiMGRhZTNmNzgxYmU1NmU2NGRiZWM0MDZjZTYzNGI1ZmZiOWM3ODdkNTgyYjcwYTMwYTNhZTUwNmMxZmJkNzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzZTBjNmY1Mjk3NWUzZTUwMDg3NDljOTlmZmU2MGU2YjIwNDNiOTc4ZGI1MGJmODU0YWFlOGUwZmY2NzJiZDUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a92f4daad2c34640bd3d3dd43741107b",
+      "statement": "Query-builder identifiers (columns, tables, tenant field) must match ^[a-zA-Z_][a-zA-Z0-9_%.]*$.",
+      "evidence": [
+        {
+          "resource": "repo://src/query_builder.lua#L18-L26",
+          "version": "repo-lines-v1:sha256:01bf4b3c741634e074c2432657c679bd270718a9e3cc3c9630a906feb78ac531:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjZjMTk0NWQ5NmFmOWJkNWE3MTc2M2QxMDRiNTkzODVmYTQ0MzMyMjVlMTY1NWU1ZDRiNDY5OWM4OTJhMzMzMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDgzMzJmZTY2N2JjNTFhYzRhNTFiYTBlZmU3MzQ0NDFjOTBkZWY1NWM2MGEyNmQ3ZGIyNzVlY2JiY2Y0MmYxNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGY0ODIxMzM0NzYwYTI3NWFhMzgwYmU2OWZmYjhjMzgwNGQwZTNkMDJkMDUzMWYzYTI4Y2VhNzIyNWJhOTQ0MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGM5M2U2YTc4N2RkYTA5OTJkZDc3MjRhNTk2YWY2NGE4ZjY0NWY5OTVlOTEwNWYxZTc1ZGRhMGE1NWE1NzFhYSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_8c5a89b41079442f9f9561cbaaf1b9b0",
+      "statement": "Query-builder WHERE operators are restricted to a fixed allow-list of nine operators.",
+      "evidence": [
+        {
+          "resource": "repo://src/query_builder.lua#L6-L16",
+          "version": "repo-lines-v1:sha256:881d5245cc90a33f0502d7b79e466f9aefa9416ba0ec87e7555c911823ead0fc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlYzBlYzE3NjdiNGJhMDNmZDI2YmM3NzBlY2E4ODNmNjljY2JhZjI1NGYzMzA4ODhmOWQyYjMyMDczYWFjN2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRkNGFiZmVlNGQ4NWUyNzczMmExM2I5OWY3NmZjYzM5OTBhMzIwM2FmYWQ5Y2QzYjg4N2NjZjRjMDc5MTE0ZWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM1Y2IyNzcxYjQzYzg5MWM0OTAzZWI3NDE1ZTQ2ODYyNDAyODg0ZTA3ZGU2ZDcyZWJkYTExNTdiMmZjNDFmZDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0d340872d0134a3099c2ca2ad0110fb2",
+      "statement": "For tenant-required models the builder injects tenant_id = ? into every WHERE clause and aborts with a logged tenant violation when no tenant is set.",
+      "evidence": [
+        {
+          "resource": "repo://src/query_builder.lua#L78-L100",
+          "version": "repo-lines-v1:sha256:bb1f25979ad6d7c7a0b4172825266b0a985c24bb6eb81c9a82a79e15ec975222:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY1Y2M4MDY0ZTE2MjEzMzY3YTEzMWQyNWExNGVjZTc3ODA2ZWZmYTg4YzA3NDhmYTRmNzgzOTdkN2QzNDFiNTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZjNzBkM2NlODI2NjYyYTIxZjA2NmQxYjBhZTkxNGQxODg2MWFhZTU2MDgwZTcxMGVhYjNiNWU0OGQ2YjYyMDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEwNGY2M2UzNjc2Yjc5ZWE0MzhkNDM1YzEwYTViMDMxZTRjMDJiYjcxYWFhNWNlYTc3MjVmZTg3MGJkYzFiMGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c9a70b14b23a41f0baac8fefcec17633",
+      "statement": "update and delete refuse to execute without at least one WHERE filter.",
+      "evidence": [
+        {
+          "resource": "repo://src/query_builder.lua#L373-L374",
+          "version": "repo-lines-v1:sha256:1dd7e5126189db17191a791625bbba432e18ebfa6c443c5f2637277633e6aa99:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTcxYWY4NjhhNWMzN2ZjZmFmNzExMWY2MmVhMjU0ZjEyMGZlODVjMzlkZWUwMDk4MTViZTI4NWVkY2NiNjk5YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzU2NDYxNDUwZjFmZDJjNmQ0NThiYmM2ZDY1MmZkMTUwYmFiMjk5N2U3NTZkN2MwZDU2NmFmZmM2ODkzMWE3NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjM5MjU4NWUwMDU0NGFjNzIyZjYzNGM5YWRiMTU5MDk4ZDEzNDJhYTU5ZjYyZTE5MDczMTk1ZjlhYzFmZjM1NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmVhNGNkZjAxNTU0ZDIxY2UzODUzZmM5MWJlMmY2MTllYjQ5MWE3MDQ4MzE5YzJhZWRmYWJhNjY2NzI1ZGFkYSJ9"
+        },
+        {
+          "resource": "repo://src/query_builder.lua#L415-L416",
+          "version": "repo-lines-v1:sha256:c16acc86f9a68dc8c92db7879e300568c7c4e33d0916f987e34ccf04e0811f04:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTcxYWY4NjhhNWMzN2ZjZmFmNzExMWY2MmVhMjU0ZjEyMGZlODVjMzlkZWUwMDk4MTViZTI4NWVkY2NiNjk5YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTI2YzNlM2YyOTUxNGYxNjUyM2FhYzczZmI4OWUxOTdmNTYyYmIyOTA3NzhkMTYxYzYwM2FhZTA5YzY5N2E3NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTI0ZmJjZTE5MzM3Zjg4YzU3MTQyMjc5OGVlMGQ3N2M3OTFhNjhiZjQ4NDljOWUzMWE2ZGM3YWYzNzk2NTQ4NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTU4YzAwNjQ3OTUyMGMwYTFjZGFlYWYzNTQ5ZDYwODE5NTNmZDFkMjVhYTc4NWNjNDRmNzRhMzdkMDRmZDRlNSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b41f1ac6f137411d95da550165738e1e",
+      "statement": "Models are registered with multi-tenancy enabled by default (require_tenant=true, tenant_field=tenant_id, primary_key=id).",
+      "evidence": [
+        {
+          "resource": "repo://src/dataware.lua#L126-L134",
+          "version": "repo-lines-v1:sha256:72b41eaa9ea4b2082053224c2b2cfd849598753707a57a1b28233217105e0a3e:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2Y5NjY5YzJkNWI2MjA3ZjA5MTZjNWJjNDRhOTBjOGU5YTc1MTBmMGViM2Q3ZWU4MDQ3YTZjZTZjNTkyYjZhMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg5M2Y0MGUzNzgxZWI4OTZjODJkMDQ2YTA4MDY3YTExZTM1Y2RmMmYxZGZhZjI2ZmVhOTBiOGRiNjY3NjQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGE1ZTQ3OWRlY2YwYzdmMGI1NjJjZGNjZGY4ZWZlMzE2NjRiZmEzZmU4NGMxNTQ5MmRmY2VjOGRmOWQxOWI5NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDQ4OTI2Yzk5YmY2YTJiYjQ5MGZmZWIyNDU3YTc4YzA3YTA1MjRhYjA2ZTc3NWVkYjBiZTUzN2IzMDhkZTNjNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5cc3a08120604de7be4f6779a1c94974",
+      "statement": "auto_crud.generate registers five routes (list, get, create, update, delete) on a configurable base path.",
+      "evidence": [
+        {
+          "resource": "repo://src/auto_crud.lua#L124-L236",
+          "version": "repo-lines-v1:sha256:5752c329b5fdd6e8c547187ee6bf9af4bd5920dde3ba8ff47fc63504a9abef78:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEzLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiI0MTA5MDQ5MTc4Yzg1ZmFkMTRhZTA5NzZiYzRhNGM5NGYzNzc0OWIwYTkzN2M2OTNjNTkzZTRiOTFjMGMxOTZlIiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiIwOTQwMTNlZmRlOGE0ODAxYmJkYjNkZTU1YjAxNDNhMzc4M2EwYWM1ODI3MWZjYTFjNjAwNDY0NDgxMzFiNjFhIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI2NmI3ZmE4YWYxNzI2NzQ5YmI5NWI0M2Q5MjRmZDU2OTAyYzNhNTcwODI0OGE5NDQzZTgxMzFiOTk4ZjNlMzg1IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIyNzRhMTUwNzAwNGRiYzhlZWExNmE1MzMyNDMzMTczMWQzMDY0MDAzNmI1MzJjZGIwYTRjZDRmZDNiZGNiZjk1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_b23548ffca4e485087349c53383327e5",
+      "statement": "auto_crud maps tenant_required to 403, constraint violations to 409, and busy/locked to 503 with a retryable flag.",
+      "evidence": [
+        {
+          "resource": "repo://src/auto_crud.lua#L25-L45",
+          "version": "repo-lines-v1:sha256:91c64c9f06aa827839dcc614fa32e57f41897a920833dbdad1d45850b39e6130:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0YTMzMmZmYmVlOWMxYjViNmU2NjRlNmVlZTk2MWQ4MjE2ZGI5NGRjODU5NDM5MjNkYjA4ZjJlMGNmM2IzZTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRlZmI2OTc2YzM4ODZmZGFkZmRkMGUyNTkzZmQ1NDJmNjU4OTczZDYwZGFjZDA1ZWIzYjIwZDM4MzRhMGI4NjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5YTIyMThhYjliOWI3ZGJiNzk3NWRlY2IzNzkzNTRjZmMxYWE1ZWFjNjFiN2RjMGQ1NTU5ZmE3N2JlM2QxOWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6c6c4e24071a435cb4c207ff354a9141",
+      "statement": "The tenancy middleware reads X-Tenant-Id and short-circuits with a 403 when the tenant is absent.",
+      "evidence": [
+        {
+          "resource": "repo://src/dataware_tenancy.lua#L3-L13",
+          "version": "repo-lines-v1:sha256:fc30aa0aff5b1ef70f90f549908284c6c22dcae19b8f07f7eb6208ebb99829e2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4Y2ExMTFhYTE4MGQyOGNlNDI0M2Q1YzczZWIxZTI0OTI4MjNhOWY3YTlkZTlkNjBhYTM5NmM5NjBjNThlZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg1OWVjMGE0YjM2NzdmZjA0MzI5M2MzZDNhNDdkODM1YzRhZDVlOWNkZjcxNmJjNmZmMjM3MjcxNDQxMWQ3NTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIxYjg3MmU4Zjg0MTgzZDk5OTE4YjIzYjQ0NzVhZDlkYTI1Zjg5ODQyMjNhYTQxMmZkMDNlM2Y0MjljY2EzNGIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4e0469458fa24814b5d667ba18b8bac9",
+      "statement": "CRUD operations and tenant violations are emitted through the framework security audit log.",
+      "evidence": [
+        {
+          "resource": "repo://src/dataware_audit.lua#L11-L42",
+          "version": "repo-lines-v1:sha256:cb131cae7b142acad0ad334ceeef564b709efe74ffce319028abaf69d86f570b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY5MDA1NmU3MzU2MzA1M2NiYzY5ODdlMDI2NTA5ODUzMDgyN2JlNWRiZjc5MjY4ZThhMTkyNzZjZDg4MTRiZWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFiM2M0YzRhMmNhYWUxYjUyNDYxMWFlNWRkN2RlZTRiNTZkODQxZWNiZGNiYTBiYjlhMTNiODI2MDdhYTc1OGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkNGViMjFkYmRhM2M2ZjQ2OWFlOGUyZDFlM2VmZDkwNGM0NDRlZmZmOGY3NjgxOWJiZmExYmEzZmNmNjM5ZGUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-16T16:12:57.544Z"
+  }
+}

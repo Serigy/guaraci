@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:bad9109c74e414fa9fff64aa9a5d67bcb4435dc74568b52739d1ff73ca3181a0",
+  "claims": [
+    {
+      "id": "claim_f4b22870d0054f4f9bea87c6c5b46f92",
+      "statement": "adapter_cgi maps the CGI environment (REQUEST_METHOD, PATH_INFO/REQUEST_URI, HTTP_* headers) into Guaraci's agnostic request shape.",
+      "evidence": [
+        {
+          "resource": "repo://src/adapter_cgi.lua#L111-L122",
+          "version": "repo-lines-v1:sha256:e8c428ddf174dbbcc927ffcb6484deb2a6a9f2bd9b3bfef32e8739e96a0853a4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0ZTIxYjhmODU1ZTIyYjM3YzQzZTcyMjkzODQxODMzODc3ODNkNGViYTY2YWUzMzg4NWM3NWVkZTQ4OGZlOTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTMzNjFjYWUwZGE1Yzg0NWY2NWM5ZGJkNzA2MWFiYmIzYTMzZWRlN2I5ZDA4OWVhODBjY2MwMDBlYzQwZTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM2ZGYzNmMyNDg5NTc4MTI5NjBiZjJjYzJmMTM4OWZkNjk2YWU1MjllM2IwOTc3ODcwY2ViM2IyN2ZjNGU0YTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJkM2RlZGE2Mzc4MDZlNzM2ZGEwMTI1N2QxNGYyNGNmZTJjOTdjMDJlNzc0NDRlYWM0ZDc1NmJmN2NkZmQwM2QifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_449a01c03d3b45dfa717baea16f536bc",
+      "statement": "The request context_id comes from X-Request-Id, REQUEST_ID, or UNIQUE_ID, falling back to a generated id.",
+      "evidence": [
+        {
+          "resource": "repo://src/adapter_cgi.lua#L120-L120",
+          "version": "repo-lines-v1:sha256:ac2708ebcc7c9fc225672b24d52c817c7779003cd3580893ce4128488a6e1c21:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWMyNzA4ZWJjYzdjOWZjMjI1NjcyYjI0ZDUyYzgxN2M3Nzc5MDAzY2QzNTgwODkzY2U0MTI4NDg4YTZlMWMyMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWMyNzA4ZWJjYzdjOWZjMjI1NjcyYjI0ZDUyYzgxN2M3Nzc5MDAzY2QzNTgwODkzY2U0MTI4NDg4YTZlMWMyMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjc4NDNjZWM5ODljZDIxMjQ1NGFhMDgzNTFmZDU5ZGNiMjY0OTgwYTk1OGRlYWU4NTRhOTY4ZTlhYjFlOTA4MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGZkZDFhY2MxYTg0MmQ5YTZjYmIzNWFmYjQwYzEzNjA3MTczZGNjMWQ4ZmNjMjNjNDlkN2QwZDYyZmVlNDM3YSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ef479b6c2da840778c6971e29ad1ddc7",
+      "statement": "For multipart bodies the adapter parses and stores files via file_manager.process_files, recording upload_error on failure.",
+      "evidence": [
+        {
+          "resource": "repo://src/adapter_cgi.lua#L129-L146",
+          "version": "repo-lines-v1:sha256:2902ab6ab73890cc016f3e541e0c0e4fcce8cd268c9ead4143ef99c423edba95:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3ODkxMzFmMjllYjBlNTI2ODc5MzJkZDNiNzFmZjA2YmM5NjlkMTRiNTVjZWMxMzZiYjk0M2M2ODgyMmY1YzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1YTM5NjY5NGRjMTEyZjI4OGEzZTI3MzBkYTQ4YzhkMGJmMzUzOTdmNjRjZWQyYTdhZGQ1ZjcwMzE0NTA0OTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA4MDVlNWNjMjhhYjc5ZDI0ODY0NGY4YTQ5YTQxNWZkNmI4MmI1MGNkOTEzZmY4NDM5NmMyZjQzODliNzYyOTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYxNTIyNzk0ZDY2MmExOTI4ZGZjYzIyMjUxMmI5NWYyOTJkYWE0ZmQ0ZjUyOWVkY2U4NzIwODU5NmM5YjdlOWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_214bafb36d02490b87a89579cdb8bcf4",
+      "statement": "response_to_cgi writes a CGI Status line, headers with computed Content-Length, and the body.",
+      "evidence": [
+        {
+          "resource": "repo://src/adapter_cgi.lua#L192-L199",
+          "version": "repo-lines-v1:sha256:2576ac785537e31fbeee8be87de5e9a8e09dc0ef2e9e817ae7d8b9a4a00a762b:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjZjOTI3MzlhZjk3NDg4OTQxYmM1MzcwYzI5NDZiZDgyY2UxNzVjNWI4ZmU4YjAyOTE5MGM1ZDViYjE1YzdiYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzBlZjUzYmQ4YjBlMmFiZGEzYWZlMjkyMjA3NDZmMWZhMjUyNGE0NTA2Y2UxYzkxZjA4MDkxOWMxMTAyMDI4YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmEwMjhlOTFhYmM4MjQxNTI2ZjlhYTczYWZjZTc4Mjg1ZjM1ZjIxMTg1ODQ1ZjE5MmI2YTQ4NDNhZjc4Njk4OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNjYTc3YzgzNTQyODEzZmIwNTQyYTBiZTA5YTM1ZjFhM2NkZDBkYjZjMTQ1N2MzY2ZlZmU5OWRhZmFmZmM2ZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_2fb10f43f5414885b737338c24a79500",
+      "statement": "guaraci_io.new_request returns a read-only request whose writes raise an error.",
+      "evidence": [
+        {
+          "resource": "repo://src/guaraci_io.lua#L25-L28",
+          "version": "repo-lines-v1:sha256:ecb881ec32081ac38b2e4608103581ea9ed0d17c14ede2a67ff02a8b23b4d27b:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTA5OWExMjA0NWM4ZmVkODhlYmE0ZGNmZjMzZmMwYTU1MTk0NzkzYzExM2JhMGNmMDBkNzY2ZWMwNWZmNjc2YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZWMxZWI3NzZmNWE1MGVjZDk0YTMzZWNiMDJiOGY2M2JhNWJmMmE4NjFjNjVlZjljYTEwZjAxYjFlOWNhOWVhMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTU5NGY2MTc3Y2IyNmM1OGYxNDEyYjRjYTdhYTI5MDk1MDUxNDIxNjhlZmQyNDgxZmM0MTMwOWNhNDQ5ZGNmMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTgzNzFiZDEyYzc2ZjgyM2EwNGFiOWZkMjNmNjJhZTk2ZGU3MDk0MGM0ZTJiMmE0Mjc3ODQ0YmEyMWFmNWRkMyJ9"
+        },
+        {
+          "resource": "repo://src/guaraci_io.lua#L67-L67",
+          "version": "repo-lines-v1:sha256:449fbb99489d138c030f42f56de01a41987e2935ad83b5c8e1f42d0baf1e322e:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDQ5ZmJiOTk0ODlkMTM4YzAzMGY0MmY1NmRlMDFhNDE5ODdlMjkzNWFkODNiNWM4ZTFmNDJkMGJhZjFlMzIyZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDQ5ZmJiOTk0ODlkMTM4YzAzMGY0MmY1NmRlMDFhNDE5ODdlMjkzNWFkODNiNWM4ZTFmNDJkMGJhZjFlMzIyZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzFiYjZjZTk0MDY2OTlkNjExZGM0YTQyZTljMDNmM2YyODJlMDBiNGZlMTk4NzdiODgyMzkzZDliZWZjYzg4NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzBjZGEzMmIyODYwNDM1OGE1NmM5ZGMyMzVlNmMwMmJmZDMzZjljNDExM2U0MTExY2U4ZjUwNWZhZGQ1Mjg1YyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b7312416fe724426bfffc577bdc12a79",
+      "statement": "new_response exposes a res.json(payload, status) helper that encodes JSON and sets the content type.",
+      "evidence": [
+        {
+          "resource": "repo://src/guaraci_io.lua#L83-L90",
+          "version": "repo-lines-v1:sha256:497bcd8157a1e810b12f594297ffa95543df5765348168deec51c234f2ccd2d8:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWVkODFhODFjMDMxY2NiNTVlNGE5NDZmZDdiNjg4NTQxYjYwMjA2YjAyN2I1ZWJkNjQzODNkMDhhMDM4M2ExMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTRkMzg5N2EwZjlkNjljOWRiODFiYzk3NzQxNWU0MGI3MjJhNWQ0NGRkZTViZDhmNzI2NDUxYmFlZDI0OGE0MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWFkODNjMjY3MjgyZWM4ZWIzZTMwZWJmNjA1ODNjODUxZTBlZWY4MDA4NGNjNmVmNGNhOWRjZTNhNjBhM2MyOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2U1N2I3ZGEyMmExYzcwNzU4ZWZmNjI3ZDFmNzk1YzIzZjQyMGQ5OWY4ODNlNTk5NDI5ZWVkMTE2ODEyYmNiNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5e2a513b13ad4e9e920b8977f3fdf6cd",
+      "statement": "The smoke test asserts the CGI output contains Status: 200 and the rendered value before reporting SMOKE CGI: OK.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/smoke_cgi.lua#L27-L38",
+          "version": "repo-lines-v1:sha256:82558b58bac7e1d4006dbcf4785d10bd7f56ac0658ab9ad8407e62a2a12fb188:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5N2FkMGM3NDcwZmNkYTg5YmM5M2Q1NDY2ODE3MTVhZDJjOGNhNzM5ZTliNmRmZTFiNzU1MjkwYjU1YTVkYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ3MjJkNzllNWQxZTljY2I1NjM4NzE0NDUwMzg2NGU5ODg5ZjI1M2I1ZmUwMjQ3NTZjNWU5YzliNWQ3NTMyOTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRkNWQwYmM1MzAxOWMwNWNhNTdlNjFmMDQ0MWJjMzhkODIxNWU2Y2E5NjhlM2VhMjE0ZGUxMWM0MmJiNzkwMGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-16T16:12:57.544Z"
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:ce6e7d898d3c6368bf2a84a50ec628df13707584af86c8636ea5e077599252f2",
+  "claims": [
+    {
+      "id": "claim_c9d69c588cc148fe9ebf7fe285186794",
+      "statement": "parser emits <%= expr %> as a context-escaped write and <% code %> as raw Lua in the compiled output.",
+      "evidence": [
+        {
+          "resource": "repo://src/parser.lua#L99-L112",
+          "version": "repo-lines-v1:sha256:2f70b80a21aea13abfdb15417b684fadc78f3e53bb257cb03964ada1fb690252:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiOGY1NTY2YzEyYzU5NDUxMjI3ZDkyMDlkNzk2M2NlMGI0ZTdiZDVhMzkyNzFkZjMyMDg3YzU0ZTlkMDRlZjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5ZGM2M2ZjN2QzZmFlYmJkOGVkNDY4YWU4NjVjMmUzMzE1OGFjYTEwNDMxZmIwMzk5ZTYxYTA5ZWVjZWFmMDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA1NTMzODQ2MzFhZGM0OWM1ODcxMTA5MzQxMmQ1YzRlMWFjMGU4ODE2MzNhNzUxNTQzN2VjNmFlY2Q1NjVkNTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmMzI2NzkyNGJjZDczY2IwYzdlMWNiZjkxNzVjNWY2YmYyOTAwOTY2NWM2NTlhMTk4NWE1Njg5MjZjOTlkZWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_34dd4b7cc401484abe4c456f4e2fbab7",
+      "statement": "The parser infers output context from preceding text: <script> → JS_STRING, <style> → CSS_STRING, URL attributes → URL_ATTR, other attributes → HTML_ATTR_QUOTED, default HTML_TEXT.",
+      "evidence": [
+        {
+          "resource": "repo://src/parser.lua#L34-L58",
+          "version": "repo-lines-v1:sha256:7d3c72d3df1a3f64cb619665e2548672823234ef9f6a364ad65d603245899760:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhMTMzZjg2ODRlNTljNWJmODNlODRmNTU3MDQzNzg3MTZlNmYyNzg1ZDhlNzlhOWVlNGJjMWE3MWJhMDI0NTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NzQ0MDNhNzZiZmM1OWE1ZDE0ZTEyYzI2ZmIzYjRkYWQ3ZDE0N2ZhOTU0YWM0NTg4MDg2YTc3ZjMxZWQxNmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5Yzg5NjA4MWIwYjY1MTcyMWM0Y2M0YTYxN2ZmMTIzMTc0NDJhYjk4OTNjMGI0OGViZThiNzFhOWNkMjQ4NGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b58bd9d9baab4dfc81ef89563f07ef0d",
+      "statement": "URL attributes are the fixed set href, src, action, formaction, poster, cite, data, and srcset.",
+      "evidence": [
+        {
+          "resource": "repo://src/parser.lua#L3-L12",
+          "version": "repo-lines-v1:sha256:0a7f1860e954578e297d74e82753d0c4f32cb60651e8355e46c1c989d49a963d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdlYzYwOTg0M2I1ZmNkMWY0MDI1MjM1MWMyZDg3MTM2YWJmODg0ZWQ5Mzc4YmM4MDNjYjdjNmM1MmM5OTYzOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg1OWVjMGE0YjM2NzdmZjA0MzI5M2MzZDNhNDdkODM1YzRhZDVlOWNkZjcxNmJjNmZmMjM3MjcxNDQxMWQ3NTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg1OGY2NmI4MjMzMjRlYTBjODNkZDEyOTlhNmRkZTFkMjI4NjZiYjRjYmJjMTA0YmUzNTQ2ZGIyYWUyMWYzZDQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fcb33a933648476a9737eb7e9530a49b",
+      "statement": "escape_url_attr blocks javascript: and data: schemes and any scheme outside http/https/mailto/ftp.",
+      "evidence": [
+        {
+          "resource": "repo://src/escape_context.lua#L44-L56",
+          "version": "repo-lines-v1:sha256:387111a86bea58fef321ef8f5b8a1ac5d53c9e33ce330bf0759953238dea9e94:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkYjhkYTNiZWVhNTdlNzE2YzA5N2MzYzBjNjU0MTE1MmY5M2UzMTI5NzY2YWRjMWFhZWI3YmY5ZTI0ZjUyY2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0ZDM4OTdhMGY5ZDY5YzlkYjgxYmM5Nzc0MTVlNDBiNzIyYTVkNDRkZGU1YmQ4ZjcyNjQ1MWJhZWQyNDhhNDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM2ODQ2Y2JkMmE2NTc5M2VmMTZlNjAzNTQxZGRiNTI0OGZjOTZkMWRjZjc3YTM3NzcyZDAxZTQzNGM3Y2EzOWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUxMDA2OGJjZDZkOWU2NzVjZjI5YjEzMGRiZjYxYTVmMjhkYzJkOTJhNjg1OWRhYmU4NjZlMGZjY2U5ZDZhYmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fbd707f74c19451e9f7f14f74b750fc2",
+      "statement": "In html mode, JS_STRING and CSS_STRING contexts are blocked at runtime with a blocked_context error.",
+      "evidence": [
+        {
+          "resource": "repo://src/escape_context.lua#L103-L105",
+          "version": "repo-lines-v1:sha256:346d23add82898bbfc6e25ed600451232d3d8a5c21130fc9b30b0aedc68dfccd:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjc3MjNhMTM3MjAwYjYzYjM0MzM3NDEyNzZkZDIzODQ0YWVkMDMzZDhlNDJhM2MyYjE0NWVmNDcxZDk1ZDVmMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTRkMzg5N2EwZjlkNjljOWRiODFiYzk3NzQxNWU0MGI3MjJhNWQ0NGRkZTViZDhmNzI2NDUxYmFlZDI0OGE0MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjZiOTgwYjI3NzNlNWI5NmQwMzc0YzM1ZjgzNTMyNGEwMjA2NzViNDViMGQ3ODBhOWFmNDM5ZjI2YzBhYTE3ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODgzMTIxYjQyOWJkYzZjM2ZjZGY3ZWI2YTdkNzFiMjdkOWE3NTU4NzRmZTMzODdmYzE5NWMxZGJiNjU3OTdmMSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_e99c5f0fe40c459d8bb4118e8b6a4c14",
+      "statement": "text mode disables auto-escaping and returns values raw.",
+      "evidence": [
+        {
+          "resource": "repo://src/escape_context.lua#L99-L101",
+          "version": "repo-lines-v1:sha256:66de574b68dd9fa8e4411af73813b98c3233ce75440107e14c3224bbabbc88b5:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODgwNzZmZTA0NTEzZjg5OWMyNDQyNDJjMjUyMmVjZWI4MmI5YzllZDYyZDJhYWJjNDY5ZmY5MDczY2I4MDUwYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTRkMzg5N2EwZjlkNjljOWRiODFiYzk3NzQxNWU0MGI3MjJhNWQ0NGRkZTViZDhmNzI2NDUxYmFlZDI0OGE0MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTM5OGU2MzJiMmM5N2ZjOWM1MDAzNTM3OTcwZTQ5NzZjOTNmNzg4MmExNWYyYjZjMDI4MWZjYmFhN2YxMWY5MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmQxNWE0MjAxYWM1M2VlZDlhOTUyMzM2MzQyOWIxNTRjM2YyZmI4NWFlMzY3MDg3NjIyNGQ3MmQ4MzcxN2M4NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_48242a8e2a86476793cd005e6633872a",
+      "statement": "The sandbox never exposes forbidden globals (_G, require, os, io, package, debug, load/loadfile/dofile/loadstring).",
+      "evidence": [
+        {
+          "resource": "repo://src/sandbox.lua#L12-L23",
+          "version": "repo-lines-v1:sha256:94d97059a1cc7c3d499ea8cf0900559ab3100871c272c038b567b896f2398de3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3YzJlYTEwYjJiY2VlNzkyYTBlOWRiOWY1YzBmYTk2NDUxNGM1YzBhZjIwMjQyYjE3YzI4Y2M1ZWY0M2M2NWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzN2I2MTViNDRkMmNiNWFhMTVhOGMwMGI5ZDM4YmZlMDFjMmExMzlhMDlhZDZiNGZiMjM0N2YwZmYxYzk4NGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU5Y2MxZDExZWU2NTk5ZWY1YjA2Y2ZjODMyMmQ4ODQzN2RmNWYwZDYyMzZmZmViYmUwMjNmYjc3NDgzYTFkMWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c9d02f8db24d495b81ecf62eca908749",
+      "statement": "The sandbox environment is read-only: its metatable raises an error on unknown reads and writes.",
+      "evidence": [
+        {
+          "resource": "repo://src/sandbox.lua#L208-L215",
+          "version": "repo-lines-v1:sha256:e41a486c4a58ffd80f9d7057d8a009c6fdcd2cf277e257a98d4c4e89025164ed:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzU0Y2I1NTJmYWJjNjQ1NjZjNzQ4NWEyMmFmYzU3ZjhjMGU0NDg3NDI2N2U4ODVhMzE5ZjVjYTNjNDNjZTUxMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjQ3NWU5NGE5MDRhYzQ5YjMxNTRkNDY3MmE2NmU4NjI5Yjg2ZGFjNzRlM2UyOTM3YmU2OTI3YWUzZGExMWM1MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTYzNWJiM2I0YWM2MDlmZGEzNzQ3NDJmOWQ2YjY4N2ViNTQyZDc0MDVkOTY1NmRjZDUyMWMzOWQ1NWZmZDY3YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWZhNWQ1MzdmMzM0OGJlOWNlZDA5ZDhlN2U0Yzk5ZGU4NDBlMTJmMTg2YmZjMDA5MzdkNmUxZjZiM2EwOTM2NiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b83854e0675c4a7e8abd6143b4626fda",
+      "statement": "Template functions must pass a name allow-list and forbidden-name check to be registered.",
+      "evidence": [
+        {
+          "resource": "repo://src/template_functions.lua#L38-L55",
+          "version": "repo-lines-v1:sha256:55688920085496bd389ffc06f60135b904ce45449f6b173d8f1b9a1bae9f33d4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5NWQ2OWVkMzUwNGRiOTE0MmE4MzczNzIxMWFiMmZhYzI5YjM5YjcxMDFhNTVmNDY1YjU1MGE5NTk4YzZmOGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNmMTA5OGY1NWFmYWFjZjhiMWZjYzE2OGQ5YzZkZDc2ZTJhZTUwNmU0NTVhYjQyODU1ZTI5NTU3MWZkNDcxYTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI4ZjY2MjNjNWRlMjg3Mjk5NmI1NzY2Y2QyMzkzNzExNWY4ZDVjM2Y0YzQ1YjNjOTA5ZDUxZTIzN2ZlN2FkZDMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_55443d2d442247d9b45e1a2d1242c3cd",
+      "statement": "Partials render recursively through include()/partial() with a default max depth of 5.",
+      "evidence": [
+        {
+          "resource": "repo://src/sandbox.lua#L122-L128",
+          "version": "repo-lines-v1:sha256:c3326c6450206fc8a37d5ea1b9f72600f7556be9b5280284f75d19a409982e11:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjhjMjM0YWY3YTk0NzYyNzRkOTUzZTEwZjZkNDQ4ZTk1YTBiYWMxMDNhZWZmNmIxMTRlNjM5MzU0ZWIxZDg3ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjVhMzk2Njk0ZGMxMTJmMjg4YTNlMjczMGRhNDhjOGQwYmYzNTM5N2Y2NGNlZDJhN2FkZDVmNzAzMTQ1MDQ5NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjMwYzg3YjA1ODM2MWU1OGM5NzIxMjg3YjVhZjg0YjEyMzNiODdjZDBiNWJiYWQ0YjY3OTY3YmQ1YTM3YjM0YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjFmODNhY2JhNzQ0YjI5YjhjMjE1YTdhOTA2OTAzOTg1ODg0OTUyNGJiM2U1M2VmMTdjZGU2MWE2MzI1NzVjNCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5c4626d1a3454d09b513e74a52dd10b8",
+      "statement": "When a context_id is present, the sandbox exposes Context as a read-only view of the request context.",
+      "evidence": [
+        {
+          "resource": "repo://src/sandbox.lua#L192-L194",
+          "version": "repo-lines-v1:sha256:c40abae1b168d391175c50590f841109b8aa45055cbbf510b3550559a3daaaaf:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDk1MzkxZDNlNjEyNzBhOTA2Y2Q5OTg2NmZlMDM3NDc3ZmM3YWQ4ZWVmNjgwNTNjYmFkZGY2Y2UxOTQwNjE1OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTRkMzg5N2EwZjlkNjljOWRiODFiYzk3NzQxNWU0MGI3MjJhNWQ0NGRkZTViZDhmNzI2NDUxYmFlZDI0OGE0MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTQxYmJhMWIzMmYwZTM0OTNkNTMwZTJhZGE0YjE5MGY1YWU2NjYzYWJlNWI5ZTI0ZmQxMjc1ZDhmMGM1Y2NiMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2NlNWE5MmM2MTZjZTk0YTk3MjYyMTI0MTA5ZGEyZDE4ZWIxNWNiMWFiZjgxNmFmOWMwOWFmOTNjMTllOTRhYyJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-16T16:12:57.544Z"
+  }
+}

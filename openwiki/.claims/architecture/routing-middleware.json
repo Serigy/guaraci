@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:33bfd6fcefc0dfc426a61fa92504d9d7b585c5e31d10f9fb7c812a5bb369a6d8",
+  "claims": [
+    {
+      "id": "claim_4f36b5aac2e742ddb1e430b0f15a29a5",
+      "statement": "The legacy file-system router rejects path traversal (.. segments) and NUL bytes during path sanitization.",
+      "evidence": [
+        {
+          "resource": "repo://src/router.lua#L46-L69",
+          "version": "repo-lines-v1:sha256:16b9066e019daa6cce7dcac359ceb78db692dead6d9b7fec013c22bcb851118b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZjYTVmYmQ4OTUwODU3MTBhOTZhYmM2NGRjM2NjNzM2ZDI0OWExNGJlNWFjZjhkOTNmNWU2MDAzOGNlZDVhOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlYzRkMDNkNzI0ZTczZjBmMmMxZGJiMzUzYmFjNDM0NmQ2ZjAyMGUwZTliNGY0M2QyYTY5YmE1ODU1M2EyMjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc5ZDViNjRhYjVhZmNkODY5MTU0YjExMjAzOGRhNWZiM2NmNWUxMzY2NTRlY2IwZWNjMDM1N2ZmODYzZjhlMDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc2YzMxYzIzMGRlMGI0YzBkYjM4YWJjMjU0NTRhYmU1ODBhMTdhNTdhYzk3NDFjM2M3ZTcyOTgyMGE0NDYzYmIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fe20413342ca4045a2f54f49d29c05c6",
+      "statement": "The legacy router resolves a path to a .gc template file under templates_root and returns not_found when the file is absent.",
+      "evidence": [
+        {
+          "resource": "repo://src/router.lua#L107-L128",
+          "version": "repo-lines-v1:sha256:2718175f2e0d62a6df91e19b7c78db7d0d809b27c8d1e37c3a2ea899eafc5546:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiOWJjZDM4ZGI5M2RiODMzMDg3NzE1OTY5M2I0MWJjMDZiNjU2ZDcyNGU0YzA0ZTQyZDdiZWQxMzQzZWVmOTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJkNjNiMmYzOWVhNmYxNGU0MmRkNzkwZjg4MTk3ZTBjNzU4Njc4ZTBhMjAxZTM3OGRhNDdmMmUyZDhmN2E1ZjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJiNWUxYWVjNGFlZmJlNmQyMjViZWRmYmYxMzM0MWE1OTAwOWYwNDFhNmE1MDBhM2RjYmMwZTY4NWFiZTAyMzMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c3de5c6a07b54e34ad001db18fb3f8a4",
+      "statement": "router_v2 compiles :param segments into ([^/]+) capture groups and {regex} into regex capture groups.",
+      "evidence": [
+        {
+          "resource": "repo://src/router_v2.lua#L15-L32",
+          "version": "repo-lines-v1:sha256:14eb5464d54296ef5fad17d17104587297d7cfbb06d8acd32795493b26e7976f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0OWNmOGUxNjI2ZDUwNDA2OGUyY2IyNDgxM2Y1Zjc0YTkxZjQwMDU0ZTI5NGVhYjcwYTYwN2MwMzI5MzFmNmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdhNmU4ZjFmOGM3MzU1ZGI2OGM2MzMwY2RjMjRhZDQwODRhYTQyYzBkMDgwZDhiZmY0ZjJkMTY5NzQ1YjExMTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRiYTM3YThhM2U4NmQ4MDM0YzdmYmQ0Y2Q1YzNlZjM1NDNjZDY2OTZhM2M0YTc4NjJmY2E4MzdmMTdiNDJmYjkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_acaa1eb84176480e9ccbc06eab881799",
+      "statement": "Routes are stored per HTTP method, so the same path can route differently by method.",
+      "evidence": [
+        {
+          "resource": "repo://src/router_v2.lua#L64-L65",
+          "version": "repo-lines-v1:sha256:838ade5b1706857f5a7032fa53131c189f2d2d688799711e0dd5f42cfa20762c:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjc2Nzk2YmNkMWVmMWM4MGI4MjA3OTUzYmNmN2NiY2NhY2EwN2UzM2E3M2Y1OTExZjY1ZTY2NWQ1Zjk1MjNjNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTkxZjJmNWM1OTRlYzNiMDViZjFmNzg1NTI2NmQwMDA4NTkxOTI0Yzk2ZTM5MjkwZmYwMDNjZDkyZjgzMzczZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDZkYTM1NWVkM2I1NTc2MDFjMTljMjMyZGI5NDc3NWE3ZmE3NTdkZGM5ODJkNDA0MjZiYmZmZGFiNzA4MzNiMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGZjOGQxODRhNjYyMzg0NWQ0MGUwOTU2NmY0OWYwOGY0MzBlZDlkMzJjZWNmNjQ1OTZmODU3MzAwYTMxNWQ5MCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_f3303eb462e44016944d739d4295638f",
+      "statement": "router_v2.match extracts named parameters into a params table from matched capture groups.",
+      "evidence": [
+        {
+          "resource": "repo://src/router_v2.lua#L96-L109",
+          "version": "repo-lines-v1:sha256:2ceb73a05ab90ccaedcf31d4b57bd22c62bb33b26eccc5b68c227fa14786548d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE0ZTE1N2ExZTYyZWIxNzIyMzZkMmEwZWQzZjM0YjBkMmViNmMzN2M2NjViOTJhY2I4OGQ0MDRiZWRjNzEwODQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0ZDM4OTdhMGY5ZDY5YzlkYjgxYmM5Nzc0MTVlNDBiNzIyYTVkNDRkZGU1YmQ4ZjcyNjQ1MWJhZWQyNDhhNDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc1ZTZlYWJjZjUzODIzN2RlN2E0OGRmY2JiNGRhMzA5NjkxOTg5OGVlNDIzZGYzNWEzOTJiMmFkNmVlZGU0ZjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAwNDQ1NGQzNTBiNGRhYThkM2U0MDYyOTM4ODg4NDYwMzRlY2Y4MmVjMzI5OGEyODRjODE0YjhkZDI2MjUxZDYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_833640b15d9845fdb8742f6f8a02fd81",
+      "statement": "route_group prefixes its routes with the group prefix and keeps a group-local middleware list.",
+      "evidence": [
+        {
+          "resource": "repo://src/route_group.lua#L21-L80",
+          "version": "repo-lines-v1:sha256:ff98ced68b0666765fd4c68d402676f5bc4cef28676ea0ae36a2c0502b9a7f39:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiNmViMGUxM2U2ZGE2N2I0NGQ5MTQ3MDZmOTc2MmMyMzdlNWMwZmJkNmI0ZmIyNWVmY2UxMGI2Yzk5NmQ2NTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0ZDM4OTdhMGY5ZDY5YzlkYjgxYmM5Nzc0MTVlNDBiNzIyYTVkNDRkZGU1YmQ4ZjcyNjQ1MWJhZWQyNDhhNDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI5NGNiNjZlNDg4ODJhNWQ2YTg5ZTc0NDZjYmE4ZjUzZTgyYmE3ZTg5NjNiNTQ0NmE3ODYxY2NlZDM5NDA2NGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUyYjc3ZmFkYjFmZmYwZDE5NjUwODViYWVhZGRmODFjZjI3YzQ3OThhYTIxMjQ3MDY5Y2ZlM2IxNTEzMzAzZTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_547f68799af64ee3a7a545ae8b2aabff",
+      "statement": "context_store isolates per-request data under a generated UUID request_id and queues ids for cleanup.",
+      "evidence": [
+        {
+          "resource": "repo://src/context_store.lua#L22-L35",
+          "version": "repo-lines-v1:sha256:5f5eccd4fffd20c3fbad9c8f890082b41cd14e8c908dcf74ce2b95a995692b33:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1N2E4NzRjMmQ5NTkxYzEzOGIzOTM3MjMxZGFjYWEzNDU1NzRlYzEwYWRhYjdjY2RhOTVjZjc1MWMxMTVmOGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE4M2MyMTViYTEwYTBhMGMxNzFlMTBhYjBjM2ZhMTNmZjg5Y2E0MDNiNjgxNWVmOGExMTE2YTM1NDIzOTA3NWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImEyMzBkY2Q0ZmI4YTZhM2RmMDQyODVlNjA1ZTI0YTNhMjg4NGU4MGY0NDdkYmQyMDgwYzQwMTYzZDVkNjhkMGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d0a7a1e1b5c948cf9b036aecc4b5f477",
+      "statement": "context_store rejects writes to the reserved keys _request_id, system, and __meta.",
+      "evidence": [
+        {
+          "resource": "repo://src/context_store.lua#L43-L46",
+          "version": "repo-lines-v1:sha256:512b7baee326aa5e8efafb19d5b9a056eb5deb99a3de2b006a536fb3dbe7cf1d:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODI2ODc2MTA5NDE0OGIzNWZiMjRhODA2YTMzM2I1MTk0Y2ExZjcxZmNhYWVhOWIxYzQ4Y2EzNGM3MWZmYjI1MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTRkMzg5N2EwZjlkNjljOWRiODFiYzk3NzQxNWU0MGI3MjJhNWQ0NGRkZTViZDhmNzI2NDUxYmFlZDI0OGE0MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTkwZTQzOWQyZTczMDZjNGQ3MjExOGRhNjU1YWNmN2Y1ZDRmNzcxNjRiMDkyNjQ5YzAyMzEyNTQ3OGQ1OWVmNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTM4MmY5ODA5ZWVkY2NjZGJlN2RmMjUwNTQwOTJjZmJlMjc1MmFhNDZkN2NkODkwZTRlN2RjN2NhNGUyMWJhYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_90f24146e4bc40fc86efdb39672bcd11",
+      "statement": "make_readonly_api exposes the context to templates through a read-only table whose writes raise an error.",
+      "evidence": [
+        {
+          "resource": "repo://src/context_store.lua#L90-L104",
+          "version": "repo-lines-v1:sha256:4823623183e008809673088b0802057923836bc0317b14f8eefb4bd20f25b568:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmOGQ0ZGMyYzliYmMyOGUzNzdhYTg2NzRhNjM4NDBmMzM0MGU2ZGQ4NDQzZDRjMDcwYjlmOGM0YTMyNTFiZDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUyOTg0MjExZjI5YjJlZDBjYWVmNTYxMzE4YmQ3MWFkNjQxZTVlZGFkZDQwZjE3YjQ5NWQ0ZWM5ZGMyZDEzODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEzZDFiOGUxZjg2Y2VhMTZkOGZhNDIzODhjNmRlMDM5Yzc5NmQ1M2I4OTM3YjY3ZWE0Y2QzODU5ZDkyYWQyOWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a5e491d124f141a8b61a9d36bdca1e0d",
+      "statement": "middleware_chain executes middlewares in descending priority order within its three stages.",
+      "evidence": [
+        {
+          "resource": "repo://src/middleware_chain.lua#L63-L87",
+          "version": "repo-lines-v1:sha256:6fffa518ebb2e1f9554f3e231f179ba973fcefc8f55dfd394be61d8613bada37:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUwZjllNTNkNzlhMTQxMDYxYWY0NWNiMGVlYTY0ZjlmNWYyYTZiZDMxZjQzMzVmNDZkZDkzNTU5MTA4NDZhY2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFiM2M0YzRhMmNhYWUxYjUyNDYxMWFlNWRkN2RlZTRiNTZkODQxZWNiZGNiYTBiYjlhMTNiODI2MDdhYTc1OGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJlNWJiYTg4OTgyNzU1NjM3ODA0NmU4YjgxOWVkOGVmMWI3ZjU0MzBjMDlmZTAyZGY4YmVlYmUwZTZiNTNkNmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0eb0de49b87f44de86a75fe68b89eb8e",
+      "statement": "A middleware returning true short-circuits before_request/before_render but not after_request.",
+      "evidence": [
+        {
+          "resource": "repo://src/middleware_chain.lua#L115-L124",
+          "version": "repo-lines-v1:sha256:484a4d39b25270d893c3e54204e12681eb791f3b43bb5bb913a71e0bc42d959b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYzYWY1NDBiNDY5MDhmZTA3ZmZiYWU3YTFmMmI0NTA3M2U0MzljZjVlMmJhMTE4NTE4YTM1NzJlZDFkMDJlMjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1YTM5NjY5NGRjMTEyZjI4OGEzZTI3MzBkYTQ4YzhkMGJmMzUzOTdmNjRjZWQyYTdhZGQ1ZjcwMzE0NTA0OTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEyNjIxZThkMGE4MmI5ZWU4MzZlOTAyMWUxNzZmMzhkZGE1MzU4MzAyY2FiNTM0N2UyYjAxM2E1YzNmNzFlMjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzZjk4ODQxMTZkMzI0ZjJiMjk1ZmU2ZjRmMzBkYzFmODkxMWViMmM5NDYyZmJjMjA5NDY0Mzg1MmEwZGQwOGMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3c83fe5fcab249fc979dfdaac5bde3a1",
+      "statement": "middleware_chain.run_legacy delegates to hooks.run_stage for backward compatibility.",
+      "evidence": [
+        {
+          "resource": "repo://src/middleware_chain.lua#L168-L174",
+          "version": "repo-lines-v1:sha256:06a45ce1a1b9ce11dea4ed7977456686929a2659f6171c9d453c2faa7335fc55:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTliOWFmYjkyZTJmZDcxMWRhZmM0MDFjMjc0ZjliZGM5Yjc2M2M0NTVmZTUxNTk4YTM0MTAxYWI5NTkyMDI0MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDgzMzJmZTY2N2JjNTFhYzRhNTFiYTBlZmU3MzQ0NDFjOTBkZWY1NWM2MGEyNmQ3ZGIyNzVlY2JiY2Y0MmYxNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWIwNDY1ODVmZGNlMjZmMmMzNTZkODIyOTdmMzJkYjcxM2YwODU3YmMyOWFjOWM2MTViNGIxYWUwZDM2OGE4NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjIsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGQ0ZWIyMWRiZGEzYzZmNDY5YWU4ZTJkMWUzZWZkOTA0YzQ0NGVmZmY4Zjc2ODE5YmJmYTFiYTNmY2Y2MzlkZSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-16T16:12:57.544Z"
+  }
+}

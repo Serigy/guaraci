@@ -1,0 +1,120 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:27c145b2b175a0911ee9091e8e886e4887498e93881792ba96b2080fe09fddb0",
+  "claims": [
+    {
+      "id": "claim_3e840126d4644ed281291e86df301dc0",
+      "statement": "handle_request generates a context_id when the incoming request lacks one.",
+      "evidence": [
+        {
+          "resource": "repo://src/guaraci.lua#L65-L66",
+          "version": "repo-lines-v1:sha256:1b1a0195ec0d89f9322b9f8bbcda422e5b5032dd7b4073544a74d39d2b1b2230:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjRiNjk4MTU1Y2FmZTE5NWEyODVmZDRhODllOTYwNGYwMzE4NjdhYjc1NDBhMTAxYjFlNWM5ODBkYWQ4OThmMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjRhNWU2NzU2MTdjOWMyZGExOGVmOTA0MTY4YzgwMmE5MDM0ZTljYTY0ZjRiMmRmNzBiMDA1NGE5ZGM4NTZjYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2E3NjUwZDRlMzZiM2VmNTY3MzY5NjhlMTU1OGZlMDFjZTkzMzgyOGMxNjk0ZjAyZjdjNzE1YjAwNDFhY2Y2NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTdhZDU2YzMwNTczYTZlMzcxNjMxZmU0MzE5NTk2N2FkZWU1ZjE1MjQ4NTM3Y2Y3ODJjNWU1NTUxZGMxYmM1ZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_78ec421e101c4bba88b30dcf072f181d",
+      "statement": "The pipeline stages are: before_request hook, route resolution, template read, before_render hook, compile, render, then after_request with upload cleanup.",
+      "evidence": [
+        {
+          "resource": "repo://src/guaraci.lua#L163-L263",
+          "version": "repo-lines-v1:sha256:fc5a842743f7e59ee54564540ce37526f5c74e0dbda09a83104535439879a2b2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAxLCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiIzZDc3YmExNmEyZWQ3NDBlNDg2ZjQyOGYzN2NkMWRkMDJlMThkMTkzMGMzNTczYmVmMWNlNmRhYTFmN2Y5MzY1IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI3MWM5MjdlOTk5ZmM5NTUzYmJlYmZmMTdiYThkYjYwMGFiYjdkM2MyMjdjMmRjZjg0ZjM5ZTg2OTBjMjQ2MGMxIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJhMzI0NGM3MDU5ZmVlZjE4OTJiZDQxMGFjMjA4OTMzNTQ2NjViMTVkMmZhYTJkOWJlY2M4MzRmN2RjODk0NDM2IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI2ZWNiYzNmYTA5YjkyMjg2OWZlNTIxNmIxYTA3MWI5MmM4YzYxZGRmZDlhNDQ3OTliOGI1ZDEzMDc2NTU5NmM0In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_90d4249a134a43ada4cb9c264f24f594",
+      "statement": "Uploaded files are cleaned up per request after the response via file_manager.cleanup_request.",
+      "evidence": [
+        {
+          "resource": "repo://src/guaraci.lua#L92-L94",
+          "version": "repo-lines-v1:sha256:5ececc58cd5d29fdb3eeaf843d0d1ac3e1521688adb18534e17b1c4b5c55f8d5:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjdjYjcwMzA2MWUwYzEwOGM2MzE2NzViNzYwN2E4ZTI5MmI5ZGI5NWY4ODMxNDE4YzkzM2YwMTE4MWIyNzcyYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTE1NzJhYjQ1MWNmMzdlZjRjMDE5MmNhNTQ2MTdmMjZkNTE5NWQxMzE3ZDY4MGIyOWViN2JlOWM1OTdkMzdiZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzM4NGE0YWE3ZDkxN2YzNjY4NzI1ZThjOTFmN2IyMTdmYTRlMjM2NWI1ZjQwMTVkZjU5OGU2ODViYTBiNjY1MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDk0OTUzZGQ0Y2FjZWNhMGYyMDNmMzVmODNmODhlODNmNTI1ZmM3NjhhZDc5OTM1Yjg5ZjhkMmIzMGMwYWRmYiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_339842176d9545e29c34f951715d4c90",
+      "statement": "Hooks run in exactly three stages: before_request, before_render, and after_request.",
+      "evidence": [
+        {
+          "resource": "repo://src/hooks.lua#L5-L9",
+          "version": "repo-lines-v1:sha256:10ec145ab96ac41ea9813a56cfbefdac72fb4fe82eaf50d1c508e4dc7e2af9f7:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDQ0NTMyMzE5Mzg5NWE4MjBjYjUwZTFiMjgxZDI1ZWNkMzAyNGMyMDRhZWRjNTMyMDc3MGFmYzgwYmY4YmNiMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmU3MTM3NTkwYTVlOTQzYmQ5Yzg5ZmJmMGNhNjc0ZjQ5MWVhNDY2OTdmM2Y1ZDgwMDVkZjM5M2RmYjRlOTJjZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzg3MTIxYTA2M2I4ZTI1OTliZTBhMmE0NDlkYTc0NGNhNDA5NTM2N2YwMDkzOWI3NzAyYTMzZTY3OTgwNzk3ZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_526b7817b997484da4c48a538af4be7c",
+      "statement": "run_stage executes each hook under pcall, short-circuits when a hook returns true, and converts a thrown error into a hook_error.",
+      "evidence": [
+        {
+          "resource": "repo://src/hooks.lua#L105-L144",
+          "version": "repo-lines-v1:sha256:cd7e20b8e64d0e9a2d54f4da0631fcdb1846d70d6600f426d11908a257945d08:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmOTM5YzE2NzdlYjZjODNiNDE5NTNhMjk3NDA4M2YyM2U3NDEyMjYyNDg1OThiNmFlM2UyODdkZGVkOGQzMzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFiM2M0YzRhMmNhYWUxYjUyNDYxMWFlNWRkN2RlZTRiNTZkODQxZWNiZGNiYTBiYjlhMTNiODI2MDdhYTc1OGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFmZTM3NWU2YTY0OTQzZjk0NDJkMjg3NzNjMmY1NmQwNmI2MmRmZWI0NmRkOWYwMTlhODNkMTNmZjZmZTE3NzYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b583bac84d0e455fa141aebdd2df363a",
+      "statement": "A short-circuit defaults the response to 403 unless the hook already set a status.",
+      "evidence": [
+        {
+          "resource": "repo://src/hooks.lua#L87-L103",
+          "version": "repo-lines-v1:sha256:fd2f93019f445c2e8297b57a1e94b2fd64304c1dcd07677bd7719bc0826d9af0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI1NzE0Y2QwZDFmNzQxNGQ1YTgyMjYyOWM4MTI3ODllMWNhYThhYjZlOTZhYWUxNDExYTY1OWMxNjhkYWE2ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJkZDE2ZTY5ZDA5ZTNiNTMzOWMwNDBjOGRiMGQ4ZjgxNGUyMTZmZDEyY2E3MGJiY2RmYzk1OWZhMzdmODc0YmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY5ZThmNWI3OTAxMjA0OThhYTBmZTAyNjJmMmE1MzYzYWRlZWRhYzNlZTAwZjBmMDBkOGU5MTRkZTk3Njk1YWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_90d2f7adfcd049428dac7140a406abd5",
+      "statement": "The native security-headers hook is auto-registered into the after_request stage by default.",
+      "evidence": [
+        {
+          "resource": "repo://src/hooks.lua#L169-L189",
+          "version": "repo-lines-v1:sha256:2ab64a43eff64a12ee925c75d12e87827cfacf0e92a21888bda5ce0aff53f41b:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhMDA4YWVlZTY4NzFjNmMwMTlkNDMxZGJkZmNiOGJkNDFjMTdiNmMyODE2MmIzMWJkMDEwNjA2Y2Y1ZmM0YTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg1MDJlZjk4NGE4OTE0OTRjMDQ4MWM3YjkwYTlkNzdiYjQxYmIyNWMwYTJkOTM1OTliZjc5Yzc2MjRjZDQ0MDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkNGViMjFkYmRhM2M2ZjQ2OWFlOGUyZDFlM2VmZDkwNGM0NDRlZmZmOGY3NjgxOWJiZmExYmEzZmNmNjM5ZGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_73e3101f7e17444ea7c2aa5de2f02ca8",
+      "statement": "The default error handler replaces the message of 5xx errors with Internal Error outside dev.",
+      "evidence": [
+        {
+          "resource": "repo://src/error_handler.lua#L65-L68",
+          "version": "repo-lines-v1:sha256:fb0e98fd64d9ab3f84a1f8de854872ccd966a60cbc22829469ae19dd30d2940f:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzE2YmNkYjBjYzY3ZWU4MGExZjhmMGJlMDU1ZmZmYjVhNTg5MTllODE4YTkxMWVkMTExNjMyMDgxY2NiOTZiMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjVhMzk2Njk0ZGMxMTJmMjg4YTNlMjczMGRhNDhjOGQwYmYzNTM5N2Y2NGNlZDJhN2FkZDVmNzAzMTQ1MDQ5NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDI3YmYyZmZjN2FiYWFkNDJhMWI3OGUzNDE4ZjNiMjQ4NDBiMDlmMTFiNzZiM2Q5MzI3MzY3YmI1Nzg0OGZlOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjgwMGFhZTAxMGY0ZGU3OWQ0Njc3NmJjZTIxYmYyYzEzNGFkZDcxNDYwZTYyMTQ5NmExNjM0YjU3NDk1ODE5NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5e4c5421e1f7462dba8805259bcc2230",
+      "statement": "Error details are included only in dev and only for 5xx errors.",
+      "evidence": [
+        {
+          "resource": "repo://src/error_handler.lua#L77-L79",
+          "version": "repo-lines-v1:sha256:d9d71bff366e8750abbd2e2a0c67fcad8682bf4596d8885cf12257fafa63824e:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDBkZWUzY2YxNGE3MzI1ZGYxY2MzMjNkMzBlZjk0YzVmNGU0MzUyYjUyOTgyMGFkNWNhOGEzMzZhOTA0MzU2NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjVhMzk2Njk0ZGMxMTJmMjg4YTNlMjczMGRhNDhjOGQwYmYzNTM5N2Y2NGNlZDJhN2FkZDVmNzAzMTQ1MDQ5NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2E3ODA2YmJkODNmNDI1MTA0MzJiNmQ2NDQwMTlmMWE3YWJjYWM5MzUwNzE4NDNkMzFlYjc0OTYzNWEyZmM5ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDEyYjMzYzMwMTJkYWVjOWEyNWRmZDgzOTlhN2RmODdhODMzMGQyNzRlNTRmMTQ4MzBjMDY1MWMyOThjYWQ3NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_9870bf8c86ee45269bca135bc27ae5a9",
+      "statement": "Error responses are negotiated from the Accept header into JSON, XML, or HTML.",
+      "evidence": [
+        {
+          "resource": "repo://src/error_formatter.lua#L45-L70",
+          "version": "repo-lines-v1:sha256:2ebf33959db142977f5afc16f074d9b84dc1068f2ce9fd856ad17cdddcea493a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2Y2VkNzEzODgwYTMxMmIxYzZjNzdiOGMxMTBhNmY0YmIyOGZjNDQxNDc4MTc2YTI1MTJkOTljODRiZDUyMzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNiNDk0MzlmNjZlOTQ0MzdhOWE0NjRmNzAxMmYwNjBiYzQ3NDIzMGIxMTBjNzY5NGUwMmI3ZTBhMTY1YTZiNjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJlMmQ5ODFjZGI0YjFkMzIyOTk4NzhhMjEyYzZiNGFjNTg5MWE2OTFkNjg0NDgzOTg2MDFlNjZhZmZlYmRiYzgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_88d13161ef834cce98bde087db19f1c5",
+      "statement": "The error handler is wrapped in pcall with a production fallback so a throwing handler still yields a 500.",
+      "evidence": [
+        {
+          "resource": "repo://src/error_handler.lua#L95-L113",
+          "version": "repo-lines-v1:sha256:3d5602b792f035120659bf10fa70b4b9287744b3d160eb6cb1fb84631d4468d6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjZTc0NGZmMjdlNmQ4Nzg3YjA0NTU4NGZjM2U4MWFhODRkZDczY2MwZjE3ODkxYzY2MDM5NzJmMmQzYTMwMzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFiM2M0YzRhMmNhYWUxYjUyNDYxMWFlNWRkN2RlZTRiNTZkODQxZWNiZGNiYTBiYjlhMTNiODI2MDdhYTc1OGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkNGViMjFkYmRhM2M2ZjQ2OWFlOGUyZDFlM2VmZDkwNGM0NDRlZmZmOGY3NjgxOWJiZmExYmEzZmNmNjM5ZGUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-16T16:12:57.544Z"
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:cb6659dac667e13b474eb2ec6e2ad225a6f65ad5a58862287468b325e35f1904",
+  "claims": [
+    {
+      "id": "claim_a8d1c4870ea14bf9badc1b0896773aec",
+      "statement": "Guaraci is a minimalist, server-agnostic Lua web framework oriented to security-by-design (ISO 27001).",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L3-L3",
+          "version": "repo-lines-v1:sha256:348e5602cc3e551d19ef366c95cf98254630d1f011c5ec84b98b6748c9b5777e:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzQ4ZTU2MDJjYzNlNTUxZDE5ZWYzNjZjOTVjZjk4MjU0NjMwZDFmMDExYzVlYzg0Yjk4YjY3NDhjOWI1Nzc3ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzQ4ZTU2MDJjYzNlNTUxZDE5ZWYzNjZjOTVjZjk4MjU0NjMwZDFmMDExYzVlYzg0Yjk4YjY3NDhjOWI1Nzc3ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGI0NjRhODFjMDBiNWRjMDYzZWE2OTRmODJhZWVjNDY2MGM0ZTA3NjI0Y2FmMmUxNTJkYjRhZWMxYjhjNjEzZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWFlOGMyNTcwNTgzMjZjY2FjMmQwMzM5NDNmMTA1YzA3YTI5YjZiOTg3OWY3NWMzNjZiMzNhODQxNjE0NWY1OSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_3090c93749b540f08ecc68c4e44c0d7a",
+      "statement": "The framework's principles are a zero-magic auditable design, an agnostic req/res contract, ASP-style .gc templates, and native defense against XSS, SSTI, SQLi, and path traversal.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L5-L9",
+          "version": "repo-lines-v1:sha256:7bba3262dfc555afb996c9f5b730664d3eba7039ef81fdd9c062a229eea6852c:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGQyMGU3NWZkYWZiMmE2MmQxZDE4YjdiM2UzNmY0YjhjODQ4YzAzM2M1MTU4ODI1MDNiZGE4NTgzNTQ0NjkwOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjhlNDAzMDFjOTYyOTZkMzJjOTEwNWFlYTRjZjIyNjExZTJmZTI4ZmVkNzUyNTQ2ZGJiMjkyMjBjNmY3NjZjMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2MwMTMyMTI5YWYzN2FlMmQ2MDk0MWI1MDUwOTVkNDU4OTY5YjgzYTBjMDg0MjE2MWU5ZjVjZDZiNjMwYTEwNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDExZGFhODUwNzRhZmFlMDk3ODU4YzRkMTRiZDFjMjdmOWQ1MjBiMDNhZGZkZWVmNmUwZWZkOTgyNTc3NmRkZSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_464c9e8bf2e84f839c6dcede46f9bc5a",
+      "statement": "Guaraci requires Lua 5.4+ (with 5.1 fallback in parts of the sandbox).",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L21-L21",
+          "version": "repo-lines-v1:sha256:61a20cecebc2772719e8595076b0f8c4eb07f9f88c40f244dfecff636ab70aa8:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjFhMjBjZWNlYmMyNzcyNzE5ZTg1OTUwNzZiMGY4YzRlYjA3ZjlmODhjNDBmMjQ0ZGZlY2ZmNjM2YWI3MGFhOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjFhMjBjZWNlYmMyNzcyNzE5ZTg1OTUwNzZiMGY4YzRlYjA3ZjlmODhjNDBmMjQ0ZGZlY2ZmNjM2YWI3MGFhOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2RlNTg2ZjUxZmM3OTIzNzk0MDdjNzNkOTgyNTU5ZTQ5YTA3ODEyYTg3MDBhMWRkNDUzYjhmNWRmNDUxODQyMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmE0NjFmMTIwNjc1MzJmZTc2NDk4NjMzNzVhOGMwMDgwOTM3MDk3NGQ1YWIzYWRkMmMwNTUyNzMyOGY3ZmY1YyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b854a43efb7e43b789d2cf7550cf9cd2",
+      "statement": "handle_request is the single entrypoint that orchestrates the whole request pipeline.",
+      "evidence": [
+        {
+          "resource": "repo://src/guaraci.lua#L61-L61",
+          "version": "repo-lines-v1:sha256:3de8f5a59a6ee06332cc0642e21922d3eb5682d22633621a701d3f82cbf1622e:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2RlOGY1YTU5YTZlZTA2MzMyY2MwNjQyZTIxOTIyZDNlYjU2ODJkMjI2MzM2MjFhNzAxZDNmODJjYmYxNjIyZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2RlOGY1YTU5YTZlZTA2MzMyY2MwNjQyZTIxOTIyZDNlYjU2ODJkMjI2MzM2MjFhNzAxZDNmODJjYmYxNjIyZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2I0OTQzOWY2NmU5NDQzN2E5YTQ2NGY3MDEyZjA2MGJjNDc0MjMwYjExMGM3Njk0ZTAyYjdlMGExNjVhNmI2MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2E3NjUwZDRlMzZiM2VmNTY3MzY5NjhlMTU1OGZlMDFjZTkzMzgyOGMxNjk0ZjAyZjdjNzE1YjAwNDFhY2Y2NCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5a85a8caeaae4512800aacf782e4f06d",
+      "statement": "The entrypoint exposes explicit routing and middleware via router(), group(), and use().",
+      "evidence": [
+        {
+          "resource": "repo://src/guaraci.lua#L285-L295",
+          "version": "repo-lines-v1:sha256:8994a2c0b4430363ec58a73387d03518886026e0a7e4fb1c1886f8536bacbdfb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFjOTQ5MDZkMmI5ZDQwYWIwNDkwZDJjZjZmYTdjNTdiZDg3NWQ3Y2E5ODAzYTdlNWQzYjhjZDVlNjFhMjYyOGQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0MGNjOTI5OGU2ZDA3NWMzZDI4YTkwZGU4NDdmYzA5ZGUyZjI5OTU0MTUzM2RiOTEwMWViMDZlZGI2OWY2MWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdkYTUxZTIwYjg2ZDNhY2UyZjA0MWJjNjNlNWM5ZWJlNWJhZTRiOWQyOTcwYTE5OWVlZWYyN2Q2YzkyN2M5MjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMzMWMzNWU0ZTNmMDI1YjlkOTNlOTNlYWVlYjczOWYyZGE2NDNlNzRmYjA3Nzg2N2JiNzQwNmI4Y2NjMzU4N2EifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_34346d98acfc4ac6b19af6427976b071",
+      "statement": "The model registry is exposed via model(), get_model(), list_models(), and clear_models().",
+      "evidence": [
+        {
+          "resource": "repo://src/guaraci.lua#L324-L336",
+          "version": "repo-lines-v1:sha256:502bce927410f86fbf49f26a423943296ed071a804ac149c2680ba74a78baa8b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQwZDJhY2Y2NjQyZTBjNDU5NjUyM2UwMmRhMDE2OTA3ZGVhZTczYzNiN2FjNzNkZGY0ODA2N2Q0OTc3MjQ0MjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFlYzYxNDA4NDI3MTY0NzU0ZWM1OTQyNDVhM2MyMTUwNzhiMWJhOWM0NDdmOTNjZmRlMDA1Mzc3M2FkMGM3NmQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2MzcyOTQ3ZDc0OThiYTQyZmI3OGMwNWIxMDllNGI2MmU2NWM1NDMzMWI3YzBmYzY0YWU3NmFkYzZlZGYxOGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFkNmM0NGUzNzBlZmIxNDM2YmJiMDhjYThlNDlkZWY3NTQ1YTg3ZDI3ZGYzYzZiZjBiMGViNDcxYjc4YjQ3MWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5abea76bf57844fa92e5cf328c1b20a7",
+      "statement": "init_dataware_sqlite initializes the Dataware layer with the SQLite reference backend.",
+      "evidence": [
+        {
+          "resource": "repo://src/guaraci.lua#L345-L374",
+          "version": "repo-lines-v1:sha256:892d74d2abfdccfcda7bd56caabeff5bab751fdd941be8b4926e25bc20613744:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk0YThiMDJkYzU2ZTU4YWYzMDJlYjkwNTY5MzlmOGM0YWRlZGNkZDAxYWI4Y2QzMmQzMTU4YmU5NjE5ZDkxZjQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ0ZTQ4OTYwNmNjNzk4NTQ5OTQzMTFlMzI5YzBmMmViNTAzM2U2NDUwZmNlMThjYWRjY2RjN2MyNTYwNTc3ODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY3NmE4MjE0NGYzMWZiMjVmOWRhZmIzODE3YjEwOGFiNDNkYzgzNzk5YWQ2N2I2NDRiNDVmM2NkNWQwOTkzNDEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0c434c5d0298446e9bf15add1cea52ce",
+      "statement": "Validation, binding, and security middleware are exposed as factories (validator_schema, validate, bind, middleware_cors, middleware_csrf, middleware_ratelimit).",
+      "evidence": [
+        {
+          "resource": "repo://src/guaraci.lua#L376-L401",
+          "version": "repo-lines-v1:sha256:668929b2d97d64549daa3ed13f9e6428c7bfe485625d3056f4179980bd75369c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwNjI4NDhhYjA3ZmRkMmMwNjBhOTU3YTQ0NmYxZjlmOTE3MmJkZmZkMjE1NzQ4YzUzNjAwZmViMDEwNjA3NDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyMDZiZjgzZjg2NDgwZmVjZmYyZTZlZWQ0ODg2ODMxOGQ4OTk4Zjc4ZTY4NGVjNmIwZGYwMmJmMzdlNTcxNmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZmY2RmNGEyMDE1OTZjNGRkODdhOGEzMDkyZTVhNTA1NWQ0YmEwY2Y0MmE2MmM5NjRmMThhYzU3ZGIzNzFjZDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY1OGJjY2E2YTQyM2FlZGJlZDMzNTQ3MGVjOGU2YWVmY2Q4NGYyZmYwMTY1NmNiMWViNThmZjc1NzZkYzgwNTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0e6b574c541e4afc8311dd43c9d34803",
+      "statement": "set_error_handler and reset_error_handler configure and reset the global error handler.",
+      "evidence": [
+        {
+          "resource": "repo://src/guaraci.lua#L405-L413",
+          "version": "repo-lines-v1:sha256:1278930dfc4d951c443043b102a531e20aa34e0b1449cbb1d0b8a961a18fa4b4:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWU4ZWJiN2VmMWQzMjcwMmU3Yzk4MDUzOWFiMDYyNDY0NjYyMmE3YTM0MDgyZjUxYTcyZmE0OWVkMTRmY2ZhOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODBlOWNiYTIzODIwMDA1MjgzYjhlOWM1ODdjOTNjZjlkZGNmODE5M2ZhOTVmNDY2MjM1NTFmYzNmMWMwM2Q0YyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjU4YmNjYTZhNDIzYWVkYmVkMzM1NDcwZWM4ZTZhZWZjZDg0ZjJmZjAxNjU2Y2IxZWI1OGZmNzU3NmRjODA1MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDkxZWMyOGZmNDZjODkyMGZmNDgzNTZkNmFiMDJiNmJlNjM1NzA3Yjg0NGFjOWEwZTMyZWY0MDI0MGJjNmViMiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ea0e28a24ea0480da40c07319c85e69c",
+      "statement": "The roadmap records fourteen completed phases, from the MVP (1-5) through template parity (6-9) to the mature framework (10-14).",
+      "evidence": [
+        {
+          "resource": "repo://ROADMAP.md#L444-L444",
+          "version": "repo-lines-v1:sha256:65ac9f766391fbb7d0046ef2b8bc9b22cce1a793824dfd6b834582f29d566832:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjVhYzlmNzY2MzkxZmJiN2QwMDQ2ZWYyYjhiYzliMjJjY2UxYTc5MzgyNGRmZDZiODM0NTgyZjI5ZDU2NjgzMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjVhYzlmNzY2MzkxZmJiN2QwMDQ2ZWYyYjhiYzliMjJjY2UxYTc5MzgyNGRmZDZiODM0NTgyZjI5ZDU2NjgzMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjc1MzhlOGViYTBiYWUzMmRlZDg0ZjBmYjg3YTU1NzQxNWE1YWFlMWY0ZTI4MGIxZGYzNTIxMjFiYmY3MWE1MiJ9"
+        },
+        {
+          "resource": "repo://ROADMAP.md#L6-L13",
+          "version": "repo-lines-v1:sha256:b130265db148278d8de1f47e7d8da61f1e6c95fb0104037ec890f7446565089b:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmEwNGIyZWI3Y2Q1NDExZGZjMTY5NmQwZmVhYzBhZTY5NWU4NzYxMWZiMmZhNzQwY2Q5MGNjZGIzOTVhZjJhZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDJmM2JlMDg3MTZlOWQ0ODBjMDk2Y2Y2ZGE3NDAzMTY4NWEyNTU0MDBiZGI4OTE4NDEwOTVkZTJiMDYwMTExNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWJjMzMwMDU5ODUyZmYxZGI3ZGRiZjViOTQ2N2I2MDU4YTZjNGFkMWYwYzBkMTNhOGNiODM1MzZhNDczM2YxOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-16T16:12:57.544Z"
+  }
+}

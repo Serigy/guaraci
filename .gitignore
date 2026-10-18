@@ -2,3 +2,4 @@ guaraci_audit.log
 *.tmp
 uploads_test/
 tests/guaraci_audit_dataware_*.log
+.pi/

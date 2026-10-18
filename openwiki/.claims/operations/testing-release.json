@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:471fec5d5f2fbf670175420f293f7a86ac57b92d2241f5dfcfcb1568a3e19572",
+  "claims": [
+    {
+      "id": "claim_41c4ef18b5254314a024c7e19fd58f12",
+      "statement": "busted_lite swaps the global assert for richer matchers (is_true, is_nil, is_not_nil, are.equal) with a __call fallback to native assert.",
+      "evidence": [
+        {
+          "resource": "repo://tests/busted_lite.lua#L15-L49",
+          "version": "repo-lines-v1:sha256:8bd726d5fa8f184de592a5543d1799d3f06cff64aedd107edf7c81bdb5dc186a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYzYWViNThjMzliNGYyZGJhNzAzNTI0MzI5NTU1M2JiMmNiM2YzYzcyNDFiM2E1OGE5ZjNlNmVmODU0NzM0YzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM2OWRkNGExYzBlN2Y3Y2VlNTgwNWE1ZTMyNTFhZGI2MDUwOWFiMzhhYTJiMjhlMWZhZjA1YzA5ZjJkMzNjOTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNjOGMwM2JhNzM1MjkxNjJjZDczZGYyZDc3M2EyYmIwM2I1Mjg3YTA2NWFkNjE2MDU4YTdhNDBkZmJhYmU2OWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4d2ec6857ebd423e937b67eeb4219b90",
+      "statement": "install_globals defines describe/it/before_each/after_each and returns a restore function.",
+      "evidence": [
+        {
+          "resource": "repo://tests/busted_lite.lua#L51-L129",
+          "version": "repo-lines-v1:sha256:d8d19e7d9d2731cb2e22f4c057a19b6fcdf8ab33e2f30b36df2072be8fcd8a01:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzNzUwN2U5YjNmZWE3NDQxY2ExZWZmZDNhYjRjMDcyOWY5YjIxZTIzYmEzOWEyNDJiYzJiMjNjOGIzZDc4ZmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg1YzFkMWRjNzMyNTk0ZTc0ZTMxZTAwNTRmMjU5M2VkYjY0ODJkYWNjZjk2OTBmYTk3OTA4MGRhYzM5OTQ0ZGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFjNjY5ODdhYTQ5YThhNDk4YmY3MWE3OWExNGE4YzcyZTUxYmZmMmMzZDJiZWIyOWJiMTJlNDI5ZDJkYmNkNzYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c5e9168f6a574c2c821ce9b38c2e1cc3",
+      "statement": "describe pushes a suite onto the stack while its function runs; it appends tests; before_each/after_each attach hooks.",
+      "evidence": [
+        {
+          "resource": "repo://tests/busted_lite.lua#L62-L120",
+          "version": "repo-lines-v1:sha256:024c54991380266f64e344510fddc1f9f847ce5b3b82eef4e49f9cc21d4193cc:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlMGU4MzhhYmQ0MGRkZmRjN2IzMTI1ZDdhNGQzZDE5Mzg3ZTI0MTJmZWM0ZmE3MTI4YzczM2U3ZDJmYjIzNWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0ZDM4OTdhMGY5ZDY5YzlkYjgxYmM5Nzc0MTVlNDBiNzIyYTVkNDRkZGU1YmQ4ZjcyNjQ1MWJhZWQyNDhhNDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJmZTVhMTRmMjFlMmM0MjM4NjdiYWEyNzRlMTMwZGM3OTkwNDMyYWJmYWE1NzViOTMyYjQzZTNhYjJlYjhmY2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI2M2VlNDgzYzI4MTIzZWY3MjYwOTc0MTgxNjNiY2NkNGM2NzRkNzVlMTlmYTUxYTg2OTIyMGIwNzBhYmYxYzgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_93a36f73c5a441449e4ddee40901abf6",
+      "statement": "busted_runner declares 33 spec modules across the template, routing/middleware, Dataware, validation/security, upload, and error-handling phases.",
+      "evidence": [
+        {
+          "resource": "repo://tests/busted_runner.lua#L3-L44",
+          "version": "repo-lines-v1:sha256:df276278e9402a633a8d6a7437a64673ec04fdc57cf55db1141f321536e3a0b7:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBlODMxN2VlNWZkMjYxY2ZjNDI4ZTdmMDZlOWVmOTNiNjAxYWZjYTY3OTk4MDE1ODhiY2E0ZTQ1MDM4NjI2NTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIyNGM0ZTdmMWUzY2FkMDE0OTM0MjE3YTAwYTQyYmFiOTE0ZGUxOGNhMjJhZGE5NmIyMTljYTJjNDFkYTFiYzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk4YjNkYmFlZTc5N2FjNmQ0ZGFiOTliNDI5OTBmNTMyNTIxZWNkZTQ0OGRlYzM5YjJlZWVhMDhmMGViMDRhMTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_fc07bf2388454394b759bf60b63bedff",
+      "statement": "run_suite runs each test under pcall, counting failures from the test body, before_each, and after_each.",
+      "evidence": [
+        {
+          "resource": "repo://tests/busted_runner.lua#L46-L83",
+          "version": "repo-lines-v1:sha256:8c299af5f3df3e4da56af979e2310fdab3be809f1314fd2d1c0020bcbe14ce97:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBkY2RkMDg0NTQyMDgxYmJiYTAzZThjOTIyZjJhYjNlMDVlYjY3MDliNTZkZDZlMjhmMWIxZjE0ZDU3YTYxZGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBlNmNjODdlZGNjN2M5ZmM2MmRlMGI3YTVkMTYxZDJmMDU4MmZjNjJmMzE1ODg3ZmM1ODcwOWFkMjc0ZTMwYzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM3ZTA4M2FmMDM4OWJhMjdmOTJkNmI5YmMxNjgzZDJmMjllNDAxZGIwMWQxMzhlNzM1NDRhZGVhZDk5OGUyMTgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e849fde8dec14b3bb6b0dc5148794fc7",
+      "statement": "run_all loads every spec under pcall, then runs all suites and prints ALL SPECS PASSED or TOTAL FAILURES.",
+      "evidence": [
+        {
+          "resource": "repo://tests/busted_runner.lua#L85-L121",
+          "version": "repo-lines-v1:sha256:5d1767196050e632f6680025cc6e9c565cf72bb6bb4253c382798956fdcf7920:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwZDAyMTcwNTliNDJhODQyZjA2NDNjZmZmM2ZiMjQyNzBkZjk1Mzc5YTcwMGQxYzUxNTIzMzQyNzExY2NiYTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwNDZjMDFkMmRlMjBjYmRiZmUzNzczNzcyOTY4ZTE2NDU1ZWNmMDQxZTc4M2E4N2E4ODIxYWJmN2EzMTRlNzQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZmNDM3NGI3MjJjMTJiZWM5NzBmNjRkZWMzNjVjMTFhODdiMzQ0ZmU1ZTQ2OTAyOWYxZjAxNDhmZDcyNjY5OTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4e4d80d563724889bd958e06d2466609",
+      "statement": "tests/run_all.lua sets package.path, runs the runner, and exits with code 1 on failure.",
+      "evidence": [
+        {
+          "resource": "repo://tests/run_all.lua#L1-L8",
+          "version": "repo-lines-v1:sha256:23a4326677df1bd7ce3451d461cf6e51327c5d4fab24e6edd50dd342c3ac0be9:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjQ0OTQ1MmY1NzQxMWFjOTMyM2Q3Y2IwMGFlNTlmZTQxZWNmM2U0Y2FiZjMzMzIyZjhhMDgzNDJlODcwZDlmYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDgzMzJmZTY2N2JjNTFhYzRhNTFiYTBlZmU3MzQ0NDFjOTBkZWY1NWM2MGEyNmQ3ZGIyNzVlY2JiY2Y0MmYxNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0ec83b67298f4f58a2f0dfdd226f7438",
+      "statement": "release.yml validates a semver version and converts it into a LuaRocks rockspec version.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/release.yml#L43-L91",
+          "version": "repo-lines-v1:sha256:cb2cacfc63c8deca9dec046fb80d20c97c2cd47f8fed94ca7dbcf1852f28d153:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyYmZlZGYwZWFlOTg4ZTNjNDMyNWJmMDQ2YWNlYTE5ZDI0ZjllYWRjZDVkMmMxNWNmZDk3MDlhZjMyODZiZmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjViNTE0NjdiYjlkZTA1NjVmMDg3YzBkOTU1ODZkMjQzMGFlMTQ2NWFiZmVmNmVhMjM5OTI4YzQzZGM0NGY1YzAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM2MGFkNjRhNzc2N2YyNmFjNDRhMjcxNzgwN2E4NjAzYzQ5ZmQxZTAwMDE1MWZhYzgzYjk1OWE4MDBlYjAzNzEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmYjI3ZDAyNWU2NjM0ZmY2ZDZjOGNkYjlmNWRmMGJmOTcxZTE2ZjljZWJlYzkxNmM2Y2M2MTk0MTFhM2VhNzQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1bccdaba914b4b199f216fe8b5a9a1a7",
+      "statement": "release.yml generates a rockspec mapping each module to its source path and publishes via luarocks pack/upload using LUAROCKS_API_KEY.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/release.yml#L179-L225",
+          "version": "repo-lines-v1:sha256:03b6c2a40d6fc0045551aa56dfa104f80571bbf857923b72118ca074fa860d62:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY0NzZhZTFjMTU4YjdjNDM1Yzc4N2YyZmMzMTNlNjFhYzdmMTI5ZTY2YzA1M2RjZDU3NzdhNWQ5MjYyYjdjNTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkzMzJlZmE4NmQxZjQ2YjJiYjAzMzQwZGMwYmRjNGYwNTkzMTZkODg5ODU3ZTIzYWJjYjY1OWU2ZmI0YzUzMTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjMwYzZlYjQyNDFmNGM4N2Q2NDMxOGE2NTI1YjI5NjA2ZjkyYjlhMzEzMTBjOWU5MTJhYzI2ODBiMzkxMmUzZmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMxOWJhZTBjZmYwYzg5OTZiNWY5NTkxYjE0N2VmODUzYmNlMDc4MzZkMGE3Yzk4YTJjMzIwZTc4ZjI2NjhhZmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2bc458580ab7455abba00cc912b332a7",
+      "statement": "Pushing a v*.*.*-shaped tag triggers release-on-tag.yml, which archives the tree and creates a GitHub Release.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/release-on-tag.yml#L3-L9",
+          "version": "repo-lines-v1:sha256:181562e74dc756a0de505c2c6cf0308c2e79c9aab7424498bea31dc33fa44202:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTk2ZGM0ODE0OWY1YTgzZDFlZDZkYmIzOWJiYzdlMmI5MDJhYTNkMzRkNmJkNWFlNGIyOTFiNjhkZjBjYTc5YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDhhNjZkMDA1Mzc3YTAzNDc0M2FkYzZlMDliM2VjOTI0MDJhMmU5ZTU1NTBhZDU5ZjMyMGNkZjZlYjRmNzk0ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOWY3ZDdkOTQ4MTAzNzQ3NjZiNGQxZGUwYjQzZDA1MGQxNjk5MmZhNGUwZTFlMTBkZjU1OWRiZjcwMWEwMzgxNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzk0NjJkNWYyYzIwN2U2YjRmODI4NDNkOTE1NGZmMGJiYWQwMzQzOTI0YjJjM2M0YmFiZDk5Yjg3Y2NkNGI4MiJ9"
+        },
+        {
+          "resource": "repo://.github/workflows/release-on-tag.yml#L57-L74",
+          "version": "repo-lines-v1:sha256:00510fe73ef6f0120c2a993bf8fef7772855eb5c7dbdb0affc52eccb2161f4c2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0MTcxYzI1NjMxMGVhYjlmNTM4OGViOWEzOWU3OTA0N2U1ZWNhOGY2MTE4ZjJiNWFhZGE1MGVlNGI3YWZjYWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjMGJjOTAzOGQ3MWEwYjllYjcxMTY0YzgyMjY5YTMwYTE1NWExNTAyNDg5MDA2NjY3MDM1MjMyNWFmNGE4ZTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI4NDdhMTc2ZDY4ODUxN2VkMDY3MWU2MDE3OTkxNTZlZTk1NGJlMjQ5NmU0ZDE2ZGYwMGZmM2M0NTc1M2Y0ZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUyZGE2ZDJhNDk5MTRkNjkxNjAwOGFmNTc5NjVhNjIxOTc5MzY3NjE4ZjRhNTUzZGEyZTFkZmRjZmNiYTVkMDAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_dd46213afdba4e8c984a2b34de3264c2",
+      "statement": "ROADMAP records phases 1-13 complete and the release pipeline (GitHub Release + LuaRocks package) configured.",
+      "evidence": [
+        {
+          "resource": "repo://ROADMAP.md#L7-L13",
+          "version": "repo-lines-v1:sha256:73789356a578b44076d5ded6054403101bb34cfd57367643e487c97b6c5c79f0:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWJiNTg0MTMzYzEwZTcyNmM2NDBhY2Q5ZTA5MTQzNmY1NzZkNjVmN2I3ZjExNTc3ZmQ3YWNhYzQyYTUyMzlmYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDJmM2JlMDg3MTZlOWQ0ODBjMDk2Y2Y2ZGE3NDAzMTY4NWEyNTU0MDBiZGI4OTE4NDEwOTVkZTJiMDYwMTExNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODM2NmI0ZTgxODMyYzc5YTk2ZTBiN2Y4OTI5N2MxMWUzODMwOTAwNmFlNjcyNzkwODA1OTQxYTNmMjI5MThiYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-16T16:12:57.544Z"
+  }
+}

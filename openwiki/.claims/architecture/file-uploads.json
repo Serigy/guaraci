@@ -1,0 +1,130 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:fd0262b4fb0a2a40387a4bc23558902d0b894169b93e69d485b9811b07373b1c",
+  "claims": [
+    {
+      "id": "claim_76a3ad6a5fab4be8a8af6c65cb33c38d",
+      "statement": "multipart.parse accepts only multipart/form-data content and requires a non-empty boundary.",
+      "evidence": [
+        {
+          "resource": "repo://src/multipart.lua#L56-L63",
+          "version": "repo-lines-v1:sha256:824336c9ae22a4140a4fd35c2f97abe721395fe7eba70036d2b58d42814da5ad:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzRlNzZiNTc2NTZjMjA0OWE2NjdmNmQ1MzdlOWZiMDdjYmE4Y2I2MDRmYzEwYzM4NWYzMzA0Mzg5OTY4OTVjYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTRkMzg5N2EwZjlkNjljOWRiODFiYzk3NzQxNWU0MGI3MjJhNWQ0NGRkZTViZDhmNzI2NDUxYmFlZDI0OGE0MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDA4OThhN2UyNzAzYzRkZjIxNmU5MWNmMWMxMzY4ZjhiM2UzZTlhOWMxNjliNjg0MmVkM2QyMDY3MTA4NjJkYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDM1N2U3NDIwMDc2MTIxYTMxNDA3ZjJhZDFmMjM0NDRlNzEyMjZjNjMyZjMzZDRlOTk5MjY3YThlMzgwMjE3MCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5f0218548aee47e1890fdb889deb3378",
+      "statement": "multipart.parse separates parts with a filename into the files array and plain fields into form_data.",
+      "evidence": [
+        {
+          "resource": "repo://src/multipart.lua#L107-L117",
+          "version": "repo-lines-v1:sha256:1da9f9e47f64a481390bb19536a3007e231d5f46a4cc814b975da1610d8f4a05:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgxMmIxOTdkOTQwZDFlZTdiYjdhYmU5Y2ExMDMwNTg2NmVhOWRiNzI5MDgwZGY4NTZhZDQ0MGY2YTBiZmFkNTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5ZGM2M2ZjN2QzZmFlYmJkOGVkNDY4YWU4NjVjMmUzMzE1OGFjYTEwNDMxZmIwMzk5ZTYxYTA5ZWVjZWFmMDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE0NmVkNzVkZjE4NjljMmZiZTdmOTQ3MGQzODc1NWQyMTdjNzRiNWY0ZTczZTI2YmFjYTRiNDc5YWYwM2FhMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg1ODVmYjgyODAzNjYxOGY0OGY2MmZhOTBjNzljZGQ3YjVkZDdhZDc0NzExOTBkN2MwZDEwNmYzZDFmYTA2ZTcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d92eb6f0954949629fe94eae83dc9af8",
+      "statement": "Each parsed file carries field, filename, content_type, data, and size metadata.",
+      "evidence": [
+        {
+          "resource": "repo://src/multipart.lua#L108-L114",
+          "version": "repo-lines-v1:sha256:c6e14baf2277b3ba50c8bb326c6a6461ce3b2b2bca46b4ed58c8fb86a8a1499a:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODkxOGE2MjljNzZkMzY2MTYzZDg0NTEyOWIyMWMxNmU5NDZmNTRlNzcwMWM1MTFjNWU5MGY4MjNiOTNjMmNlZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGM2NDc5Y2MyMzA0NDBmZDQxZTgyMjQyMTg2Nzk2OTg1NTlkMjg5M2JkNjdiNDM4MGFmYWI4MTFiMzhhNTVhYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2JmZmQ4YThmMGY2YzU1Nzc4NTAwNmViNGYxNzI5YzAwZWM3YTE4Y2UxZDBhZDlmMzQ1MzVjYWM3ZjA5NDZiMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzc4YTkyYWZiYTgzY2MyZTBiNGRmMTYzMWNhOWRhNTVmYTRmNThjOTYxNmE1M2UyYTg0Nzc4NmExODExNDUzYiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_57ca3d34cf5645438e6b7071fbd266ca",
+      "statement": "sanitize_filename rejects path traversal (.. and leading /), NUL bytes, names over 255 characters, and characters outside [a-zA-Z0-9._%-/].",
+      "evidence": [
+        {
+          "resource": "repo://src/file_validator.lua#L19-L38",
+          "version": "repo-lines-v1:sha256:5bb48e99e4f91acb7fe8e195704585df713cb7a407d13a5b8c0f68f379c532f7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY3MjM0YWRkZTBjYjRmMjQwMmY3NDhkMTJlY2FiYmQ3YTE1NTMzMTc2OWQ5ODdjNjBhYWMyNTU3ZDRlNWMyNjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0ZDM4OTdhMGY5ZDY5YzlkYjgxYmM5Nzc0MTVlNDBiNzIyYTVkNDRkZGU1YmQ4ZjcyNjQ1MWJhZWQyNDhhNDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRiYzBkYjczZWFhZWM0NjY5YzU2YjNjN2RjMGIzYWQ4NTM4YjY1YWZjN2ViYWY4ZTM4ODFkMDAyZTNhMTIyMWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY4ZmVmZTFmODliMGE2MWI0YTJhNGRmNGZmNGVkNWQ0NzZmNTlhOTliNWJlMjAwMzI5YTY5OWRkYzFjNmZiNWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_33f62e1f615f424fb81b0981146c8a59",
+      "statement": "Default upload limits are 25 MB per file, 200 MB per payload, and a MIME allow-list of jpeg/png/pdf/plain.",
+      "evidence": [
+        {
+          "resource": "repo://src/file_validator.lua#L3-L12",
+          "version": "repo-lines-v1:sha256:d45328e493ad15ed50dc57e7f0ec1f91ab6d4847632178f40f72261b7e644280:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYwNGZlMzIzM2U3MWE4M2Y4OTllNzI1YmVlYzYxM2FjZWYyNmNiZWJmYmRhYmQwZjY2NGI3NmM0MTg5YzFlOWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjoyLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg1OWVjMGE0YjM2NzdmZjA0MzI5M2MzZDNhNDdkODM1YzRhZDVlOWNkZjcxNmJjNmZmMjM3MjcxNDQxMWQ3NTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjczMTk5YTFjMTc0ODc2ZmQxM2NjNzhmY2ZlNGRmZWZhMjNiMzliYmJlNWZlYTk3ZTcwMDExNzNkYTMyNDcxZTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6663c981e05e477c99d2eba4a118e54c",
+      "statement": "validate_file rejects files exceeding the size limit or whose MIME type is not allow-listed.",
+      "evidence": [
+        {
+          "resource": "repo://src/file_validator.lua#L62-L69",
+          "version": "repo-lines-v1:sha256:7a886e01f5e6f21a70b057b6a59109d249fd70d58f062a1a96c44912ba2e45f1:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTJkODg1MzBlYTBhMzllMDkxNWI0MTI5MGJhNTY3ZDczNDg0YWZiMTY5M2EwYWJjZTY2Zjg5M2U2OWJhNGQ3MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTRkMzg5N2EwZjlkNjljOWRiODFiYzk3NzQxNWU0MGI3MjJhNWQ0NGRkZTViZDhmNzI2NDUxYmFlZDI0OGE0MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOGRjYzMzY2YyMGE3MGRjYmE0MDhlOTU1NTNjNzcxMWVhODBmNWFhNGJjZjZjNmUwNDE5ODdiYWI1NzVjNzIxMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2M1NTJlZDYxNDMzNzdiYmJhN2FhYWQ4NDZiZmE3ZTQ0ZWYyZTU1YWU0MjRjMWQ0N2EzZmZmMzgzYWE2NTk0MyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_2276e446dba64b4d8a3033a9255802e8",
+      "statement": "validate_payload rejects a batch whose cumulative size exceeds max_payload.",
+      "evidence": [
+        {
+          "resource": "repo://src/file_validator.lua#L86-L89",
+          "version": "repo-lines-v1:sha256:b2e7dbb5ae6c1a90ed9457230d6527ed851053b59de7ba75e138ddf5bf24fe0b:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTEwOTcyOGNkZTAyZDA3MDk3ODMwYmU0YTExNTM2OWI3ODdlOThlOThlZmEyNGQ4YTY0YmIzMDNlNGI0ZTY1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjVhMzk2Njk0ZGMxMTJmMjg4YTNlMjczMGRhNDhjOGQwYmYzNTM5N2Y2NGNlZDJhN2FkZDVmNzAzMTQ1MDQ5NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTQ4NTExNmRlMDE3NjBjMTMxZjE2ODMxMTcyMjFkNmE0ZWQ5ODZlMDg1NTg3YjljNmExYTA2NWRlYWFiMGY4ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDZkZjZhNjA4YjI3YjdjNzY5ZmM4YzE3NjY4YzJiYjg0MjJiNmE5MDI4OWRlMGRmNGQxZWI4NDg3YjNiNWMwNSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_2e14f0b1dacf49d2a25a19b108994ad4",
+      "statement": "The local storage provider writes files as {random_id}_{sanitized filename} under a configurable root_dir.",
+      "evidence": [
+        {
+          "resource": "repo://src/file_storage.lua#L46-L48",
+          "version": "repo-lines-v1:sha256:ea3d2965ae9c788f68985b67c2f60586475711477f410bce9a85a4e36897844e:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjc0MjI4NjUxMTE5ZDA2NzQwMDgzNmQ1ODE1ZTE3OThmZmZhODk2YjJlYTI3ODIyMWNlYTFkM2E4MGVhYTc0MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTE3ZTY0NTExYmQ4NGY2YmQ5NTE2MjEwZjA3NmQyZjJiYTA3MDQ5YzJmNzZhZDJjMGE1ODc5ZDJmYzMyYjBhMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjZmMDQwMzdhYmE0MjUyOGMyOWRmZjA3ZDhkNGNkOWE1YzQ0NTEyNTBjODllMjcwYmM4YjUwNTMyZTZiMjZmMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWY1MGE5M2I3N2U4NjcwYTU5MzNlNDMxOGY0YTcxNmMzM2ViNWM1ZDAzZWI0Y2MyNGFjYjBiYWEyZmU2NTE5YiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_05009062865d44b7b9651091e7609f14",
+      "statement": "Storage is pluggable through a provider registry supporting set_provider and use, with a local default provider.",
+      "evidence": [
+        {
+          "resource": "repo://src/file_storage.lua#L109-L167",
+          "version": "repo-lines-v1:sha256:a7b1d1d42797b72ea49aa25db8b37db6f16027b7ea969c25c5fe9a65c0b26e1d:eyJzZWxlY3RlZExpbmVDb3VudCI6NTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyNzU2NDJiM2E2OTRlNDdhZjg2M2ZlOGNjMTQ5MjI4ZGY4ODhjYjAyMWZiMTJmYzk5OTAxNWRlNDEzZmQ1ZjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJhNWRiOTAyZGNhMjgxY2U5MWI3MGExNWFlZjdjYzg2MjgxYzUxNTQ3YTYyNjgzMGY2OTEyZTMwMTQxZTNhODQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkNGViMjFkYmRhM2M2ZjQ2OWFlOGUyZDFlM2VmZDkwNGM0NDRlZmZmOGY3NjgxOWJiZmExYmEzZmNmNjM5ZGUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5b90f9cd1ee843f99cc7ea4ad526b8a8",
+      "statement": "file_manager.process_files validates the full payload before storing and indexes stored ids by request_id.",
+      "evidence": [
+        {
+          "resource": "repo://src/file_manager.lua#L38-L75",
+          "version": "repo-lines-v1:sha256:4942916939cf35ca040d8c0245a62884e6eb48bff9965b36d00c644f0167d9b8:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyYTc4OWY1ZmM0MzJhN2E2NWNjZWE0MDQyMTYxZDFkMzM2MTQxOTA1NDZjNmM5YzcxYWJjYjZkM2FhYTBhM2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1MGVmOTE0MDI1ZmM2MTk4NzVmN2RiYWU1MzQyY2Y0ZjM0OWI2Mjg4MmM0NTQ0YmQ2ZTJkYzVmYTUxZDA0NzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVhYmZjMjJkOTZhM2Y0YTM2NGZlNWQ1NzcyMjk2NWFkYWU5ZTIzM2QyY2M5OGZlZTYxMWE3ZDc0YjVlYTkxMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3ZDllNGIzMmNhYjgwNDMyMzM0MmNiMTQ1NGNmN2VkYTQ2OTZhMjUwYTMwMmZjNjQyOWQwNGVlMzRjMDMxMjMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_950d2ee2798549559f3904d41bdb1f79",
+      "statement": "cleanup_request deletes every file indexed for a request, preventing orphaned uploads.",
+      "evidence": [
+        {
+          "resource": "repo://src/file_manager.lua#L90-L107",
+          "version": "repo-lines-v1:sha256:2a3bd58c3dff54066890563902971434889f51cd07a454583ee0a125d87004bf:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiYzUwOGI1YWUyNmFhYzg5ZmM4YmEwMjMyZDE4NmUwMTg0OWRiMWMyZDc1ZDc1YmVjOTIyNWY1YmExZjYwMTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4MzMyZmU2NjdiYzUxYWM0YTUxYmEwZWZlNzM0NDQxYzkwZGVmNTVjNjBhMjZkN2RiMjc1ZWNiYmNmNDJmMTUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlNGEyMzdhNTNkYjU2ODk0ZDJlODMxMDliYWQxMTVjNzcwYmExOWUyOGMwZjljZjM1MGI0YTc1Mjk5NmJjYjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE5MmE5NDM2ZDliNDlmMzAyNWU2OGM5OTEzYzhlNGUwNzgxMmJjODQxNWVmNTJjMTQwZjZjOGVkNWI0YjMzOTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d911e1aa611b4857b7f704b6b0e710d1",
+      "statement": "Blocked uploads are logged as file_upload_blocked security events.",
+      "evidence": [
+        {
+          "resource": "repo://src/file_manager.lua#L41-L44",
+          "version": "repo-lines-v1:sha256:8283b526f383e49382d38b702378b8cb48485d98a6642f7ab35e74736257cb83:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDVjOTEzYTg0Mzc5NmRkY2YwZTc3ZDIyNWVhMzE3OWNkMWE3Zjg1YjRiZDlhOGJiMWZjNTY1NzNmM2ExOGQzNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTNjYTBhMWM3NDkxYzI5MGRmNjNmYTY5M2NmODJmNjdmZGNjZThkZTY5YzI3NjFhNTY0MDNiNzE0NWViZWE3OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGU2YmM4YTIzZTg3NmYwYWE0MzVjZGUzOTcwNGY1YzcxYmZlNmU1YzU5ZmEyY2E0OTA2NWU1MDk5ZDIzOWYzYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTczNzc5MzIzOWI5ODRjMmMzNDJlNWQ4YTUzNmJmNDRhN2I1ZWQzNTRhMjVjODYxZjY0NWZmNmM5YTYwNjE4YSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.2",
+    "at": "2026-10-16T16:12:57.544Z"
+  }
+}
