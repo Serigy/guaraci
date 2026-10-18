@@ -155,7 +155,7 @@ describe("Route Group (Phase 10)", function()
     end)
 
     it("rejeita router_v2 ausente", function()
-        local ok, err = pcall(function()
+        local ok = pcall(function()
             route_group.new("/api", nil, middleware_chain)
         end)
 
@@ -163,7 +163,7 @@ describe("Route Group (Phase 10)", function()
     end)
 
     it("rejeita middleware_chain ausente", function()
-        local ok, err = pcall(function()
+        local ok = pcall(function()
             route_group.new("/api", router_v2, nil)
         end)
 

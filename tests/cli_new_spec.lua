@@ -33,9 +33,9 @@ describe("guaraci new", function()
 
     it("treats an unlistable directory as non-empty", function()
         local real_popen = io.popen
-        io.popen = function() return { read = function() return nil end, close = function() return nil end } end
+        rawset(io, "popen", function() return { read = function() return nil end, close = function() return nil end } end)
         local code = run({ "tests" })
-        io.popen = real_popen
+        rawset(io, "popen", real_popen)
         assert.are.equal(1, code)
     end)
 end)

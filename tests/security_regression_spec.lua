@@ -194,13 +194,13 @@ describe("Context-aware escaping (Fase 7.1)", function()
     it("security headers are still injected when hooks/ is absent from cwd", function()
         local hooks = require("hooks")
         local real_open = io.open
-        io.open = function(path, ...)
+        rawset(io, "open", function(path, ...)
             if path == "hooks/security_headers.lua" then return nil, "missing" end
             return real_open(path, ...)
-        end
+        end)
         hooks.clear()
         local ok, err = pcall(hooks.register_default_hooks)
-        io.open = real_open
+        rawset(io, "open", real_open)
         assert(ok and err == true, tostring(err))
         local res = { headers = {}, status = 200 }
         hooks.run_stage("after_request", {}, res)
@@ -226,12 +226,12 @@ describe("Context-aware escaping (Fase 7.1)", function()
 
         local real_getenv = os.getenv
         local function with_env(value, fn)
-            os.getenv = function(name)
+            rawset(os, "getenv", function(name)
                 if name == "GUARACI_ENV" then return value end
                 return real_getenv(name)
-            end
+            end)
             local ok, res = pcall(fn)
-            os.getenv = real_getenv
+            rawset(os, "getenv", real_getenv)
             assert(ok, res)
             return res
         end
@@ -250,7 +250,7 @@ describe("Context-aware escaping (Fase 7.1)", function()
         local guaraci = require("guaraci")
         local router_v2 = require("router_v2")
         router_v2.clear()
-        local hit = false
+        local hit
         router_v2.get("/files/:name", function() hit = true end)
         local ok_res = guaraci.handle_request({ method = "GET", path = "/files/ok", headers = {} },
             { auto_register_default_hooks = false })
