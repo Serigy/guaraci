@@ -23,9 +23,8 @@ local error_handler = require("error_handler")
 local has_audit, audit = pcall(require, "guaraci_audit")
 
 local M = {}
-local configured_error_handler = error_handler.create_default({
-    env = "prod"
-})
+-- No fixed env: the default handler reads GUARACI_ENV on each call (prod when unset).
+local configured_error_handler = error_handler.create_default()
 
 local function log_error(message, context)
     if has_audit and audit and type(audit.log_error) == "function" then
@@ -68,7 +67,11 @@ function M.handle_request(raw_req, opts)
 
     local req = io_factory.new_request(raw_req)
     local res = io_factory.new_response(opts.base_response)
-    local active_error_handler = opts.error_handler or configured_error_handler
+    local active_error_handler = opts.error_handler
+    if not active_error_handler and type(opts.env) == "string" then
+        active_error_handler = error_handler.create_default({ env = opts.env })
+    end
+    active_error_handler = active_error_handler or configured_error_handler
 
     local function apply_error(err)
         local handled = error_handler.apply(active_error_handler, err, {
@@ -411,9 +414,7 @@ function M.set_error_handler(handler_fn)
 end
 
 function M.reset_error_handler()
-    configured_error_handler = error_handler.create_default({
-        env = "prod"
-    })
+    configured_error_handler = error_handler.create_default()
     return true
 end
 

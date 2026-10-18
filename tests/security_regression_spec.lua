@@ -208,4 +208,42 @@ describe("Context-aware escaping (Fase 7.1)", function()
         assert.are.equal("DENY", res.headers["X-Frame-Options"])
         assert.are.equal("nosniff", res.headers["X-Content-Type-Options"])
     end)
+    it("default error handler hides details in prod and shows them only with GUARACI_ENV=dev or opts.env", function()
+        local guaraci = require("guaraci")
+        local tmp = os.tmpname()
+        os.remove(tmp)
+        os.execute("mkdir -p " .. tmp)
+        local fh = assert(io.open(tmp .. "/index.gc", "w"))
+        fh:write("<%= 1 %>")
+        fh:close()
+
+        local function boom(extra)
+            local o = { auto_register_default_hooks = false, templates_root = tmp,
+                escape = function() error("SECRET") end }
+            for k, v in pairs(extra or {}) do o[k] = v end
+            return guaraci.handle_request({ method = "GET", path = "/", headers = {} }, o)
+        end
+
+        local real_getenv = os.getenv
+        local function with_env(value, fn)
+            os.getenv = function(name)
+                if name == "GUARACI_ENV" then return value end
+                return real_getenv(name)
+            end
+            local ok, res = pcall(fn)
+            os.getenv = real_getenv
+            assert(ok, res)
+            return res
+        end
+
+        local prod = with_env(nil, boom)
+        local dev = with_env("dev", boom)
+        local dev_opt = with_env(nil, function() return boom({ env = "dev" }) end)
+        os.execute("rm -rf " .. tmp)
+
+        assert.are.equal(500, prod.status)
+        assert.is_nil(tostring(prod.body):find("details", 1, true))
+        assert.is_not_nil(tostring(dev.body):find("details", 1, true))
+        assert.is_not_nil(tostring(dev_opt.body):find("details", 1, true))
+    end)
 end)
