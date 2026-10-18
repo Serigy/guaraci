@@ -103,8 +103,9 @@ local function read_body(env, stdin_reader)
 end
 
 -- Client-supplied ids key uploads and contexts and are echoed in errors: accept only a safe shape.
+-- "@" is allowed because Apache mod_unique_id values use it (alphabet A-Za-z0-9@-).
 local function is_valid_request_id(value)
-    return type(value) == "string" and #value >= 8 and #value <= 64 and value:match("^[%w%-_]+$") ~= nil
+    return type(value) == "string" and #value >= 8 and #value <= 64 and value:match("^[%w%-_@]+$") ~= nil
 end
 
 function M.request_from_cgi(env, stdin_reader)
@@ -123,7 +124,8 @@ function M.request_from_cgi(env, stdin_reader)
 
     local headers = parse_headers(env)
     local context_id
-    for _, candidate in ipairs({ env.HTTP_X_REQUEST_ID, env.REQUEST_ID, env.UNIQUE_ID }) do
+    for _, key in ipairs({ "HTTP_X_REQUEST_ID", "REQUEST_ID", "UNIQUE_ID" }) do
+        local candidate = env[key]
         if is_valid_request_id(candidate) then
             context_id = candidate
             break

@@ -20,17 +20,25 @@ end
 local function extract_client_ip(req, trusted_proxy)
     if trusted_proxy then
         local headers = req.headers or {}
-        local forwarded = header_value(headers, "x-forwarded-for")
-        if type(forwarded) == "string" and forwarded ~= "" then
-            local ip = forwarded:match("^%s*([^,%s]+)")
-            if ip and ip ~= "" then
-                return ip
-            end
+        -- Prefer X-Real-IP set by the proxy; otherwise the rightmost X-Forwarded-For hop, which is
+        -- the one the trusted proxy appended (earlier tokens are client-controlled).
+        local real_ip = header_value(headers, "x-real-ip")
+        if type(real_ip) == "string" and real_ip:match("%S") then
+            return real_ip:match("^%s*(%S+)")
         end
 
-        local real_ip = header_value(headers, "x-real-ip")
-        if type(real_ip) == "string" and real_ip ~= "" then
-            return real_ip
+        local forwarded = header_value(headers, "x-forwarded-for")
+        if type(forwarded) == "string" then
+            local last
+            for token in forwarded:gmatch("[^,]+") do
+                local trimmed = token:match("^%s*(.-)%s*$")
+                if trimmed ~= "" then
+                    last = trimmed
+                end
+            end
+            if last then
+                return last
+            end
         end
     end
 

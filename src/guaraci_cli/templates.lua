@@ -73,6 +73,7 @@ M.paseo_json = [==[
 
 M.gitignore = [==[
 guaraci_audit.log
+logs/
 uploads/
 *.tmp
 ]==]

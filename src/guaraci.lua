@@ -214,7 +214,7 @@ function M.handle_request(raw_req, opts)
             return finalize_response(false)
         end
         if stop_before_request == true then
-            return finalize_response(false)
+            return finalize_response(true)
         end
 
         local short_circuit, chain_err, chain_ctx = middleware_chain.run("before_request", req, res, request_context)
@@ -296,7 +296,7 @@ function M.handle_request(raw_req, opts)
             return finalize_response(false)
         end
         if stop_before_render == true then
-            return finalize_response(false)
+            return finalize_response(true)
         end
 
         local render_short, render_chain_err = middleware_chain.run("before_render", req, res, request_context)

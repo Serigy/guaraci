@@ -140,10 +140,22 @@ describe("Rate-limit client identity", function()
         assert.are.equal(429, res.status)
     end)
 
-    it("honours X-Forwarded-For only with trusted_proxy = true", function()
+    it("trusted_proxy uses the rightmost X-Forwarded-For hop, so a spoofed first token is ignored", function()
         local rate = middleware_ratelimit.create({ max_requests = 1, window_seconds = 60, trusted_proxy = true })
-        assert.is_true(hit(rate, "10.0.0.1", "1.1.1.1") == false)
-        assert.is_true(hit(rate, "10.0.0.1", "2.2.2.2") == false)
-        assert.is_true(hit(rate, "10.0.0.1", "1.1.1.1") == true)
+        -- client sends "1.2.3.4"; the proxy appends the real address
+        assert.is_true(hit(rate, "10.0.0.1", "1.2.3.4, 203.0.113.7") == false)
+        assert.is_true(hit(rate, "10.0.0.1", "9.9.9.9, 203.0.113.7") == true)
+        assert.is_true(hit(rate, "10.0.0.1", "1.2.3.4, 198.51.100.8") == false)
+    end)
+
+    it("trusted_proxy prefers X-Real-IP over X-Forwarded-For", function()
+        local rate = middleware_ratelimit.create({ max_requests = 1, window_seconds = 60, trusted_proxy = true })
+        local function with_real(real, xff)
+            local res = { status = 200, headers = {}, body = "" }
+            return rate({ method = "GET", remote_addr = "10.0.0.1",
+                headers = { ["X-Real-IP"] = real, ["X-Forwarded-For"] = xff } }, res, {})
+        end
+        assert.is_true(with_real("203.0.113.1", "5.5.5.5") == false)
+        assert.is_true(with_real("203.0.113.1", "6.6.6.6") == true)
     end)
 end)

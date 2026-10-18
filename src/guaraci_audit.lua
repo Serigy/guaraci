@@ -1,8 +1,9 @@
 local M = {}
 
 local config = {
-    log_path = "guaraci_audit.log"
+    log_path = os.getenv("GUARACI_AUDIT_LOG") or "guaraci_audit.log"
 }
+local warned_write_failure = false
 
 local SENSITIVE_KEYS = {
     password = true,
@@ -146,6 +147,11 @@ local function write_event(event)
     end)
 
     if not ok then
+        if not warned_write_failure then
+            warned_write_failure = true
+            io.stderr:write("guaraci: WARNING: cannot write audit log '" .. tostring(config.log_path) ..
+                "': " .. tostring(err) .. "\n")
+        end
         return false, err
     end
 

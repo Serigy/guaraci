@@ -10,7 +10,7 @@ M.IMAGE = "guaraci-dev"
 -- Runtime config. GUARACI_ENV=dev turns on detailed error responses; LUA_PATH exposes the mounted core.
 function M.lighttpd_conf()
     return [==[
-server.modules = ( "mod_alias", "mod_rewrite", "mod_setenv", "mod_cgi", "mod_accesslog" )
+server.modules = ( "mod_access", "mod_alias", "mod_rewrite", "mod_setenv", "mod_cgi", "mod_accesslog" )
 # Only public/ is a document root: app.lua, views/ and hooks/ are never served as files.
 server.document-root = "/app/public"
 alias.url = ( "/cgi-bin/" => "/app/cgi-bin/" )
@@ -20,8 +20,14 @@ accesslog.filename = "/dev/stdout"
 
 setenv.add-environment = (
     "GUARACI_ENV" => "dev",
-    "LUA_PATH" => "/guaraci/?.lua;;"
+    "LUA_PATH" => "/guaraci/?.lua;;",
+    "GUARACI_AUDIT_LOG" => "/app/logs/guaraci_audit.log"
 )
+
+# Never serve dotfiles from public/ (matches `guaraci dev`).
+$HTTP["url"] =~ "(^|/)[.]" {
+    url.access-deny = ( "" )
+}
 
 cgi.assign = ( ".cgi" => "/usr/bin/lua5.4" )
 
@@ -49,6 +55,7 @@ function M.run_args(opts)
         "-p", string.format("%s:%d:80", opts.host or "127.0.0.1", opts.port),
         "-v", opts.project_dir .. ":/app:ro",
         "-v", opts.project_dir .. "/uploads:/app/uploads",
+        "-v", opts.project_dir .. "/logs:/app/logs",
         "-v", opts.core_dir .. ":/guaraci:ro",
         "-v", opts.conf_path .. ":/etc/lighttpd/lighttpd.conf:ro",
         M.IMAGE
@@ -95,7 +102,7 @@ function M.run(opts, io_streams)
     end
 
     out:write("Building image " .. M.IMAGE .. " (alpine + lua5.4 + lighttpd)...\n")
-    os.execute("mkdir -p uploads public")
+    os.execute("mkdir -p uploads logs public")
     local build = io.popen("docker build -q -t " .. M.IMAGE .. " - >/dev/null", "w")
     if not build then
         err:write("guaraci dev --container: cannot start docker build\n")

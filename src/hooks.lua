@@ -89,11 +89,13 @@ local function apply_short_circuit_defaults(res)
         return
     end
 
-    if type(res.status) ~= "number" then
+    -- Fail closed: the response default is 200, so a stop that set no status and no body means "forbidden".
+    local empty_body = res.body == nil or res.body == ""
+    if type(res.status) ~= "number" or (res.status == 200 and empty_body) then
         res.status = 403
     end
 
-    if res.body == nil or res.body == "" then
+    if empty_body then
         if res.status == 401 then
             res.body = "<h1>401 Unauthorized</h1>"
         else

@@ -60,6 +60,11 @@ describe("adapter_cgi request hardening", function()
         end
     end)
 
+    it("keeps Apache mod_unique_id values (they contain @ and -)", function()
+        local id = "Zx9@-abcDEF123456789012"
+        assert.are.equal(id, req_with({ UNIQUE_ID = id }).context_id)
+    end)
+
     it("takes remote_addr from REMOTE_ADDR, not from headers", function()
         local req = req_with({ REMOTE_ADDR = "203.0.113.9", HTTP_X_FORWARDED_FOR = "1.2.3.4" })
         assert.are.equal("203.0.113.9", req.remote_addr)
