@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:fd0262b4fb0a2a40387a4bc23558902d0b894169b93e69d485b9811b07373b1c",
+  "pageVersion": "sha256:cb7712ed49a6bf42ba664091a9887f96eab814b0c71db1a1f80ec59b7f7ab8ef",
   "claims": [
     {
       "id": "claim_76a3ad6a5fab4be8a8af6c65cb33c38d",
@@ -34,7 +34,7 @@
     },
     {
       "id": "claim_57ca3d34cf5645438e6b7071fbd266ca",
-      "statement": "sanitize_filename rejects path traversal (.. and leading /), NUL bytes, names over 255 characters, and characters outside [a-zA-Z0-9._%-/].",
+      "statement": "sanitize_filename rejects path traversal (.. and leading /), NUL bytes, names over 255 characters, and characters outside letters, digits, dot, underscore, hyphen, and slash (percent is not allowed).",
       "evidence": [
         {
           "resource": "repo://src/file_validator.lua#L19-L38",
@@ -104,7 +104,7 @@
     },
     {
       "id": "claim_950d2ee2798549559f3904d41bdb1f79",
-      "statement": "cleanup_request deletes every file indexed for a request, preventing orphaned uploads.",
+      "statement": "cleanup_request deletes every file indexed for a request; each file is indexed as soon as it is written, so a failure mid-batch cleans up the earlier files and prevents orphaned uploads.",
       "evidence": [
         {
           "resource": "repo://src/file_manager.lua#L90-L107",

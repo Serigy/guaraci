@@ -18,12 +18,14 @@ File uploads in Guaraci flow through four modules: `multipart` parses the reques
 
 ## Validation (`file_validator`)
 
-Every upload passes `file_validator`, which enforces three limits by default: 25 MB per file, 200 MB total per payload, and a MIME allow-list (`image/jpeg`, `image/png`, `application/pdf`, `text/plain`). Before any other check, `sanitize_filename` rejects path traversal — `..` segments, a leading `/`, NUL bytes, names longer than 255 characters, and any character outside `[a-zA-Z0-9._%-/]`. A file is rejected if its size exceeds the per-file limit or its MIME type is not allow-listed; `validate_payload` additionally rejects a batch whose cumulative size exceeds the payload cap.
+Every upload passes `file_validator`, which enforces three limits by default: 25 MB per file, 200 MB total per payload, and a MIME allow-list (`image/jpeg`, `image/png`, `application/pdf`, `text/plain`). Before any other check, `sanitize_filename` rejects path traversal — `..` segments, a leading `/`, NUL bytes, names longer than 255 characters, and any character outside letters, digits, dot, underscore, hyphen, and slash (percent is not allowed). A file is rejected if its size exceeds the per-file limit or its MIME type is not allow-listed; `validate_payload` additionally rejects a batch whose cumulative size exceeds the payload cap.
 
 ## Storage (`file_storage`)
 
-Storage is pluggable through a provider registry. `new_registry(default_provider)` holds named providers with `set_provider`, `use`, and `active`, and forwards `put`/`get`/`delete` to the active provider. The built-in local provider writes each file as `{random_id}_{sanitized filename}` under a configurable `root_dir` (default `uploads`), and keeps an in-memory index of stored files for retrieval and deletion.
+Storage is pluggable through a provider registry. `new_registry(default_provider)` holds named providers with `set_provider`, `use`, and `active`, and forwards `put`/`get`/`delete` to the active provider. The built-in local provider writes each file as `{random_id}_{sanitized filename}` under a configurable `root_dir` (default `uploads`, overridable with `GUARACI_UPLOAD_DIR`), and keeps an in-memory index of stored files for retrieval and deletion. The random id comes from `guaraci_random` (`/dev/urandom` with a seeded fallback), so ids are not predictable across CGI processes.
 
 ## Orchestration and cleanup (`file_manager`)
 
 `file_manager.process_files(files, opts)` first runs the full payload through `file_validator` (logging a security event on rejection), then stores each file and records the returned metadata. When a `request_id` is supplied, the stored ids are indexed against it so `cleanup_request(request_id)` can delete every file from that request after the response, preventing orphaned uploads.
+
+When validation fails, `handle_request` answers `413 Payload too large` for client size errors, `400 Invalid upload` for other client errors, and `500` for server-side storage failures; the raw reason is only exposed in `details` (dev) and in the audit log, never in the HTTP body. Each stored file is indexed as soon as it is written, so if a later file in a multi-file upload fails, the earlier files are cleaned up and no orphans remain.

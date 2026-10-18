@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:bad9109c74e414fa9fff64aa9a5d67bcb4435dc74568b52739d1ff73ca3181a0",
+  "pageVersion": "sha256:8390616b4dffbd3a5381323576746719fa4d20ce152f51dae2b4dfdbb071432b",
   "claims": [
     {
       "id": "claim_f4b22870d0054f4f9bea87c6c5b46f92",
-      "statement": "adapter_cgi maps the CGI environment (REQUEST_METHOD, PATH_INFO/REQUEST_URI, HTTP_* headers) into Guaraci's agnostic request shape.",
+      "statement": "adapter_cgi maps the CGI environment (REQUEST_METHOD, PATH_INFO/REQUEST_URI, HTTP_* headers, REMOTE_ADDR) into Guaraci's agnostic request shape.",
       "evidence": [
         {
           "resource": "repo://src/adapter_cgi.lua#L111-L122",
@@ -14,7 +14,7 @@
     },
     {
       "id": "claim_449a01c03d3b45dfa717baea16f536bc",
-      "statement": "The request context_id comes from X-Request-Id, REQUEST_ID, or UNIQUE_ID, falling back to a generated id.",
+      "statement": "The request context_id comes only from server-provided REQUEST_ID or UNIQUE_ID (validated as ^[%w%-_@]{8,64}$); the client X-Request-Id is never used as context_id and is exposed only as client_request_id, and an id is generated otherwise.",
       "evidence": [
         {
           "resource": "repo://src/adapter_cgi.lua#L120-L120",

@@ -11,7 +11,7 @@
     "/openwiki/architecture/file-uploads.md": {
       "gitHead": "c36c22cb1a0f223fd20151b8b9fa4f638eafa602",
       "sourceFingerprint": "sha256:e277dbd166e30445650f7b94880cb78b22f7e237109c3746f7c6baec0e439b0e",
-      "pageVersion": "sha256:fd0262b4fb0a2a40387a4bc23558902d0b894169b93e69d485b9811b07373b1c",
+      "pageVersion": "sha256:cb7712ed49a6bf42ba664091a9887f96eab814b0c71db1a1f80ec59b7f7ab8ef",
       "completedBy": "pi",
       "completedRunId": "76c6e8eb-9320-46ce-b591-5380f91967d0"
     },
@@ -32,7 +32,7 @@
     "/openwiki/architecture/routing-middleware.md": {
       "gitHead": "c36c22cb1a0f223fd20151b8b9fa4f638eafa602",
       "sourceFingerprint": "sha256:e277dbd166e30445650f7b94880cb78b22f7e237109c3746f7c6baec0e439b0e",
-      "pageVersion": "sha256:33bfd6fcefc0dfc426a61fa92504d9d7b585c5e31d10f9fb7c812a5bb369a6d8",
+      "pageVersion": "sha256:9fa2939c9ee977f01ff0397800015e478c4dc10669819a89650819ed37eab6c3",
       "completedBy": "pi",
       "completedRunId": "76c6e8eb-9320-46ce-b591-5380f91967d0"
     },
@@ -46,19 +46,19 @@
     "/openwiki/architecture/validation-security-middleware.md": {
       "gitHead": "c36c22cb1a0f223fd20151b8b9fa4f638eafa602",
       "sourceFingerprint": "sha256:e277dbd166e30445650f7b94880cb78b22f7e237109c3746f7c6baec0e439b0e",
-      "pageVersion": "sha256:0e19a6b49cfedac3ef03710265232016607571bf81b0ee852c3f6c106de24c06",
+      "pageVersion": "sha256:983eda0c14caf2ae0af66470ff0072fe144c68e430c886d02328caf1e90ec39a",
       "completedBy": "pi",
       "completedRunId": "76c6e8eb-9320-46ce-b591-5380f91967d0"
     },
     "/openwiki/integrations/cgi-adapter.md": {
       "gitHead": "c36c22cb1a0f223fd20151b8b9fa4f638eafa602",
       "sourceFingerprint": "sha256:e277dbd166e30445650f7b94880cb78b22f7e237109c3746f7c6baec0e439b0e",
-      "pageVersion": "sha256:bad9109c74e414fa9fff64aa9a5d67bcb4435dc74568b52739d1ff73ca3181a0",
+      "pageVersion": "sha256:8390616b4dffbd3a5381323576746719fa4d20ce152f51dae2b4dfdbb071432b",
       "completedBy": "pi",
       "completedRunId": "76c6e8eb-9320-46ce-b591-5380f91967d0"
     },
     "/openwiki/operations/testing-release.md": {
-      "pageVersion": "sha256:471fec5d5f2fbf670175420f293f7a86ac57b92d2241f5dfcfcb1568a3e19572",
+      "pageVersion": "sha256:168db223b8058f1a18e9332a3e7eed9b1a4395a6ad8051345c8546a3e3e7b520",
       "completedBy": "pi",
       "completedRunId": "76c6e8eb-9320-46ce-b591-5380f91967d0",
       "gitHead": "c36c22cb1a0f223fd20151b8b9fa4f638eafa602",
