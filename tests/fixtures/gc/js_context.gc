@@ -1,0 +1,7 @@
+<p>ok</p>
+<script>
+  var n = "<%= Request.query.n %>";
+</script>
+<style>
+  a { color: <%= c %>; }
+</style>
