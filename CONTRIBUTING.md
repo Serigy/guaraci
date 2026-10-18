@@ -4,7 +4,7 @@
 Manter o Guaraci pequeno, seguro e auditavel.
 
 ## Requisitos
-- Lua **5.3 ou superior** (recomendado 5.4). Lua 5.1 nao e suportado: o core usa `table.pack`, `table.unpack` e `goto`.
+- **Lua 5.3 ou superior** (recomendado 5.4) **ou LuaJIT 2.1**; Lua 5.1 nao e suportado.
 - Use o binario `lua5.4` nos comandos abaixo.
 
 ## Checklist obrigatorio para PR
@@ -25,7 +25,12 @@ lua5.4 scripts/smoke_cgi.lua
 ```bash
 lua5.4 tests/run_all.lua
 ```
-4. Abra PR com:
+4. Valide templates e a CLI:
+```bash
+guaraci check views/*.gc
+guaraci test
+```
+5. Abra PR com:
 - contexto da mudanca
 - risco de seguranca avaliado
 - evidencias de teste

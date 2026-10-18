@@ -9,24 +9,65 @@ Framework web minimalista em Lua, agnostico de servidor e orientado a seguranca 
 - Defesa nativa contra XSS, SSTI, SQLi e Path Traversal
 
 ## Requisitos
-- Lua **5.3 ou superior** (recomendado 5.4). Lua 5.1 nao e suportado: o core usa `table.pack`, `table.unpack` e `goto`.
-- Nenhuma dependencia externa no core. `lsqlite3` e opcional, apenas para o driver SQLite.
+- **Lua 5.3 ou superior** (recomendado 5.4) **ou LuaJIT 2.1**; Lua 5.1 nao e suportado.
+- **LuaRocks** para instalar a biblioteca e a CLI `guaraci`.
+- Nenhuma dependencia externa no core. `lsqlite3` e opcional (driver SQLite); `luasocket` e opcional (apenas `guaraci dev`).
 
 ## Instalacao
-<!-- TODO(WP2): preencher apos CLI -->
-```bash
-# TODO(WP2): comando de instalacao via LuaRocks sera publicado aqui
-```
-
-Enquanto o pacote nao estiver publicado, clone o repositorio e use `package.path`:
+A partir do checkout, antes da primeira release:
 
 ```bash
 git clone https://github.com/Serigy/guaraci
 cd guaraci
+luarocks make guaraci-scm-1.rockspec
+```
+
+Depois da publicacao:
+
+```bash
+luarocks install guaraci
+```
+
+O LuaRocks instala a biblioteca e o binario `guaraci`; ele e o canal de atualizacao (a CLI nao se auto-atualiza). Para o dev server:
+
+```bash
+luarocks install luasocket
+```
+
+## Uso rapido
+```bash
+guaraci new meu-app
+cd meu-app
+guaraci test
+guaraci dev            # http://127.0.0.1:8080
+guaraci check views/index.gc
+```
+
+Comandos: `new`, `check`, `test`, `dev` (com `--container`), `version` e `help`. Codigos de saida: 0 sucesso, 1 achados/falhas, 2 erro de uso. Veja `docs/CLI.md`.
+
+### Exemplo minimo sem CLI
+```lua
+package.path = "./src/?.lua;./?.lua;" .. package.path
+
+local guaraci = require("guaraci")
+
+local res = guaraci.handle_request({
+    method = "GET",
+    path = "/",
+    query = { nome = "Mundo" },
+    headers = {}
+}, {
+    templates_root = "views"
+})
+
+print(res.status)
+print(res.body)
 ```
 
 ## Estrutura
 - `src/`: core do framework
+- `src/guaraci_cli/`: implementacao da CLI
+- `bin/`: entrypoint `guaraci`
 - `hooks/`: hooks nativos de runtime
 - `views/`: templates `.gc`
 - `tests/`: suite de testes estilo Busted (runner local)
@@ -35,41 +76,15 @@ cd guaraci
 - `history/`: relatorios de validacao por fase
 - `openwiki/`: indice de evidencias em ingles (gerado)
 
-## Quickstart
-### 1) Smoke test do adapter CGI
-```bash
-lua5.4 scripts/smoke_cgi.lua
-```
-Resultado esperado:
-- `SMOKE CGI: OK`
-
-### 2) Rodar suite de testes (integracao + regressao de seguranca)
+## Testes
 ```bash
 lua5.4 tests/run_all.lua
+lua5.4 scripts/smoke_cgi.lua
+guaraci test
 ```
-Resultado esperado:
-- `ALL SPECS PASSED`
+Resultados esperados: `ALL SPECS PASSED` e `SMOKE CGI: OK`.
 
-### 3) Exemplo minimo de uso no seu adapter
-```lua
-package.path = "./src/?.lua;./?.lua;" .. package.path
-
-local guaraci = require("guaraci")
-
-local req = {
-    method = "GET",
-    path = "/",
-    query = { nome = "Mundo" },
-    headers = {}
-}
-
-local res = guaraci.handle_request(req, {
-    templates_root = "views"
-})
-
-print(res.status)
-print(res.body)
-```
+O CI roda a suite em Lua 5.4, 5.3 e LuaJIT 2.1, alem de luacheck e um job com `lsqlite3`.
 
 ## Regras de seguranca importantes
 - Nunca concatenar input em SQL
