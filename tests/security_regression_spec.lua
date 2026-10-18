@@ -246,4 +246,35 @@ describe("Context-aware escaping (Fase 7.1)", function()
         assert.is_not_nil(tostring(dev.body):find("details", 1, true))
         assert.is_not_nil(tostring(dev_opt.body):find("details", 1, true))
     end)
+    it("explicit routes never match traversal-shaped paths", function()
+        local guaraci = require("guaraci")
+        local router_v2 = require("router_v2")
+        router_v2.clear()
+        local hit = false
+        router_v2.get("/files/:name", function() hit = true end)
+        for _, path in ipairs({ "/files/..", "/files/%2e%2e", "/files/a%00b", "/files/..\\x" }) do
+            local res = guaraci.handle_request({ method = "GET", path = path, headers = {} },
+                { auto_register_default_hooks = false })
+            assert.are.equal(404, res.status, path)
+        end
+        router_v2.clear()
+        assert.are.equal(false, hit)
+    end)
+
+    it("csrf middleware registered via guaraci.use blocks unsafe explicit routes", function()
+        local guaraci = require("guaraci")
+        local router_v2 = require("router_v2")
+        local middleware_chain = require("middleware_chain")
+        router_v2.clear()
+        middleware_chain.clear()
+        local hit = false
+        router_v2.post("/danger", function() hit = true end)
+        guaraci.use(guaraci.middleware_csrf(), "csrf")
+        local res = guaraci.handle_request({ method = "POST", path = "/danger", headers = {} },
+            { auto_register_default_hooks = false })
+        router_v2.clear()
+        middleware_chain.clear()
+        assert.are.equal(403, res.status)
+        assert.are.equal(false, hit)
+    end)
 end)

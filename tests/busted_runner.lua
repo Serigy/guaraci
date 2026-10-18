@@ -4,6 +4,7 @@ local SPEC_MODULES = {
     "tests.integration_mvp_spec",
     "tests.parser_linemap_spec",
     "tests.adapter_cgi_env_spec",
+    "tests.guaraci_routing_spec",
     "tests.security_regression_spec",
     "tests.determinism_spec",
     "tests.template_functions_registry_spec",

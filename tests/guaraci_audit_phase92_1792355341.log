@@ -1,0 +1,1 @@
+{"context":{"middleware":"a_mid1","stage":"before_request"},"level":"security","message":"middleware_shortcircuit","timestamp":"2026-10-18T20:29:01Z"}

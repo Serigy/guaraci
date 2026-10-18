@@ -94,6 +94,7 @@ function M.run(stage, req, res, context)
     end
 
     context = context or {}
+    local guaraci_audit = package.loaded["guaraci_audit"]
     local middlewares = get_sorted_middlewares(stage)
 
     for _, mid in ipairs(middlewares) do
@@ -101,7 +102,6 @@ function M.run(stage, req, res, context)
 
         if not ok then
             -- Middleware error: log via guaraci_audit if available
-            local guaraci_audit = package.loaded["guaraci_audit"]
             if guaraci_audit and guaraci_audit.log_error then
                 guaraci_audit.log_error("middleware_error", {
                     stage = stage,

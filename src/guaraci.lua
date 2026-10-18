@@ -47,6 +47,25 @@ local function safe_read_file(path)
     return result_or_err
 end
 
+-- Explicit routes match the raw path, so refuse traversal-shaped paths up front.
+local function is_safe_route_path(path)
+    if type(path) ~= "string" then
+        return false
+    end
+    local decoded = path:gsub("%%(%x%x)", function(hex)
+        return string.char(tonumber(hex, 16))
+    end)
+    if decoded:find("\0", 1, true) or decoded:find("\\", 1, true) then
+        return false
+    end
+    for segment in decoded:gmatch("[^/]+") do
+        if segment == ".." then
+            return false
+        end
+    end
+    return true
+end
+
 function M.escape_html(value)
     local str = tostring(value or "")
     str = str:gsub("&", "&amp;")
@@ -92,6 +111,9 @@ function M.handle_request(raw_req, opts)
         return res
     end
 
+    local request_context = { request_id = req.context_id }
+    context_store.create_context(req.context_id)
+
     local function cleanup_uploads()
         local ok_cleanup, cleanup_err = pcall(function()
             file_manager.cleanup_request(req.context_id)
@@ -105,7 +127,24 @@ function M.handle_request(raw_req, opts)
     end
 
     local function finalize_response(run_after_request, template_path)
+        context_store.cleanup(req.context_id)
         if run_after_request == true then
+            local _, chain_err = middleware_chain.run("after_request", req, res, request_context)
+            if chain_err ~= nil then
+                log_error("Falha no middleware after_request", {
+                    context_id = req.context_id,
+                    error = tostring(chain_err)
+                })
+                apply_error({
+                    status = 500,
+                    code = "middleware_error",
+                    message = "Internal Error",
+                    details = "after_request"
+                })
+                cleanup_uploads()
+                return res
+            end
+
             local stop_after_request, stop_reason = hooks.run_stage("after_request", req, res, {
                 phase = "after_request",
                 template_path = template_path
@@ -178,6 +217,40 @@ function M.handle_request(raw_req, opts)
             return finalize_response(false)
         end
 
+        local short_circuit, chain_err, chain_ctx = middleware_chain.run("before_request", req, res, request_context)
+        if type(chain_ctx) == "table" then
+            request_context = chain_ctx
+        end
+        if short_circuit == nil then
+            log_error("Falha no middleware before_request", {
+                context_id = req.context_id,
+                error = tostring(chain_err)
+            })
+            apply_error({
+                status = 500,
+                code = "middleware_error",
+                message = "Internal Error",
+                details = chain_err
+            })
+            return finalize_response(false)
+        end
+        if short_circuit == true then
+            return finalize_response(false)
+        end
+
+        local route_handler, _, route_params
+        if is_safe_route_path(req.path) then
+            route_handler, _, route_params = router_v2.match(req.method, req.path)
+        end
+        if route_handler then
+            request_context.params = route_params
+            local handler_result = route_handler(req, res, request_context)
+            if type(handler_result) == "string" then
+                res.body = handler_result
+            end
+            return finalize_response(true)
+        end
+
         local template_path, route_err = router.resolve_or_404(req, res, {
             templates_root = opts.templates_root
         })
@@ -221,6 +294,24 @@ function M.handle_request(raw_req, opts)
             return finalize_response(false)
         end
         if stop_before_render == true then
+            return finalize_response(false)
+        end
+
+        local render_short, render_chain_err = middleware_chain.run("before_render", req, res, request_context)
+        if render_short == nil then
+            log_error("Falha no middleware before_render", {
+                context_id = req.context_id,
+                error = tostring(render_chain_err)
+            })
+            apply_error({
+                status = 500,
+                code = "middleware_error",
+                message = "Internal Error",
+                details = render_chain_err
+            })
+            return finalize_response(false)
+        end
+        if render_short == true then
             return finalize_response(false)
         end
 
