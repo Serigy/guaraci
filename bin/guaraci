@@ -1,0 +1,15 @@
+#!/usr/bin/env lua5.4
+-- When run from a checkout (not installed through LuaRocks) put <root>/src on package.path.
+local script = arg and arg[0] or ""
+local dir = script:match("^(.*)/[^/]*$")
+if dir then
+    local root = dir .. "/.."
+    local probe = io.open(root .. "/src/guaraci_cli/main.lua", "r")
+    if probe then
+        probe:close()
+        package.path = root .. "/src/?.lua;" .. root .. "/?.lua;" .. package.path
+    end
+end
+
+local main = require("guaraci_cli.main")
+os.exit(main.run(arg))
