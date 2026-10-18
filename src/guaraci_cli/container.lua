@@ -14,14 +14,16 @@ server.modules = ( "mod_access", "mod_alias", "mod_rewrite", "mod_setenv", "mod_
 # Only public/ is a document root: app.lua, views/ and hooks/ are never served as files.
 server.document-root = "/app/public"
 alias.url = ( "/cgi-bin/" => "/app/cgi-bin/" )
-server.port = 80
+server.port = 8080
 server.errorlog = "/dev/stderr"
 accesslog.filename = "/dev/stdout"
 
 setenv.add-environment = (
     "GUARACI_ENV" => "dev",
     "LUA_PATH" => "/guaraci/?.lua;;",
-    "GUARACI_AUDIT_LOG" => "/app/logs/guaraci_audit.log"
+    "GUARACI_AUDIT_LOG" => "/app/logs/guaraci_audit.log",
+    "GUARACI_RATELIMIT_STORE" => "/app/logs/ratelimit.db",
+    "GUARACI_UPLOAD_DIR" => "/app/uploads"
 )
 
 # Never serve dotfiles from public/ (matches `guaraci dev`).
@@ -52,7 +54,10 @@ end
 function M.run_args(opts)
     return {
         "docker", "run", "--rm", "--init",
-        "-p", string.format("%s:%d:80", opts.host or "127.0.0.1", opts.port),
+        -- Unprivileged: run as the host user (so bind-mounted uploads/logs are writable), no capabilities.
+        "--user", opts.user or "1000:1000",
+        "--cap-drop", "ALL", "--security-opt", "no-new-privileges",
+        "-p", string.format("%s:%d:8080", opts.host or "127.0.0.1", opts.port),
         "-v", opts.project_dir .. ":/app:ro",
         "-v", opts.project_dir .. "/uploads:/app/uploads",
         "-v", opts.project_dir .. "/logs:/app/logs",
@@ -100,6 +105,11 @@ function M.run(opts, io_streams)
     if not core_dir:match("^/") then
         core_dir = project_dir .. "/" .. core_dir
     end
+    if project_dir:find(":", 1, true) or core_dir:find(":", 1, true) then
+        err:write("guaraci dev --container: paths containing ':' cannot be mounted by docker -v (" ..
+            (project_dir:find(":", 1, true) and project_dir or core_dir) .. ")\n")
+        return 1
+    end
 
     out:write("Building image " .. M.IMAGE .. " (alpine + lua5.4 + lighttpd)...\n")
     os.execute("mkdir -p uploads logs public")
@@ -114,6 +124,13 @@ function M.run(opts, io_streams)
         return 1
     end
 
+    local uid_pipe = io.popen("id -u; id -g")
+    local uid, gid = uid_pipe and uid_pipe:read("l"), uid_pipe and uid_pipe:read("l")
+    if uid_pipe then
+        uid_pipe:close()
+    end
+    opts.user = (uid and gid) and (uid .. ":" .. gid) or "1000:1000"
+
     local conf_path = os.tmpname()
     util.write_file(conf_path, M.lighttpd_conf())
     if opts.host and opts.host ~= "127.0.0.1" then
@@ -122,7 +139,7 @@ function M.run(opts, io_streams)
     out:write("Guaraci dev (container) on http://" .. (opts.host or "127.0.0.1") .. ":" .. opts.port .. "/  (Ctrl-C to stop)\n")
     out:flush()
     local ok = os.execute(join(M.run_args({
-        port = opts.port, host = opts.host, project_dir = project_dir, core_dir = core_dir, conf_path = conf_path
+        port = opts.port, host = opts.host, user = opts.user, project_dir = project_dir, core_dir = core_dir, conf_path = conf_path
     })))
     os.remove(conf_path)
     return ok and 0 or 1

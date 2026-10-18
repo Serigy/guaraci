@@ -129,7 +129,7 @@ function M.request_from_cgi(env, stdin_reader)
 
     local headers = parse_headers(env)
     local context_id
-    for _, key in ipairs({ "HTTP_X_REQUEST_ID", "REQUEST_ID", "UNIQUE_ID" }) do
+    for _, key in ipairs({ "REQUEST_ID", "UNIQUE_ID", "HTTP_X_REQUEST_ID" }) do
         local candidate = env[key]
         if is_valid_request_id(candidate) then
             context_id = candidate
@@ -137,6 +137,8 @@ function M.request_from_cgi(env, stdin_reader)
         end
     end
     context_id = context_id or generate_request_id()
+    -- Server-provided ids win; the client's X-Request-Id is kept only as a correlation hint.
+    local client_request_id = is_valid_request_id(env.HTTP_X_REQUEST_ID) and env.HTTP_X_REQUEST_ID or nil
     local query = parse_query(env.QUERY_STRING or "")
     local body = read_body(env, stdin_reader)
 
@@ -178,6 +180,7 @@ function M.request_from_cgi(env, stdin_reader)
         files = files,
         body_table = body_table,
         context_id = context_id,
+        client_request_id = client_request_id,
         remote_addr = type(env.REMOTE_ADDR) == "string" and env.REMOTE_ADDR or nil,
         upload_error = upload_error
     }
@@ -245,7 +248,7 @@ local CGI_VARS = {
 local ALLOWED_HEADERS = {
     "Accept", "Cookie", "Authorization", "Origin", "Host", "Referer",
     "User-Agent", "X-Requested-With", "X-CSRF-Token", "X-Request-Id",
-    "X-Tenant-Id", "X-Forwarded-For", "X-Forwarded-Proto",
+    "X-Tenant-Id", "X-Real-IP", "X-Forwarded-For", "X-Forwarded-Proto",
     "X-Forwarded-Host", "X-Forwarded-Port", "X-Forwarded-Prefix"
 }
 

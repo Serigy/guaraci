@@ -7,8 +7,9 @@ local M = {}
 
 local request_index = {}
 
+-- GUARACI_UPLOAD_DIR lets servers that chdir elsewhere (CGI) point at a writable location.
 local default_registry = file_storage.new_registry(file_storage.new_local({
-    root_dir = "uploads"
+    root_dir = os.getenv("GUARACI_UPLOAD_DIR") or "uploads"
 }))
 
 local function log_security(message, context)

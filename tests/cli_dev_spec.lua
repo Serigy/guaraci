@@ -123,3 +123,32 @@ describe("guaraci dev", function()
         assert.is_not_nil(http:find("HTTP/1.1 500", 1, true))
     end)
 end)
+
+describe("guaraci dev request limits", function()
+    local function lines_client(lines)
+        local i = 0
+        return {
+            receive = function()
+                i = i + 1
+                return lines[i]
+            end
+        }
+    end
+
+    it("rejects over-long lines with 431", function()
+        local _, status = dev.read_request(lines_client({ "GET /" .. string.rep("a", 9000) .. " HTTP/1.1" }))
+        assert.are.equal(431, status)
+        local _, status2 = dev.read_request(lines_client({ "GET / HTTP/1.1", "X: " .. string.rep("a", 9000) }))
+        assert.are.equal(431, status2)
+    end)
+
+    it("answers 501 to chunked bodies", function()
+        local _, status = dev.read_request(lines_client({ "POST / HTTP/1.1", "Transfer-Encoding: chunked", "" }))
+        assert.are.equal(501, status)
+    end)
+
+    it("enforces a total deadline", function()
+        local _, status = dev.read_request(lines_client({ "GET / HTTP/1.1", "A: b", "" }), -1)
+        assert.are.equal(408, status)
+    end)
+end)

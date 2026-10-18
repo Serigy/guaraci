@@ -6,6 +6,8 @@ local M = {}
 
 local MAX_BODY = 10 * 1024 * 1024
 local MAX_HEADER_LINES = 100
+local MAX_LINE = 8192
+local CONNECTION_DEADLINE = 15 -- seconds for the whole request
 
 local MIME = {
     html = "text/html; charset=utf-8", css = "text/css; charset=utf-8",
@@ -17,7 +19,8 @@ local MIME = {
 local REASONS = {
     [200] = "OK", [201] = "Created", [204] = "No Content", [301] = "Moved Permanently", [302] = "Found",
     [304] = "Not Modified", [400] = "Bad Request", [401] = "Unauthorized", [403] = "Forbidden",
-    [404] = "Not Found", [405] = "Method Not Allowed", [413] = "Payload Too Large",
+    [404] = "Not Found", [408] = "Request Timeout", [431] = "Request Header Fields Too Large",
+    [501] = "Not Implemented", [405] = "Method Not Allowed", [413] = "Payload Too Large",
     [500] = "Internal Server Error"
 }
 
@@ -29,10 +32,14 @@ end
 
 -- Reads one HTTP/1.x request from `client` (receive(pattern_or_len) -> data|nil, err).
 -- Returns { method, target, path, query, headers = {lowercase = value}, body } or nil, status, message.
-function M.read_request(client)
+function M.read_request(client, deadline_seconds)
+    local deadline = os.time() + (deadline_seconds or CONNECTION_DEADLINE)
     local line = client:receive("*l")
     if not line then
         return nil, 400, "empty request"
+    end
+    if #line > MAX_LINE then
+        return nil, 431, "request line too long"
     end
     local method, target = line:match("^(%u+) (%S+) HTTP/1%.[01]$")
     if not method then
@@ -45,6 +52,12 @@ function M.read_request(client)
         if not header_line then
             return nil, 400, "truncated headers"
         end
+        if #header_line > MAX_LINE then
+            return nil, 431, "header line too long"
+        end
+        if os.time() > deadline then
+            return nil, 408, "request took too long"
+        end
         if header_line == "" then
             break
         end
@@ -52,6 +65,10 @@ function M.read_request(client)
         if name then
             headers[name:lower()] = value
         end
+    end
+
+    if headers["transfer-encoding"] then
+        return nil, 501, "Transfer-Encoding is not supported by guaraci dev"
     end
 
     local body = ""
@@ -223,15 +240,19 @@ function M.handle_client(client, config)
         if config.public_dir then
             static, refused = M.static_response(request, config.public_dir)
             if refused then
-                config.log("public/ path refused: " .. request.path)
+                config.log("public/ path refused: " .. (request.path:gsub("%c", "?")))
                 local audit = package.loaded["guaraci_audit"]
                 if audit and audit.log_security then
                     audit.log_security("route_path_refused", { path = request.path, source = "dev_static" })
                 end
             end
         end
-        response = static or M.dispatch(request, config)
-        config.log(request.method .. " " .. request.target .. " -> " .. (response:match("^HTTP/1%.1 (%d+)") or "?"))
+        if refused then
+            response = simple_response(403, "Forbidden\n")
+        else
+            response = static or M.dispatch(request, config)
+        end
+        config.log(request.method .. " " .. (request.target:gsub("%c", "?")) .. " -> " .. (response:match("^HTTP/1%.1 (%d+)") or "?"))
     end
     client:send(response)
     client:close()
@@ -275,6 +296,8 @@ function M.run(args, io_streams)
     end
 
     package.path = "./?.lua;" .. package.path
+    -- app.lua runs on every request, so keep rate-limit counters in the long-lived server process.
+    require("middleware_ratelimit").set_default_store(require("ratelimit_store").memory())
     -- Load the core once so it is part of the baseline that survives reloads.
     require("adapter_cgi")
 

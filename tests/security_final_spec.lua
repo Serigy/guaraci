@@ -104,3 +104,51 @@ describe("guaraci_random", function()
         assert.is_true(r1.context_id ~= r2.context_id)
     end)
 end)
+
+describe("persistent rate limiting (CGI)", function()
+    before_each(reset)
+    after_each(reset)
+
+    local function fresh_limited_request(path)
+        -- Simulates a new CGI process: fresh module instances sharing only the store file.
+        package.loaded["middleware_ratelimit"] = nil
+        package.loaded["ratelimit_store"] = nil
+        local limiter = require("middleware_ratelimit")
+        middleware_chain.clear(); router_v2.clear()
+        middleware_chain.use("before_request", limiter.create({ max_requests = 1, window_seconds = 60,
+            store_path = path }), "rl")
+        router_v2.get("/", function(_, res) res.body = "ok" end)
+        return guaraci.handle_request({ method = "GET", path = "/", remote_addr = "198.51.100.5", headers = {} }, {})
+    end
+
+    it("the second request from a fresh instance is 429 through the file store", function()
+        local path = os.tmpname()
+        os.remove(path)
+        local first = fresh_limited_request(path)
+        local second = fresh_limited_request(path)
+        os.remove(path)
+        assert.are.equal(200, first.status)
+        assert.are.equal(429, second.status)
+        assert.are.equal("DENY", second.headers["X-Frame-Options"])
+    end)
+
+    it("file store keys are encoded and expired entries dropped", function()
+        local store = require("ratelimit_store").file(os.tmpname())
+        local count = store.incr("a\tb\nc", 60, os.time())
+        assert.are.equal(1, count)
+        assert.are.equal(2, (store.incr("a\tb\nc", 60, os.time())))
+        local expired = store.incr("old", 1, os.time() - 100)
+        assert.are.equal(1, expired)
+        assert.is_nil(store.get("old"))
+        os.remove(store.path)
+    end)
+
+    it("an injected store is used", function()
+        local calls = 0
+        local store = { kind = "custom", incr = function() calls = calls + 1; return 99, os.time() + 5 end }
+        local limiter = require("middleware_ratelimit").create({ max_requests = 1, store = store })
+        local res = { status = 200, headers = {}, body = "" }
+        assert.is_true(limiter({ headers = {} }, res, {}) == true)
+        assert.are.equal(1, calls)
+    end)
+end)

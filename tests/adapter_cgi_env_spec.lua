@@ -65,6 +65,12 @@ describe("adapter_cgi request hardening", function()
         assert.are.equal(id, req_with({ UNIQUE_ID = id }).context_id)
     end)
 
+    it("prefers server-provided ids over the client's X-Request-Id", function()
+        local req = req_with({ UNIQUE_ID = "server-id-123456", HTTP_X_REQUEST_ID = "client-id-123456" })
+        assert.are.equal("server-id-123456", req.context_id)
+        assert.are.equal("client-id-123456", req.client_request_id)
+    end)
+
     it("takes remote_addr from REMOTE_ADDR, not from headers", function()
         local req = req_with({ REMOTE_ADDR = "203.0.113.9", HTTP_X_FORWARDED_FOR = "1.2.3.4" })
         assert.are.equal("203.0.113.9", req.remote_addr)

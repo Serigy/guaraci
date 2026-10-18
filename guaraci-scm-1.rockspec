@@ -13,6 +13,7 @@ Dependency-free Lua web framework: .gc templates (<% %> / <%= %>) with
 context-aware escaping, explicit routes with middleware, CGI adapter and the
 `guaraci` CLI (new, check, test, dev). The core needs no external modules; the
 `guaraci dev` server optionally uses luasocket (luarocks install luasocket).
+LuaJIT 2.1 also works through small shims when installed with a LuaJIT-flavoured luarocks.
 ]],
     homepage = "https://github.com/Serigy/guaraci",
     license = "BSD-3-Clause"
@@ -52,6 +53,7 @@ build = {
         ["guaraci_cli.util"] = "src/guaraci_cli/util.lua",
         guaraci_io = "src/guaraci_io.lua",
         guaraci_random = "src/guaraci_random.lua",
+        ratelimit_store = "src/ratelimit_store.lua",
         guaraci_version = "src/guaraci_version.lua",
         hooks = "src/hooks.lua",
         json_util = "src/json_util.lua",
@@ -79,5 +81,5 @@ build = {
 
 test = {
     type = "command",
-    command = "lua5.4 tests/run_all.lua"
+    command = "lua tests/run_all.lua"
 }

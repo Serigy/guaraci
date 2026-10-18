@@ -61,6 +61,7 @@ function M.new_request(raw)
         files = copy_table(source.files),
         params = copy_table(source.params),
         context_id = source.context_id or nil, -- Phase 10: request-scoped context ID
+        client_request_id = type(source.client_request_id) == "string" and source.client_request_id or nil,
         remote_addr = type(source.remote_addr) == "string" and source.remote_addr or nil,
         upload_error = source.upload_error or nil
     }

@@ -140,7 +140,7 @@ describe("Rate-limit client identity", function()
         assert.are.equal(429, res.status)
     end)
 
-    it("trusted_proxy uses the rightmost X-Forwarded-For hop, so a spoofed first token is ignored", function()
+    it("trusted_proxy (alias) uses the rightmost X-Forwarded-For hop, so a spoofed first token is ignored", function()
         local rate = middleware_ratelimit.create({ max_requests = 1, window_seconds = 60, trusted_proxy = true })
         -- client sends "1.2.3.4"; the proxy appends the real address
         assert.is_true(hit(rate, "10.0.0.1", "1.2.3.4, 203.0.113.7") == false)
@@ -148,8 +148,15 @@ describe("Rate-limit client identity", function()
         assert.is_true(hit(rate, "10.0.0.1", "1.2.3.4, 198.51.100.8") == false)
     end)
 
-    it("trusted_proxy prefers X-Real-IP over X-Forwarded-For", function()
-        local rate = middleware_ratelimit.create({ max_requests = 1, window_seconds = 60, trusted_proxy = true })
+    it("trusted_hops picks the Nth entry from the right", function()
+        local rate = middleware_ratelimit.create({ max_requests = 1, window_seconds = 60,
+            client_ip_header = "x-forwarded-for", trusted_hops = 2 })
+        assert.is_true(hit(rate, "10.0.0.1", "6.6.6.6, 203.0.113.7, 10.1.1.1") == false)
+        assert.is_true(hit(rate, "10.0.0.1", "7.7.7.7, 203.0.113.7, 10.1.1.1") == true)
+    end)
+
+    it("client_ip_header = x-real-ip uses that header only when configured", function()
+        local rate = middleware_ratelimit.create({ max_requests = 1, window_seconds = 60, client_ip_header = "x-real-ip" })
         local function with_real(real, xff)
             local res = { status = 200, headers = {}, body = "" }
             return rate({ method = "GET", remote_addr = "10.0.0.1",
@@ -157,5 +164,10 @@ describe("Rate-limit client identity", function()
         end
         assert.is_true(with_real("203.0.113.1", "5.5.5.5") == false)
         assert.is_true(with_real("203.0.113.1", "6.6.6.6") == true)
+        -- default config ignores X-Real-IP entirely
+        local plain = middleware_ratelimit.create({ max_requests = 1, window_seconds = 60 })
+        local r1 = { status = 200, headers = {}, body = "" }
+        assert.is_true(plain({ remote_addr = "10.0.0.2", headers = { ["X-Real-IP"] = "1.1.1.1" } }, r1, {}) == false)
+        assert.is_true(plain({ remote_addr = "10.0.0.2", headers = { ["X-Real-IP"] = "2.2.2.2" } }, r1, {}) == true)
     end)
 end)

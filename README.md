@@ -58,15 +58,23 @@ print(res.body)
 ## Rate limiting e proxies
 A identidade do cliente em `middleware_ratelimit` e `req.remote_addr` (vem de `REMOTE_ADDR`);
 `X-Forwarded-For` e `X-Real-IP` sao ignorados por padrao, pois o cliente controla esses headers.
-Atras de um proxy reverso, use `middleware_ratelimit.create({ trusted_proxy = true })`; sem isso
-todos os clientes compartilham o bucket do proxy. Com `trusted_proxy`, `X-Real-IP` tem prioridade;
-senao vale o ultimo (mais a direita) token de `X-Forwarded-For`, o salto adicionado pelo proxy confiavel.
-O estado do limitador vive no processo: em CGI ele reinicia a cada requisicao.
+Atras de um proxy reverso, declare-o: `client_ip_header = "x-forwarded-for"` (padrao) ou `"x-real-ip"`,
+e `trusted_hops = N` (padrao 1): vale a N-esima entrada contada da direita de `X-Forwarded-For`, a que o
+proxy confiavel adicionou. `trusted_proxy = true` e um alias para XFF com 1 salto. Sem isso, todos os
+clientes compartilham o bucket do proxy. Use `X-Real-IP` so se o proxy o sobrescreve (nao apenas o repassa).
+
+**Armazenamento.** Em CGI cada requisicao e um processo novo, entao contadores em memoria nunca limitam.
+Com `GATEWAY_INTERFACE` definido (ou `store_path`/`GUARACI_RATELIMIT_STORE`), o middleware usa um arquivo
+(`guaraci_ratelimit.db`, escrita atomica; contagem aproximada sob concorrencia). Voce pode passar
+`store = {incr = ..., get = ..., set = ...}` para um backend proprio. `guaraci dev` mantem os contadores
+no processo do servidor; um aviso e emitido se o store em memoria for usado em CGI.
 
 ## Contrato de short-circuit de middleware
 Um middleware (ou hook) `before_*` retorna `true` para interromper a requisicao. Defina `res.status`
 (e o corpo) explicitamente. Se o status ficar no padrao (200) e o corpo vazio, o Guaraci responde
-`403` (fail closed). Rejeicoes ainda passam pelos hooks `after_request` (headers de seguranca).
+`403` (fail closed); para respostas vazias intencionais (health check) use `204`. Rejeicoes ainda passam
+pelos hooks `after_request` (headers de seguranca), que nunca podem ser interrompidos.
+Ordem: hooks `before_request` rodam antes do middleware global; um stop de hook pula todo o middleware.
 
 ## Regras de seguranca importantes
 - Nunca concatenar input em SQL
