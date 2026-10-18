@@ -20,6 +20,16 @@ Guaraci ships its own Busted-style test harness (no external Busted dependency) 
 
 `busted_runner.SPEC_MODULES` lists 34 spec modules across the template, routing/middleware/context, Dataware ORM, validation/security, file-upload, and error-handling phases. The count is derived from the `SPEC_MODULES` table, so the page stays correct if a spec is added or removed. `run_all` resets the harness, installs globals, `require`s every spec under `pcall` (counting load failures), then runs each suite; `run_suite` runs each test under `pcall`, counting failures from the test body, `before_each`, and `after_each`. It prints `ALL SPECS PASSED` or `TOTAL FAILURES`. `tests/run_all.lua` sets `package.path`, calls `runner.run()`, and exits 1 on failure.
 
+## CI workflows
+
+Three workflows exist today:
+
+- `release-on-tag.yml`: creates a GitHub Release for pushed `v*.*.*` tags.
+- `release.yml`: manual semver validation, packaging, and optional LuaRocks publish.
+- `openwiki-update.yml`: daily (and manual) `openwiki code --update` run that refreshes this index and opens a PR. It requires the `OPENAI_API_KEY` repository secret; without that secret the scheduled run fails.
+
+A test/lint workflow is being added in WP4 of this release. Its intended shape is a Lua 5.3 and 5.4 matrix that installs `lsqlite3`, runs `lua5.4 tests/run_all.lua`, and runs the configured linter. Until it lands, the release workflows are the only automation that validates the tree, and the OpenWiki workflow is the only scheduled job.
+
 ## Release pipeline (`.github/workflows`)
 
 Two workflows produce GitHub Releases. `release-on-tag.yml` triggers on pushed `v*.*.*`-shaped tags, archives the tree (`zip` + `tar.gz`) and creates the release. `release.yml` is a manual (`workflow_dispatch`) pipeline that validates a semver version, normalizes the tag, converts it to a LuaRocks-compatible rockspec version, creates/pushes the tag, generates archive packages, creates the GitHub Release, and — when `publish_luarocks` is true — generates a `guaraci-<version>.rockspec` (mapping every module to its source path) and publishes it via `luarocks pack` + `luarocks upload` using the `LUAROCKS_API_KEY` secret.
