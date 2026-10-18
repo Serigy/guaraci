@@ -166,6 +166,15 @@ function M.load_hook_from_file(stage, path)
     return M.register(valid_stage, hook_or_err, path)
 end
 
+local function file_exists(path)
+    local f = io.open(path, "r")
+    if f then
+        f:close()
+        return true
+    end
+    return false
+end
+
 function M.register_default_hooks(opts)
     if defaults_loaded then
         return true
@@ -174,7 +183,18 @@ function M.register_default_hooks(opts)
     opts = opts or {}
     local security_hook_path = opts.security_headers_path or "hooks/security_headers.lua"
 
-    local ok, err = M.load_hook_from_file("after_request", security_hook_path)
+    local ok, err
+    if not opts.security_headers_path and not file_exists(security_hook_path) then
+        -- Installed rock or project without hooks/: use the module shipped with the core.
+        local loaded, hook_or_err = pcall(require, "hooks.security_headers")
+        if loaded and type(hook_or_err) == "function" then
+            ok, err = M.register("after_request", hook_or_err, "security_headers")
+        else
+            ok, err = nil, hook_or_err
+        end
+    else
+        ok, err = M.load_hook_from_file("after_request", security_hook_path)
+    end
     if not ok then
         log_error("Falha ao registrar hook nativo de security headers", {
             stage = "after_request",

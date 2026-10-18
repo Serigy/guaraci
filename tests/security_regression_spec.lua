@@ -191,4 +191,21 @@ describe("Context-aware escaping (Fase 7.1)", function()
             assert.are.equal("Erro interno", render_err)
         end
     end)
+    it("security headers are still injected when hooks/ is absent from cwd", function()
+        local hooks = require("hooks")
+        local real_open = io.open
+        io.open = function(path, ...)
+            if path == "hooks/security_headers.lua" then return nil, "missing" end
+            return real_open(path, ...)
+        end
+        hooks.clear()
+        local ok, err = pcall(hooks.register_default_hooks)
+        io.open = real_open
+        assert(ok and err == true, tostring(err))
+        local res = { headers = {}, status = 200 }
+        hooks.run_stage("after_request", {}, res)
+        hooks.clear()
+        assert.are.equal("DENY", res.headers["X-Frame-Options"])
+        assert.are.equal("nosniff", res.headers["X-Content-Type-Options"])
+    end)
 end)
