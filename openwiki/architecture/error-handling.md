@@ -18,6 +18,7 @@ Guaraci treats every failure as a response that must be safe, stable, and tracea
 | `default_hook_load_error` | 500 | default security-headers hook did not load |
 | `upload_error` | 400/413 | multipart failure or oversized file |
 | `hook_error` | 500 | exception in any hook stage |
+| `middleware_error` | 500 | exception in a `before_request`/`after_request` middleware |
 | `route_invalid_path` | 404 | invalid path in the file-system router |
 | `route_not_found` | 404 | template or route not found |
 | `template_read_error` | 500 | template could not be read |
@@ -40,7 +41,7 @@ handler(err, { req = req, res = res, opts = opts }) -> { status, headers, body }
 - `dev` also exposes `details` for status >= 500.
 - The payload includes `request_id` from `req.context_id` so responses correlate with JSONL logs.
 
-The core's global handler is created with `env = "prod"`. `error_handler.current_env` reads `config.env` first, then `GUARACI_ENV`, then defaults to `prod`; because the core passes `env = "prod"`, setting `GUARACI_ENV=dev` alone does not change the global handler. To expose details, install `error_handler.create_default({ env = "dev" })` with `guaraci.set_error_handler`.
+The environment is resolved per request when the handler runs: `opts.env` when present (the dev server passes `"dev"`), otherwise `GUARACI_ENV`, otherwise `prod`. In `prod`, details never appear; in `dev`, `details` is exposed for status >= 500. The core's global handler does not fix an environment, so `GUARACI_ENV=dev` is honoured. `handle_request` prefers an explicit `opts.error_handler`, then builds `error_handler.create_default({ env = opts.env })` when `opts.env` is a string, and finally uses the global handler. To force `dev` without an environment variable, install `error_handler.create_default({ env = "dev" })` with `guaraci.set_error_handler`.
 
 ## Format negotiation
 

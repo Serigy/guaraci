@@ -13,15 +13,32 @@ Guaraci is a minimalist, server-agnostic web framework written in Lua with secur
 
 ## Prerequisites
 
-- **Lua 5.3 or newer** (5.4 recommended). Lua 5.1 is not supported: the core uses `table.pack`, `table.unpack`, and `goto`.
-- **lsqlite3** (optional, for SQLite ORM support via Dataware)
+- **Lua 5.3 or newer** (5.4 recommended) **or LuaJIT 2.1**. Lua 5.1 is not supported; LuaJIT 2.1 works through `table.pack`/`table.unpack` shims.
+- **LuaRocks** (installs the library and the `guaraci` CLI).
+- **lsqlite3** (optional, for SQLite ORM support via Dataware).
+- **luasocket** (optional, only for `guaraci dev` outside Docker).
 
-Install Lua 5.4 on your system, then clone the Guaraci repository:
+Install from the repository until the first release is published:
 
 ```bash
 git clone https://github.com/Serigy/guaraci
 cd guaraci
+luarocks make guaraci-scm-1.rockspec
 ```
+
+After publication use `luarocks install guaraci`. LuaRocks is also the update channel; the CLI does not self-update.
+
+## CLI Quickstart
+
+```bash
+guaraci new meu-app
+cd meu-app
+guaraci test
+guaraci dev            # http://127.0.0.1:8080, needs luasocket
+guaraci check views/index.gc
+```
+
+The scaffold contains `app.lua`, `views/index.gc`, `hooks/security_headers.lua`, `cgi-bin/app.cgi`, `spec/index_spec.lua`, `paseo.json`, `Dockerfile.dev`, `.gitignore`, and `README.md`. Exit codes are `0` success, `1` findings/failures, and `2` usage error. See [CLI](./operations/cli.md) and [Dev Server and Docker](./integrations/dev-server-and-docker.md).
 
 ## Minimal End-to-End Example
 
@@ -93,11 +110,11 @@ Functions live in `src/guaraci.lua`; see the source for exact signatures. Additi
 
 ### Routing (Phase 10)
 
-- **router()**: Returns the router_v2 instance for explicit, method-based routing. Verbs: `get`, `post`, `put`, `patch`, `delete`, `head`; `:param` segments land in `req.params`.
-- **group(prefix)**: Creates a route group with a prefix and group-local middleware list.
+- **router()**: Returns the router_v2 instance for explicit, method-based routing. Verbs: `get`, `post`, `put`, `patch`, `delete`, `head`; `:param` segments land in the handler's third argument, `ctx.params`.
+- **group(prefix)**: Creates a route group with a prefix and group-local middleware; the wrapper runs those middlewares before the handler and a `true` return short-circuits it.
 - **use(middleware_fn, name, priority)**: Registers global middleware in the `before_request` stage (higher priority runs first; default 50).
 
-From this release, `handle_request` runs the global middleware chain, then `router_v2.match`, then falls back to the file-system router when no explicit route matches. Previously only the file-system router was dispatched.
+From this release, `handle_request` runs `before_request` hooks and the global middleware chain, then `router_v2.match` (which refuses `..`, backslash, and NUL paths, including percent-encoded forms), then the group middleware and handler, and finally falls back to the file-system router when no explicit route matches. `before_render` and `after_request` chain stages and hooks also run. Previously only the file-system router was dispatched.
 
 ### ORM & Data (Phase 11)
 
@@ -123,7 +140,7 @@ From this release, `handle_request` runs the global middleware chain, then `rout
 ### Error Handling
 
 - **set_error_handler(handler_fn)**: Sets a custom global error handler.
-- **reset_error_handler()**: Resets to the default production error handler.
+- **reset_error_handler()**: Resets to the default error handler. The environment is resolved per request from `opts.env`, then `GUARACI_ENV`, then `prod`; `dev` exposes error details.
 
 ### Debug Helpers
 

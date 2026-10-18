@@ -18,7 +18,7 @@ File uploads in Guaraci flow through four modules: `multipart` parses the reques
 
 ## Validation (`file_validator`)
 
-Every upload passes `file_validator`, which enforces three limits by default: 25 MB per file, 200 MB total per payload, and a MIME allow-list (`image/jpeg`, `image/png`, `application/pdf`, `text/plain`). Before any other check, `sanitize_filename` rejects path traversal — `..` segments, a leading `/`, NUL bytes, names longer than 255 characters, and any character outside `[a-zA-Z0-9._%-/]`. A file is rejected if its size exceeds the per-file limit or its MIME type is not allow-listed; `validate_payload` additionally rejects a batch whose cumulative size exceeds the payload cap.
+Every upload passes `file_validator`, which enforces three limits by default: 25 MB per file, 200 MB total per payload, and a MIME allow-list (`image/jpeg`, `image/png`, `application/pdf`, `text/plain`). Before any other check, `sanitize_filename` rejects path traversal — `..` segments, a leading `/`, NUL bytes, names longer than 255 characters, and any character outside letters, digits, dot, underscore, hyphen, and slash (percent is not allowed). A file is rejected if its size exceeds the per-file limit or its MIME type is not allow-listed; `validate_payload` additionally rejects a batch whose cumulative size exceeds the payload cap.
 
 ## Storage (`file_storage`)
 

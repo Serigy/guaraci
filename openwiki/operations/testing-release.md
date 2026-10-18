@@ -22,16 +22,22 @@ Guaraci ships its own Busted-style test harness (no external Busted dependency) 
 
 ## CI workflows
 
-Three workflows exist today:
+`.github/workflows/ci.yml` runs on push, pull request, and `workflow_call`:
 
-- `release-on-tag.yml`: creates a GitHub Release for pushed `v*.*.*` tags.
-- `release.yml`: manual semver validation, packaging, and optional LuaRocks publish.
-- `openwiki-update.yml`: daily (and manual) `openwiki code --update` run that refreshes this index and opens a PR. It requires the `OPENAI_API_KEY` repository secret; without that secret the scheduled run fails.
+- **test**: matrix of Lua 5.4, 5.3, and LuaJIT 2.1. Lua 5.4 is blocking; the other entries are `continue-on-error`. Each job runs `tests/run_all.lua`, `scripts/smoke_cgi.lua`, `scripts/check_rockspec.lua`, `luarocks lint`, `luarocks make guaraci-scm-1.rockspec`, and `guaraci version`.
+- **luacheck**: static analysis over `src`, `hooks`, `scripts`, and `tests`.
+- **sqlite**: installs `libsqlite3-dev` and `lsqlite3`, then runs the suite with the real driver.
+- **stale-names**: fails when the project's former name or former template extension remains in `docs`, `src`, `README.md`, or `openwiki`.
 
-A test/lint workflow is being added in WP4 of this release. Its intended shape is a Lua 5.3 and 5.4 matrix that installs `lsqlite3`, runs `lua5.4 tests/run_all.lua`, and runs the configured linter. Until it lands, the release workflows are the only automation that validates the tree, and the OpenWiki workflow is the only scheduled job.
+`.github/workflows/openwiki-update.yml` refreshes this index daily and on manual dispatch. It requires the `OPENAI_API_KEY` repository secret; without that secret the scheduled run fails.
 
 ## Release pipeline (`.github/workflows`)
 
-Two workflows produce GitHub Releases. `release-on-tag.yml` triggers on pushed `v*.*.*`-shaped tags, archives the tree (`zip` + `tar.gz`) and creates the release. `release.yml` is a manual (`workflow_dispatch`) pipeline that validates a semver version, normalizes the tag, converts it to a LuaRocks-compatible rockspec version, creates/pushes the tag, generates archive packages, creates the GitHub Release, and — when `publish_luarocks` is true — generates a `guaraci-<version>.rockspec` (mapping every module to its source path) and publishes it via `luarocks pack` + `luarocks upload` using the `LUAROCKS_API_KEY` secret.
+Two workflows produce GitHub Releases. Both call the composite action `.github/actions/derive-rock`, which copies `guaraci-scm-1.rockspec`, derives a versioned rockspec with `luarocks new_version` (semver prereleases become LuaRocks versions such as `0.0.5.pre.alpha.1-1`), lints it, installs it with `luarocks make`, smoke-tests `require("guaraci")` and `guaraci version`, and optionally packs the `.src.rock`.
+
+- `release-on-tag.yml` triggers on pushed `v*.*.*`, `X.Y.Z`, `v*.*.*-*`, and `X.Y.Z-*` tags. It runs CI, derives and packs the rock, archives the tree (`zip` + `tar.gz`), and creates the GitHub Release with the `.rockspec` and `.src.rock`.
+- `release.yml` is a manual (`workflow_dispatch`) pipeline that validates a semver version, normalizes the tag, runs CI and rockspec validation, creates/pushes the tag, generates archive packages, creates the GitHub Release, publishes to LuaRocks when `publish_luarocks` is true (using the `LUAROCKS_API_KEY` secret), and commits the versioned rockspec under `rockspecs/`.
+
+LuaRocks remains the install and update channel; the CLI does not self-update.
 
 `ROADMAP.md` records phases 1-14 complete, the active integration + security-regression suite, and the configured release pipeline (GitHub Release + LuaRocks package).

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:fd0262b4fb0a2a40387a4bc23558902d0b894169b93e69d485b9811b07373b1c",
+  "pageVersion": "sha256:ce30c6cdc446ee9149fd75e34b38bfcfe914ac4e2331a2408ad4e8c30fbf2944",
   "claims": [
     {
       "id": "claim_76a3ad6a5fab4be8a8af6c65cb33c38d",
@@ -34,7 +34,7 @@
     },
     {
       "id": "claim_57ca3d34cf5645438e6b7071fbd266ca",
-      "statement": "sanitize_filename rejects path traversal (.. and leading /), NUL bytes, names over 255 characters, and characters outside [a-zA-Z0-9._%-/].",
+      "statement": "sanitize_filename rejects path traversal (.. and leading /), NUL bytes, names over 255 characters, and characters outside letters, digits, dot, underscore, hyphen, and slash (percent is not allowed).",
       "evidence": [
         {
           "resource": "repo://src/file_validator.lua#L19-L38",

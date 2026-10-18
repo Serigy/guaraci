@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:33bfd6fcefc0dfc426a61fa92504d9d7b585c5e31d10f9fb7c812a5bb369a6d8",
+  "pageVersion": "sha256:0cf8694e9c437e24e3276d47c9980e9229379f22081f89ceb6eef112672ee52e",
   "claims": [
     {
       "id": "claim_4f36b5aac2e742ddb1e430b0f15a29a5",
@@ -54,7 +54,7 @@
     },
     {
       "id": "claim_833640b15d9845fdb8742f6f8a02fd81",
-      "statement": "route_group prefixes its routes with the group prefix and keeps a group-local middleware list.",
+      "statement": "route_group prefixes its routes with the group prefix, keeps a group-local middleware list, and wraps handlers so those middlewares run before the handler and can short-circuit it.",
       "evidence": [
         {
           "resource": "repo://src/route_group.lua#L21-L80",

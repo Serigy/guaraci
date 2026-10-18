@@ -40,6 +40,7 @@ tags: [lua, errors]
 
 Rules:
 - Hand-written pages are edited directly.
+- A new section added by hand to a generated page has no claim until the next `openwiki code --update` run; do not invent a claim or an evidence version for it.
 - They have no Claims sidecar and are not listed in `.page-manifest.json`.
 - Keep claims about behavior grounded in `src/` and `tests/`; cite file paths, not line numbers, because line numbers drift.
 

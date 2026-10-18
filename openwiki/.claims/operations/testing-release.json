@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:471fec5d5f2fbf670175420f293f7a86ac57b92d2241f5dfcfcb1568a3e19572",
+  "pageVersion": "sha256:168db223b8058f1a18e9332a3e7eed9b1a4395a6ad8051345c8546a3e3e7b520",
   "claims": [
     {
       "id": "claim_41c4ef18b5254314a024c7e19fd58f12",
@@ -74,7 +74,7 @@
     },
     {
       "id": "claim_0ec83b67298f4f58a2f0dfdd226f7438",
-      "statement": "release.yml validates a semver version and converts it into a LuaRocks rockspec version.",
+      "statement": "The release workflows call a derive-rock composite action that converts the semver tag into a LuaRocks-compatible rockspec version.",
       "evidence": [
         {
           "resource": "repo://.github/workflows/release.yml#L43-L91",
@@ -84,7 +84,7 @@
     },
     {
       "id": "claim_1bccdaba914b4b199f216fe8b5a9a1a7",
-      "statement": "release.yml generates a rockspec mapping each module to its source path and publishes via luarocks pack/upload using LUAROCKS_API_KEY.",
+      "statement": "derive-rock derives a versioned rockspec from guaraci-scm-1.rockspec, lints and installs it with luarocks make, optionally packs the .src.rock, and release.yml publishes via luarocks upload using LUAROCKS_API_KEY.",
       "evidence": [
         {
           "resource": "repo://.github/workflows/release.yml#L179-L225",
@@ -94,7 +94,7 @@
     },
     {
       "id": "claim_2bc458580ab7455abba00cc912b332a7",
-      "statement": "Pushing a v*.*.*-shaped tag triggers release-on-tag.yml, which archives the tree and creates a GitHub Release.",
+      "statement": "Pushing a semver-shaped tag (v*.*.*, X.Y.Z, or a prerelease form) triggers release-on-tag.yml, which archives the tree and creates a GitHub Release with the rockspec and source rock.",
       "evidence": [
         {
           "resource": "repo://.github/workflows/release-on-tag.yml#L3-L9",

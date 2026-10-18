@@ -24,7 +24,7 @@ end, "auth_gate")
 - `register(stage, fn, name)` returns `true` or `nil, err` (`invalid_stage`, `hook_must_be_function`).
 - `list(stage)`, `clear(stage)`, and `clear()` inspect and reset the registry.
 - `run_stage(stage, req, res, context)` returns `(stopped, reason)`, where reason is `short_circuit`, `hook_error`, or `invalid_stage`.
-- A hook that raises sets status 500, body `Erro interno.`, and reason `hook_error`.
+- A hook that raises makes `run_stage` mark the response as 500 and return `hook_error`; inside `handle_request` the error handler rewrites the body with code `hook_error`.
 - A hook returning `true` stops the stage. If it did not set a status, the default is 403 (or 401 when the hook set 401), with a matching default body.
 
 ### Default security-headers hook
