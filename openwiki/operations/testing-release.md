@@ -29,7 +29,7 @@ Guaraci ships its own Busted-style test harness (no external Busted dependency) 
 - **sqlite**: installs `libsqlite3-dev` and `lsqlite3`, then runs the suite with the real driver.
 - **stale-names**: fails when the project's former name or former template extension remains in `docs`, `src`, `README.md`, or `openwiki`.
 
-`.github/workflows/openwiki-update.yml` refreshes this index daily and on manual dispatch. It requires the `OPENAI_API_KEY` repository secret; without that secret the scheduled run fails.
+`.github/workflows/openwiki-update.yml` refreshes this index daily and on manual dispatch. It uses the Gemini (Google AI Studio) provider and requires the `GEMINI_API_KEY` repository secret; without that secret the scheduled run fails.
 
 ## Release pipeline (`.github/workflows`)
 

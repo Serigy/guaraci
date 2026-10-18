@@ -78,9 +78,9 @@ Every generated page has a sidecar at `openwiki/.claims/<path>.json`:
 npx -y openwiki@0.7.2 code --update
 ```
 
-- Requires a provider key (`OPENAI_API_KEY` or the configured provider) for real regeneration.
+- Requires a provider key (`GEMINI_API_KEY` for the configured Gemini provider) for real regeneration.
 - Never run `openwiki init` again on this repository: it would overwrite the index and the claims.
-- The scheduled workflow `.github/workflows/openwiki-update.yml` runs the update daily. It needs the `OPENAI_API_KEY` repository secret; without it the run fails.
+- The scheduled workflow `.github/workflows/openwiki-update.yml` runs the update daily. It uses the Gemini (Google AI Studio) provider and needs the `GEMINI_API_KEY` repository secret; without it the run fails.
 
 ## Review checklist
 

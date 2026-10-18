@@ -114,7 +114,7 @@ Ordem: hooks `before_request` rodam antes do middleware global; um stop de hook 
 - Hooks e fluxo do request executam com tratamento defensivo e logs de auditoria
 
 ## Automação
-O workflow `openwiki-update.yml` atualiza o OpenWiki diariamente e exige o secret de repositório `OPENAI_API_KEY` (configurado manualmente em Settings > Secrets).
+O workflow `openwiki-update.yml` atualiza o OpenWiki diariamente e usa o provider Gemini (Google AI Studio) e exige o secret de repositório `GEMINI_API_KEY` (configurado manualmente em Settings > Secrets).
 
 ## Documentacao adicional
 - Roadmap do MVP: `ROADMAP.md`
