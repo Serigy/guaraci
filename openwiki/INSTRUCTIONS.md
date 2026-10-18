@@ -88,4 +88,4 @@ npx -y openwiki@0.7.2 code --update
 - [ ] Hand-written pages keep `type`, `title`, `description`, and `tags`, and have no `verified:` block.
 - [ ] JSON sidecars pass `jq .`.
 - [ ] Statements match `src/` and `tests/`, including test counts and phase numbers.
-- [ ] No placeholder or legacy names (`Nika`, `your-org`) remain.
+- [ ] No placeholder or legacy project names remain.
