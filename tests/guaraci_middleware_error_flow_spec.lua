@@ -23,7 +23,7 @@ describe("Guaraci middleware error flow (Phase 13 Block 3)", function()
         local res = { status = 200, headers = {}, body = "" }
         local ctx = {}
 
-        local is_short_or_nil, error_msg, new_ctx = middleware_chain.run("before_request", req, res, ctx)
+        local is_short_or_nil, error_msg = middleware_chain.run("before_request", req, res, ctx)
 
         -- Middleware falha resulta em is_short_or_nil = nil (not true, not false) e error_msg = error message
         assert(is_short_or_nil == nil, "middleware erro retorna nil (not true)")
@@ -55,7 +55,7 @@ describe("Guaraci middleware error flow (Phase 13 Block 3)", function()
 
         -- application/* deve mapear para JSON
         local selected_format = error_formatter.negotiate("application/*")
-        local body, content_type = error_formatter.render(err, selected_format)
+        local _, content_type = error_formatter.render(err, selected_format)
 
         assert.are.equal("json", selected_format)
         assert.are.equal("application/json; charset=utf-8", content_type)
@@ -70,7 +70,7 @@ describe("Guaraci middleware error flow (Phase 13 Block 3)", function()
 
         -- text/* deve mapear para HTML
         local selected_format = error_formatter.negotiate("text/*")
-        local body, content_type = error_formatter.render(err, selected_format)
+        local _, content_type = error_formatter.render(err, selected_format)
 
         assert.are.equal("html", selected_format)
         assert.are.equal("text/html; charset=utf-8", content_type)
@@ -146,7 +146,7 @@ describe("Guaraci middleware error flow (Phase 13 Block 3)", function()
         local res = {}
         local ctx = {}
 
-        local is_short_or_nil, err_msg, new_ctx = middleware_chain.run("before_request", req, res, ctx)
+        local is_short_or_nil, err_msg = middleware_chain.run("before_request", req, res, ctx)
 
         -- Segunda middleware falha, retorna nil (não é true/false)
         assert(is_short_or_nil == nil, "deve retornar nil em error")
@@ -154,12 +154,10 @@ describe("Guaraci middleware error flow (Phase 13 Block 3)", function()
     end)
 
     it("custom error handler pode processar middleware error", function()
-        guaraci = require("guaraci")
+        local guaraci = require("guaraci")
         guaraci.reset_error_handler()
 
-        local custom_handler_called = false
         guaraci.set_error_handler(function(err, context)
-            custom_handler_called = true
             return {
                 status = 418,
                 headers = { ["Content-Type"] = "application/json; charset=utf-8" },

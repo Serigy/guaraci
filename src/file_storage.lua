@@ -1,3 +1,5 @@
+local random = require("guaraci_random")
+
 local M = {}
 
 local function is_windows()
@@ -14,10 +16,10 @@ end
 
 local function random_id()
     local template = "xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx"
-    return template:gsub("[xy]", function(c)
-        local v = (c == "x") and math.random(0, 15) or math.random(8, 11)
+    return (template:gsub("[xy]", function(c)
+        local v = (c == "x") and random.int(0, 15) or random.int(8, 11)
         return string.format("%x", v)
-    end)
+    end))
 end
 
 local function safe_name(name)

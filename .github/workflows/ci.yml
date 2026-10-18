@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: test (lua ${{ matrix.lua }})
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.lua != '5.4' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        lua: ["5.4", "5.3", "luajit-2.1"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: leafo/gh-actions-lua@v11
+        with:
+          luaVersion: ${{ matrix.lua }}
+
+      - uses: leafo/gh-actions-luarocks@v5
+
+      - name: Test suite
+        run: lua tests/run_all.lua
+
+      - name: Smoke CGI
+        run: lua scripts/smoke_cgi.lua
+
+      # Rockspec steps only run once guaraci-scm-1.rockspec exists.
+      - name: Check rockspec
+        if: ${{ hashFiles('guaraci-scm-1.rockspec') != '' && matrix.lua != 'luajit-2.1' }}
+        run: lua scripts/check_rockspec.lua
+
+      - name: Lint rockspec
+        if: ${{ hashFiles('guaraci-scm-1.rockspec') != '' && matrix.lua != 'luajit-2.1' }}
+        run: luarocks lint guaraci-scm-1.rockspec
+
+      - name: Install rock and smoke the CLI
+        if: ${{ hashFiles('guaraci-scm-1.rockspec') != '' && matrix.lua != 'luajit-2.1' }}
+        run: |
+          luarocks make guaraci-scm-1.rockspec
+          cd /tmp
+          guaraci version
+
+  luacheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leafo/gh-actions-lua@v11
+        with:
+          luaVersion: "5.4"
+      - uses: leafo/gh-actions-luarocks@v5
+      - run: luarocks install luacheck
+      - name: luacheck (static analysis)
+        run: luacheck --no-color src hooks scripts tests
+
+  sqlite:
+    name: sqlite integration (lsqlite3)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install libsqlite3-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsqlite3-dev
+      - uses: leafo/gh-actions-lua@v11
+        with:
+          luaVersion: "5.4"
+      - uses: leafo/gh-actions-luarocks@v5
+      - run: luarocks install lsqlite3
+      - run: lua tests/run_all.lua
+
+  stale-names:
+    name: stale-name guard (nika) - expected to fail until the rename branch merges
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Fail on leftover "nika"
+        run: |
+          if grep -rniE "\bnika\b|\.nika\b" docs src README.md openwiki; then
+            echo "::error::Stale 'nika' names found (project renamed to Guaraci)"
+            exit 1
+          fi

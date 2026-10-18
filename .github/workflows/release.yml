@@ -31,101 +31,64 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  release:
+  tag-name:
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - name: Validar versao e normalizar tag
+        id: tag
+        shell: bash
+        env:
+          RAW_VERSION: ${{ inputs.version }}
+        run: |
+          NORMALIZED="${RAW_VERSION#v}"
+          if [[ ! "$NORMALIZED" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "Versao invalida: $RAW_VERSION"
+            echo "Use formato vX.Y.Z, X.Y.Z, vX.Y.Z-alpha.N ou X.Y.Z-alpha.N"
+            exit 1
+          fi
+          echo "tag=v$NORMALIZED" >> "$GITHUB_OUTPUT"
 
+  ci:
+    needs: tag-name
+    uses: ./.github/workflows/ci.yml
+
+  validate:
+    name: validate rockspec
+    needs: [tag-name, ci]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: leafo/gh-actions-lua@v11
+        with:
+          luaVersion: "5.4"
+      - uses: leafo/gh-actions-luarocks@v5
+      - uses: ./.github/actions/derive-rock
+        with:
+          tag: ${{ needs.tag-name.outputs.tag }}
+
+  release:
+    needs: [tag-name, validate]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Validar versao
-        id: version_meta
-        shell: bash
-        run: |
-          RAW_VERSION="${{ inputs.version }}"
-          NORMALIZED="${RAW_VERSION#v}"
-          NORMALIZED="${NORMALIZED#.}"
-
-          if [[ ! "$NORMALIZED" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
-            echo "Versao invalida: $RAW_VERSION"
-            echo "Use formato vX.Y.Z, X.Y.Z, vX.Y.Z-alpha.N ou X.Y.Z-alpha.N"
-            exit 1
-          fi
-
-          echo "normalized=$NORMALIZED" >> "$GITHUB_OUTPUT"
-
-      - name: Normalizar tag
-        id: tag
-        shell: bash
-        run: |
-          TAG="v${{ steps.version_meta.outputs.normalized }}"
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-
-      - name: Resolver versao LuaRocks
-        id: luarocks_meta
-        shell: bash
-        run: |
-          TAG="${{ steps.tag.outputs.tag }}"
-          VERSION_NO_V="${TAG#v}"
-
-          # LuaRocks rockspec version must match: [%w.]+-%d+
-          # For pre-release semver, convert:
-          #   0.0.1-alpha.1 -> 0.0.1.pre.alpha.1-1
-          VERSION_NO_BUILD="${VERSION_NO_V%%+*}"
-          CORE="${VERSION_NO_BUILD%%-*}"
-
-          if [[ "$VERSION_NO_BUILD" == *-* ]]; then
-            PRE="${VERSION_NO_BUILD#*-}"
-            PRE="$(echo "$PRE" | sed -E 's/[^A-Za-z0-9.]+/./g; s/\.+/./g; s/^\.|\.$//g')"
-            ROCK_BASE="${CORE}.pre.${PRE}"
-          else
-            ROCK_BASE="$CORE"
-          fi
-
-          ROCK_BASE="$(echo "$ROCK_BASE" | sed -E 's/[^A-Za-z0-9.]+/./g; s/\.+/./g; s/^\.|\.$//g')"
-          ROCK_VERSION="${ROCK_BASE}-1"
-
-          echo "version_no_v=$VERSION_NO_V" >> "$GITHUB_OUTPUT"
-          echo "rock_version=$ROCK_VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Verificar se tag ja existe
-        id: tag_check
-        shell: bash
-        run: |
-          TAG="${{ steps.tag.outputs.tag }}"
-          if git rev-parse "$TAG" >/dev/null 2>&1; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Criar e publicar tag
-        if: ${{ steps.tag_check.outputs.exists != 'true' }}
-        shell: bash
-        run: |
-          TAG="${{ steps.tag.outputs.tag }}"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag -a "$TAG" -m "Release $TAG"
-          git push origin "$TAG"
-
-      - name: Tag ja existente
-        if: ${{ steps.tag_check.outputs.exists == 'true' }}
-        run: echo "Tag ${{ steps.tag.outputs.tag }} ja existe. Workflow seguira para validar release."
-
       - name: Verificar se release ja existe
         id: existing_release
         uses: actions/github-script@v7
+        env:
+          TAG: ${{ needs.tag-name.outputs.tag }}
         with:
           script: |
-            const tag = '${{ steps.tag.outputs.tag }}';
             try {
               await github.rest.repos.getReleaseByTag({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                tag
+                tag: process.env.TAG
               });
               core.setOutput('exists', 'true');
             } catch (err) {
@@ -147,12 +110,43 @@ jobs:
             exit 1
           fi
 
+      # The tag is only created after CI and rockspec validation passed.
+      - name: Criar e publicar tag
+        if: ${{ steps.existing_release.outputs.exists != 'true' }}
+        shell: bash
+        env:
+          TAG: ${{ needs.tag-name.outputs.tag }}
+        run: |
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "Tag $TAG ja existe."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag -a "$TAG" -m "Release $TAG"
+            git push origin "$TAG"
+          fi
+
+      - uses: leafo/gh-actions-lua@v11
+        if: ${{ steps.existing_release.outputs.exists != 'true' }}
+        with:
+          luaVersion: "5.4"
+      - uses: leafo/gh-actions-luarocks@v5
+        if: ${{ steps.existing_release.outputs.exists != 'true' }}
+
+      - name: Derivar, validar e empacotar rock
+        id: rock
+        if: ${{ steps.existing_release.outputs.exists != 'true' }}
+        uses: ./.github/actions/derive-rock
+        with:
+          tag: ${{ needs.tag-name.outputs.tag }}
+          pack: "true"
+
       - name: Gerar pacotes da release
         if: ${{ steps.existing_release.outputs.exists != 'true' }}
         shell: bash
+        env:
+          TAG: ${{ needs.tag-name.outputs.tag }}
         run: |
-          TAG="${{ steps.tag.outputs.tag }}"
-          mkdir -p dist
           git archive --format=zip --output "dist/guaraci-${TAG}.zip" "$TAG"
           git archive --format=tar.gz --output "dist/guaraci-${TAG}.tar.gz" "$TAG"
 
@@ -160,70 +154,42 @@ jobs:
         if: ${{ steps.existing_release.outputs.exists != 'true' }}
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.tag.outputs.tag }}
+          tag_name: ${{ needs.tag-name.outputs.tag }}
           prerelease: ${{ inputs.prerelease }}
           generate_release_notes: ${{ inputs.generate_release_notes }}
           files: |
             dist/*.zip
             dist/*.tar.gz
+            dist/*.rockspec
+            dist/*.src.rock
 
-      - name: Instalar LuaRocks
-        if: ${{ inputs.publish_luarocks == true && steps.existing_release.outputs.exists != 'true' }}
-        shell: bash
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y luarocks lua5.4
-          sudo luarocks install dkjson
-          luarocks show dkjson
-
-      - name: Gerar rockspec
-        if: ${{ inputs.publish_luarocks == true && steps.existing_release.outputs.exists != 'true' }}
-        shell: bash
-        run: |
-          ROCK_VERSION="${{ steps.luarocks_meta.outputs.rock_version }}"
-          cat > "dist/guaraci-${ROCK_VERSION}.rockspec" <<EOF
-          package = "guaraci"
-          version = "${ROCK_VERSION}"
-          source = {
-            url = "git+https://github.com/${{ github.repository }}.git",
-            tag = "${{ steps.tag.outputs.tag }}"
-          }
-          description = {
-            summary = "Guaraci: framework web minimalista em Lua",
-            homepage = "https://github.com/${{ github.repository }}",
-            license = "BSD-3-Clause"
-          }
-          dependencies = {
-            "lua >= 5.1"
-          }
-          build = {
-            type = "builtin",
-            modules = {
-              guaraci = "src/guaraci.lua",
-              guaraci_io = "src/guaraci_io.lua",
-              guaraci_audit = "src/guaraci_audit.lua",
-              json_util = "src/json_util.lua",
-              router = "src/router.lua",
-              parser = "src/parser.lua",
-              sandbox = "src/sandbox.lua",
-              hooks = "src/hooks.lua",
-              db = "src/db.lua",
-              adapter_cgi = "src/adapter_cgi.lua",
-              ["hooks.security_headers"] = "hooks/security_headers.lua"
-            }
-          }
-          EOF
-
-      - name: Empacotar e publicar no LuaRocks
+      - name: Publicar no LuaRocks
         if: ${{ inputs.publish_luarocks == true && steps.existing_release.outputs.exists != 'true' }}
         shell: bash
         env:
           LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
+        run: luarocks upload --api-key="$LUAROCKS_API_KEY" "${{ steps.rock.outputs.rockspec }}"
+
+      - name: Commitar rockspec versionado em rockspecs/
+        if: ${{ steps.existing_release.outputs.exists != 'true' }}
+        shell: bash
+        env:
+          ROCKSPEC: ${{ steps.rock.outputs.rockspec }}
         run: |
-          ROCKSPEC_FILE="dist/guaraci-${{ steps.luarocks_meta.outputs.rock_version }}.rockspec"
-          luarocks pack "$ROCKSPEC_FILE"
-          luarocks upload --api-key="$LUAROCKS_API_KEY" "$ROCKSPEC_FILE"
+          git fetch origin main
+          git checkout -B main origin/main
+          mkdir -p rockspecs
+          cp "$ROCKSPEC" rockspecs/
+          if git diff --quiet -- rockspecs && [ -z "$(git ls-files --others --exclude-standard rockspecs)" ]; then
+            echo "rockspecs/ sem alteracoes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rockspecs
+          git commit -m "chore: add $(basename "$ROCKSPEC") [skip ci]"
+          git push origin main
 
       - name: Release ja existente
         if: ${{ steps.existing_release.outputs.exists == 'true' }}
-        run: echo "Release para a tag ${{ steps.tag.outputs.tag }} ja existe. Encerrando sem erro."
+        run: echo "Release para a tag ${{ needs.tag-name.outputs.tag }} ja existe. Encerrando sem erro."

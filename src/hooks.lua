@@ -89,11 +89,13 @@ local function apply_short_circuit_defaults(res)
         return
     end
 
-    if type(res.status) ~= "number" then
+    -- Fail closed: the response default is 200, so a stop that set no status and no body means "forbidden".
+    local empty_body = res.body == nil or res.body == ""
+    if type(res.status) ~= "number" or (res.status == 200 and empty_body) then
         res.status = 403
     end
 
-    if res.body == nil or res.body == "" then
+    if empty_body then
         if res.status == 401 then
             res.body = "<h1>401 Unauthorized</h1>"
         else
@@ -103,12 +105,13 @@ local function apply_short_circuit_defaults(res)
 end
 
 function M.run_stage(stage, req, res, context)
-    local valid_stage, err = ensure_stage(stage)
+    local valid_stage = ensure_stage(stage)
     if not valid_stage then
         return true, "invalid_stage"
     end
 
     local hooks = registry[valid_stage]
+    local after_request_failed = false
 
     for i = 1, #hooks do
         local hook = hooks[i]
@@ -126,10 +129,15 @@ function M.run_stage(stage, req, res, context)
                 res.body = "Erro interno."
             end
 
-            return true, "hook_error"
+            if valid_stage ~= "after_request" then
+                return true, "hook_error"
+            end
+            -- after_request keeps going so the remaining hooks (security headers) still run.
+            after_request_failed = true
         end
 
-        if should_stop == true then
+        -- after_request never short-circuits: the default security headers hook must always run.
+        if should_stop == true and valid_stage ~= "after_request" then
             apply_short_circuit_defaults(res)
             log_security("Hook aplicou short-circuit", {
                 stage = valid_stage,
@@ -138,6 +146,10 @@ function M.run_stage(stage, req, res, context)
             })
             return true, "short_circuit"
         end
+    end
+
+    if after_request_failed then
+        return true, "hook_error"
     end
 
     return false
@@ -166,6 +178,15 @@ function M.load_hook_from_file(stage, path)
     return M.register(valid_stage, hook_or_err, path)
 end
 
+local function file_exists(path)
+    local f = io.open(path, "r")
+    if f then
+        f:close()
+        return true
+    end
+    return false
+end
+
 function M.register_default_hooks(opts)
     if defaults_loaded then
         return true
@@ -174,7 +195,18 @@ function M.register_default_hooks(opts)
     opts = opts or {}
     local security_hook_path = opts.security_headers_path or "hooks/security_headers.lua"
 
-    local ok, err = M.load_hook_from_file("after_request", security_hook_path)
+    local ok, err
+    if not opts.security_headers_path and not file_exists(security_hook_path) then
+        -- Installed rock or project without hooks/: use the module shipped with the core.
+        local loaded, hook_or_err = pcall(require, "hooks.security_headers")
+        if loaded and type(hook_or_err) == "function" then
+            ok, err = M.register("after_request", hook_or_err, "security_headers")
+        else
+            ok, err = nil, hook_or_err
+        end
+    else
+        ok, err = M.load_hook_from_file("after_request", security_hook_path)
+    end
     if not ok then
         log_error("Falha ao registrar hook nativo de security headers", {
             stage = "after_request",

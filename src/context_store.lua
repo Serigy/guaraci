@@ -9,7 +9,7 @@ local _cleanup_queue = {} -- lista de request_ids para limpeza
 
 -- Gera UUID simples para request_id
 local function generate_uuid()
-    local random = math.random
+    local random = require("guaraci_random").int
     local template = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
     return string.gsub(template, '[xy]', function(c)
         local v = (c == 'x') and random(0, 0xf) or random(0x8, 0xb)

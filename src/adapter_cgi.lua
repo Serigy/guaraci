@@ -7,8 +7,13 @@ local has_audit, audit = pcall(require, "guaraci_audit")
 local M = {}
 
 local function generate_request_id()
-    local seed = tostring(os.time()) .. tostring(math.random(100000, 999999))
-    return "req-" .. seed
+    return "req-" .. require("guaraci_random").hex(8)
+end
+
+local function log_security(message, context)
+    if has_audit and audit and type(audit.log_security) == "function" then
+        audit.log_security(message, context)
+    end
 end
 
 local function log_error(message, context)
@@ -102,6 +107,12 @@ local function read_body(env, stdin_reader)
     return body_or_err
 end
 
+-- Client-supplied ids key uploads and contexts and are echoed in errors: accept only a safe shape.
+-- "@" is allowed because Apache mod_unique_id values use it (alphabet A-Za-z0-9@-).
+local function is_valid_request_id(value)
+    return type(value) == "string" and #value >= 8 and #value <= 64 and value:match("^[%w%-_@]+$") ~= nil
+end
+
 function M.request_from_cgi(env, stdin_reader)
     env = env or {}
     stdin_reader = stdin_reader or function(len)
@@ -117,7 +128,17 @@ function M.request_from_cgi(env, stdin_reader)
     end
 
     local headers = parse_headers(env)
-    local context_id = env.HTTP_X_REQUEST_ID or env.REQUEST_ID or env.UNIQUE_ID or generate_request_id()
+    local context_id
+    for _, key in ipairs({ "REQUEST_ID", "UNIQUE_ID" }) do
+        local candidate = env[key]
+        if is_valid_request_id(candidate) then
+            context_id = candidate
+            break
+        end
+    end
+    context_id = context_id or generate_request_id()
+    -- Only server-provided ids become context_id; the client's X-Request-Id is just a correlation hint.
+    local client_request_id = is_valid_request_id(env.HTTP_X_REQUEST_ID) and env.HTTP_X_REQUEST_ID or nil
     local query = parse_query(env.QUERY_STRING or "")
     local body = read_body(env, stdin_reader)
 
@@ -159,6 +180,8 @@ function M.request_from_cgi(env, stdin_reader)
         files = files,
         body_table = body_table,
         context_id = context_id,
+        client_request_id = client_request_id,
+        remote_addr = type(env.REMOTE_ADDR) == "string" and env.REMOTE_ADDR or nil,
         upload_error = upload_error
     }
 end
@@ -175,6 +198,12 @@ local function status_text(status)
     return map[status] or "OK"
 end
 
+-- RFC 7230 token for names; values may not carry CR, LF or NUL (response splitting).
+local function valid_header(name, value)
+    local n, v = tostring(name), tostring(value)
+    return n:match("^[%w!#$%%&'*+.^_`|~-]+$") ~= nil and not v:find("[\r\n%z]")
+end
+
 function M.response_to_cgi(res, stdout_writer)
     stdout_writer = stdout_writer or function(chunk)
         io.write(chunk)
@@ -189,6 +218,21 @@ function M.response_to_cgi(res, stdout_writer)
         headers["Content-Type"] = "text/html; charset=utf-8"
     end
 
+    for k, v in pairs(headers) do
+        if not valid_header(k, v) then
+            log_security("response_header_rejected", { header = tostring(k):sub(1, 64) })
+            status = 500
+            headers = {
+                ["Content-Type"] = "text/plain; charset=utf-8",
+                ["X-Frame-Options"] = "DENY",
+                ["X-Content-Type-Options"] = "nosniff",
+                ["Content-Security-Policy"] = "default-src 'self'"
+            }
+            body = "Internal Error"
+            break
+        end
+    end
+
     headers["Content-Length"] = tostring(#body)
 
     stdout_writer("Status: " .. tostring(status) .. " " .. status_text(status) .. "\r\n")
@@ -199,10 +243,62 @@ function M.response_to_cgi(res, stdout_writer)
     stdout_writer(body)
 end
 
+local CGI_VARS = {
+    "REQUEST_METHOD", "PATH_INFO", "REQUEST_URI", "QUERY_STRING",
+    "CONTENT_TYPE", "CONTENT_LENGTH", "REMOTE_ADDR", "SERVER_NAME",
+    "SERVER_PORT", "SCRIPT_NAME", "REQUEST_ID", "UNIQUE_ID", "HTTPS"
+}
+
+-- Pure Lua cannot enumerate the environment, so only these headers are read.
+local ALLOWED_HEADERS = {
+    "Accept", "Cookie", "Authorization", "Origin", "Host", "Referer",
+    "User-Agent", "X-Requested-With", "X-CSRF-Token", "X-Request-Id",
+    "X-Tenant-Id", "X-Real-IP", "X-Forwarded-For", "X-Forwarded-Proto",
+    "X-Forwarded-Host", "X-Forwarded-Port", "X-Forwarded-Prefix"
+}
+
+local function header_env_name(header)
+    return "HTTP_" .. header:upper():gsub("-", "_")
+end
+
+-- Builds a CGI env table from the process environment (opts.getenv overrides os.getenv).
+function M.env_from_os(opts)
+    opts = opts or {}
+    local getenv = opts.getenv or os.getenv
+    local env = {}
+
+    for _, name in ipairs(CGI_VARS) do
+        local value = getenv(name)
+        if value ~= nil then
+            env[name] = value
+        end
+    end
+
+    local function add_header(header)
+        if type(header) ~= "string" or header == "" then
+            return
+        end
+        local name = header_env_name(header)
+        local value = getenv(name)
+        if value ~= nil then
+            env[name] = value
+        end
+    end
+
+    for _, header in ipairs(ALLOWED_HEADERS) do
+        add_header(header)
+    end
+    for _, header in ipairs(opts.extra_headers or {}) do
+        add_header(header)
+    end
+
+    return env
+end
+
 function M.run_cgi(opts)
     opts = opts or {}
 
-    local req = M.request_from_cgi(opts.env or _G, opts.stdin_reader)
+    local req = M.request_from_cgi(opts.env or M.env_from_os(opts), opts.stdin_reader)
     local res = guaraci.handle_request(req, opts.guaraci_options)
     M.response_to_cgi(res, opts.stdout_writer)
     return true
