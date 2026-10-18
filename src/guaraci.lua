@@ -3,6 +3,7 @@ local router = require("router")
 local parser = require("parser")
 local sandbox = require("sandbox")
 local hooks = require("hooks")
+local random = require("guaraci_random")
 
 -- Phase 10: Novos módulos para Gin-style routing
 local context_store = require("context_store")
@@ -81,7 +82,7 @@ function M.handle_request(raw_req, opts)
 
     raw_req = raw_req or {}
     if raw_req.context_id == nil or raw_req.context_id == "" then
-        raw_req.context_id = "ctx-" .. tostring(os.time()) .. "-" .. tostring(math.random(100000, 999999))
+        raw_req.context_id = "ctx-" .. random.hex(8)
     end
 
     local req = io_factory.new_request(raw_req)
@@ -93,21 +94,36 @@ function M.handle_request(raw_req, opts)
     active_error_handler = active_error_handler or configured_error_handler
 
     local function apply_error(err)
-        local handled = error_handler.apply(active_error_handler, err, {
-            req = req,
-            res = res,
-            opts = opts
-        })
+        local ok_apply = pcall(function()
+            local handled = error_handler.apply(active_error_handler, err, {
+                req = req,
+                res = res,
+                opts = opts
+            })
 
-        res.status = tonumber(handled.status) or 500
-        res.headers = res.headers or {}
+            local status = tonumber(handled.status) or 500
+            local body = handled.body == nil and "" or tostring(handled.body)
+            local merged = {}
+            for k, v in pairs(handled.headers or {}) do
+                merged[k] = v
+            end
 
-        local headers = handled.headers or {}
-        for k, v in pairs(headers) do
-            res.headers[k] = v
+            res.status = status
+            res.headers = res.headers or {}
+            for k, v in pairs(merged) do
+                res.headers[k] = v
+            end
+            res.body = body
+        end)
+
+        if not ok_apply then
+            -- A broken custom handler must never escape handle_request or skip cleanup.
+            log_error("Error handler falhou", { context_id = req.context_id })
+            res.status = 500
+            res.headers = res.headers or {}
+            res.headers["Content-Type"] = "text/plain; charset=utf-8"
+            res.body = "Internal Error"
         end
-
-        res.body = handled.body == nil and "" or tostring(handled.body)
         return res
     end
 
@@ -126,41 +142,36 @@ function M.handle_request(raw_req, opts)
         end
     end
 
-    local function finalize_response(run_after_request, template_path)
+    -- Every response (success, 404, 500, short-circuit) goes through the after_request stage so the
+    -- default security headers are always applied.
+    local function finalize_response(_, template_path)
         context_store.cleanup(req.context_id)
-        if run_after_request == true then
-            local _, chain_err = middleware_chain.run("after_request", req, res, request_context)
-            if chain_err ~= nil then
-                log_error("Falha no middleware after_request", {
-                    context_id = req.context_id,
-                    error = tostring(chain_err)
-                })
-                apply_error({
-                    status = 500,
-                    code = "middleware_error",
-                    message = "Internal Error",
-                    details = "after_request"
-                })
-                cleanup_uploads()
-                return res
-            end
 
-            local stop_after_request, stop_reason = hooks.run_stage("after_request", req, res, {
-                phase = "after_request",
-                template_path = template_path
+        local _, chain_err = middleware_chain.run("after_request", req, res, request_context)
+        if chain_err ~= nil then
+            log_error("Falha no middleware after_request", {
+                context_id = req.context_id,
+                error = tostring(chain_err)
             })
-            if stop_reason == "hook_error" then
-                apply_error({
-                    status = 500,
-                    code = "hook_error",
-                    message = "Internal Error",
-                    details = "after_request"
-                })
-            end
-            if stop_after_request == true then
-                cleanup_uploads()
-                return res
-            end
+            apply_error({
+                status = 500,
+                code = "middleware_error",
+                message = "Internal Error",
+                details = "after_request"
+            })
+        end
+
+        local ok_hooks, _, stop_reason = pcall(hooks.run_stage, "after_request", req, res, {
+            phase = "after_request",
+            template_path = template_path
+        })
+        if not ok_hooks or stop_reason == "hook_error" then
+            apply_error({
+                status = 500,
+                code = "hook_error",
+                message = "Internal Error",
+                details = "after_request"
+            })
         end
 
         cleanup_uploads()
@@ -188,7 +199,7 @@ function M.handle_request(raw_req, opts)
                     message = "Internal Error",
                     details = defaults_err
                 })
-                return finalize_response(false)
+                return finalize_response()
             end
         end
 
@@ -197,9 +208,11 @@ function M.handle_request(raw_req, opts)
             apply_error({
                 status = status,
                 code = "upload_error",
-                message = tostring(req.upload_error)
+                message = status == 413 and "Payload too large" or "Invalid upload",
+                details = tostring(req.upload_error)
             })
-            return finalize_response(false)
+            log_error("Upload rejeitado", { context_id = req.context_id, error = tostring(req.upload_error) })
+            return finalize_response()
         end
 
         local stop_before_request, before_request_reason = hooks.run_stage("before_request", req, res,
@@ -211,10 +224,10 @@ function M.handle_request(raw_req, opts)
                 message = "Internal Error",
                 details = "before_request"
             })
-            return finalize_response(false)
+            return finalize_response()
         end
         if stop_before_request == true then
-            return finalize_response(true)
+            return finalize_response()
         end
 
         local short_circuit, chain_err, chain_ctx = middleware_chain.run("before_request", req, res, request_context)
@@ -232,10 +245,10 @@ function M.handle_request(raw_req, opts)
                 message = "Internal Error",
                 details = chain_err
             })
-            return finalize_response(false)
+            return finalize_response()
         end
         if short_circuit == true then
-            return finalize_response(true)
+            return finalize_response()
         end
 
         local route_handler, _, route_params
@@ -250,7 +263,7 @@ function M.handle_request(raw_req, opts)
             if type(handler_result) == "string" then
                 res.body = handler_result
             end
-            return finalize_response(true)
+            return finalize_response()
         end
 
         local template_path, route_err = router.resolve_or_404(req, res, {
@@ -264,7 +277,7 @@ function M.handle_request(raw_req, opts)
                 code = code,
                 message = "Not Found"
             })
-            return finalize_response(false)
+            return finalize_response()
         end
 
         local template_source, read_err = safe_read_file(template_path)
@@ -279,7 +292,7 @@ function M.handle_request(raw_req, opts)
                 message = "Internal Error",
                 details = read_err
             })
-            return finalize_response(false)
+            return finalize_response()
         end
 
         local stop_before_render, before_render_reason = hooks.run_stage("before_render", req, res, {
@@ -293,10 +306,10 @@ function M.handle_request(raw_req, opts)
                 message = "Internal Error",
                 details = "before_render"
             })
-            return finalize_response(false)
+            return finalize_response()
         end
         if stop_before_render == true then
-            return finalize_response(true)
+            return finalize_response()
         end
 
         local render_short, render_chain_err = middleware_chain.run("before_render", req, res, request_context)
@@ -311,10 +324,10 @@ function M.handle_request(raw_req, opts)
                 message = "Internal Error",
                 details = render_chain_err
             })
-            return finalize_response(false)
+            return finalize_response()
         end
         if render_short == true then
-            return finalize_response(true)
+            return finalize_response()
         end
 
         local compiled_lua, compile_err = parser.compile(template_source)
@@ -329,7 +342,7 @@ function M.handle_request(raw_req, opts)
                 message = "Internal Error",
                 details = compile_err
             })
-            return finalize_response(false)
+            return finalize_response()
         end
 
         local rendered_body, render_err = sandbox.render_template(compiled_lua, req, res, {
@@ -351,7 +364,7 @@ function M.handle_request(raw_req, opts)
                 message = "Internal Error",
                 details = render_err
             })
-            return finalize_response(false)
+            return finalize_response()
         end
 
         res.body = rendered_body
@@ -370,7 +383,7 @@ function M.handle_request(raw_req, opts)
             message = "Internal Error",
             details = pipeline_error
         })
-        return finalize_response(false)
+        return finalize_response()
     end
 
     return pipeline_error

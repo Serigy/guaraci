@@ -12,6 +12,7 @@ local SPEC_MODULES = {
     "tests.cli_dev_spec",
     "tests.cli_container_spec",
     "tests.guaraci_audit_warning_spec",
+    "tests.security_final_spec",
     "tests.security_regression_spec",
     "tests.determinism_spec",
     "tests.template_functions_registry_spec",

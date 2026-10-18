@@ -7,8 +7,13 @@ local has_audit, audit = pcall(require, "guaraci_audit")
 local M = {}
 
 local function generate_request_id()
-    local seed = tostring(os.time()) .. tostring(math.random(100000, 999999))
-    return "req-" .. seed
+    return "req-" .. require("guaraci_random").hex(8)
+end
+
+local function log_security(message, context)
+    if has_audit and audit and type(audit.log_security) == "function" then
+        audit.log_security(message, context)
+    end
 end
 
 local function log_error(message, context)
@@ -190,6 +195,12 @@ local function status_text(status)
     return map[status] or "OK"
 end
 
+-- RFC 7230 token for names; values may not carry CR, LF or NUL (response splitting).
+local function valid_header(name, value)
+    local n, v = tostring(name), tostring(value)
+    return n:match("^[%w!#$%%&'*+.^_`|~-]+$") ~= nil and not v:find("[\r\n%z]")
+end
+
 function M.response_to_cgi(res, stdout_writer)
     stdout_writer = stdout_writer or function(chunk)
         io.write(chunk)
@@ -202,6 +213,16 @@ function M.response_to_cgi(res, stdout_writer)
 
     if headers["Content-Type"] == nil then
         headers["Content-Type"] = "text/html; charset=utf-8"
+    end
+
+    for k, v in pairs(headers) do
+        if not valid_header(k, v) then
+            log_security("response_header_rejected", { header = tostring(k):sub(1, 64) })
+            status = 500
+            headers = { ["Content-Type"] = "text/plain; charset=utf-8" }
+            body = "Internal Error"
+            break
+        end
     end
 
     headers["Content-Length"] = tostring(#body)

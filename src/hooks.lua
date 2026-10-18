@@ -111,6 +111,7 @@ function M.run_stage(stage, req, res, context)
     end
 
     local hooks = registry[valid_stage]
+    local after_request_failed = false
 
     for i = 1, #hooks do
         local hook = hooks[i]
@@ -128,10 +129,15 @@ function M.run_stage(stage, req, res, context)
                 res.body = "Erro interno."
             end
 
-            return true, "hook_error"
+            if valid_stage ~= "after_request" then
+                return true, "hook_error"
+            end
+            -- after_request keeps going so the remaining hooks (security headers) still run.
+            after_request_failed = true
         end
 
-        if should_stop == true then
+        -- after_request never short-circuits: the default security headers hook must always run.
+        if should_stop == true and valid_stage ~= "after_request" then
             apply_short_circuit_defaults(res)
             log_security("Hook aplicou short-circuit", {
                 stage = valid_stage,
@@ -140,6 +146,10 @@ function M.run_stage(stage, req, res, context)
             })
             return true, "short_circuit"
         end
+    end
+
+    if after_request_failed then
+        return true, "hook_error"
     end
 
     return false

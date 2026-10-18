@@ -51,6 +51,7 @@ build = {
         ["guaraci_cli.test"] = "src/guaraci_cli/test.lua",
         ["guaraci_cli.util"] = "src/guaraci_cli/util.lua",
         guaraci_io = "src/guaraci_io.lua",
+        guaraci_random = "src/guaraci_random.lua",
         guaraci_version = "src/guaraci_version.lua",
         hooks = "src/hooks.lua",
         json_util = "src/json_util.lua",

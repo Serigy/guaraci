@@ -85,3 +85,24 @@ describe("adapter_cgi request hardening", function()
         assert.are.equal("9.9.9.9", env.HTTP_X_FORWARDED_FOR)
     end)
 end)
+
+describe("adapter_cgi response splitting", function()
+    local function render(res)
+        local out = {}
+        adapter.response_to_cgi(res, function(c) out[#out + 1] = c end)
+        return table.concat(out)
+    end
+
+    it("rejects CRLF in header values", function()
+        local text = render({ status = 302, headers = { Location = "/x\r\nSet-Cookie: pwn=1" }, body = "b" })
+        assert.is_not_nil(text:find("^Status: 500"))
+        assert.is_nil(text:find("pwn", 1, true))
+    end)
+
+    it("rejects NUL, LF and bad header names", function()
+        assert.is_not_nil(render({ headers = { A = "x\ny" } }):find("^Status: 500"))
+        assert.is_not_nil(render({ headers = { A = "x\0y" } }):find("^Status: 500"))
+        assert.is_not_nil(render({ headers = { ["Bad Name"] = "x" } }):find("^Status: 500"))
+        assert.is_not_nil(render({ headers = { ["X-Ok"] = "fine" } }):find("^Status: 200"))
+    end)
+end)
