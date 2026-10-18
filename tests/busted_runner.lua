@@ -8,6 +8,7 @@ local SPEC_MODULES = {
     "tests.cli_main_spec",
     "tests.cli_check_spec",
     "tests.cli_test_spec",
+    "tests.cli_new_spec",
     "tests.security_regression_spec",
     "tests.determinism_spec",
     "tests.template_functions_registry_spec",

@@ -1,0 +1,33 @@
+local new = require("guaraci_cli.new")
+local check = require("guaraci_cli.check")
+local util = require("guaraci_cli.util")
+
+local function run(args)
+    local sink = { write = function() end }
+    local err = {}
+    local code = new.run(args, { stdout = sink, stderr = { write = function(_, s) err[#err + 1] = s end } })
+    return code, table.concat(err)
+end
+
+describe("guaraci new", function()
+    it("scaffolds the documented files and the generated view passes check", function()
+        local dir = os.tmpname()
+        os.remove(dir)
+        local code = run({ dir })
+        assert.are.equal(0, code)
+        for _, f in ipairs({ "app.lua", "views/index.gc", "hooks/security_headers.lua", "cgi-bin/app.cgi",
+            "spec/index_spec.lua", "paseo.json", ".gitignore", "Dockerfile.dev", "README.md" }) do
+            assert.is_true(util.file_exists(dir .. "/" .. f), f)
+        end
+        assert.is_not_nil(util.read_file(dir .. "/paseo.json"):find('"dev": "guaraci dev"', 1, true))
+        local clean = check.check_source("index.gc", util.read_file(dir .. "/views/index.gc"))
+        assert.are.equal(0, #clean)
+        os.execute("rm -rf '" .. dir .. "'")
+    end)
+
+    it("refuses non-empty directories and invalid names", function()
+        assert.are.equal(1, (run({ "tests" })))
+        assert.are.equal(2, (run({ "/tmp/bad name;rm" })))
+        assert.are.equal(2, (run({})))
+    end)
+end)
