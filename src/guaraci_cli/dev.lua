@@ -235,6 +235,7 @@ end
 function M.dispatch(request, config)
     local ok, result = xpcall(function()
         reset_app_state(config.baseline)
+        require("guaraci").enable_explorer({ env = "dev" })
         local adapter = require("adapter_cgi")
         local options = dofile(config.app_path) or {}
         options.env = "dev"

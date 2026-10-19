@@ -2,6 +2,7 @@ local router_v2 = require("router_v2")
 local route_introspection = require("route_introspection")
 local openapi = require("api_explorer.openapi")
 local audit = require("guaraci_audit")
+local guaraci_random = require("guaraci_random")
 
 local function noop(req, res) return res end
 
@@ -159,6 +160,18 @@ describe("api_explorer.openapi", function()
         assert.are.equal(a, b)
     end)
 
+    it("never documents the explorer's own /__guaraci/ utility routes", function()
+        router_v2.get("/__guaraci/api-docs", noop, "api_docs")
+        router_v2.get("/__guaraci/explorer", noop, "explorer_page")
+        router_v2.get("/__guaraci/explorer/app.js", noop, "explorer_js")
+        router_v2.get("/__guaraci/explorer/style.css", noop, "explorer_css")
+        register_product_crud(true)
+
+        local encoded = openapi.encode(openapi.build_document({}))
+        assert.is_nil(encoded:find("__guaraci", 1, true))
+        assert.is_not_nil(encoded:find('"/products"', 1, true))
+    end)
+
     it("reflects a route registered between two builds without a process restart", function()
         router_v2.get("/products", noop, "products_list")
         route_introspection.describe("GET", "/products", { model = "Product", operation = "list", fields = {} })
@@ -185,8 +198,9 @@ describe("api_explorer.openapi", function()
         -- audit.set_log_path is a process-wide default: save and restore it so later specs
         -- that log without an explicit path keep writing to their expected default file.
         local default_log_path = os.getenv("GUARACI_AUDIT_LOG") or "guaraci_audit.log"
-        local log_path = "tests/tmp_openapi_audit_" .. tostring(os.time()) .. "_" .. tostring(math.random(1000, 9999)) ..
-            ".log"
+        -- guaraci_random (backed by /dev/urandom) avoids math.random's deterministic,
+        -- unseeded sequence in Lua 5.4, which could otherwise collide across process runs.
+        local log_path = "tests/tmp_openapi_audit_" .. guaraci_random.hex(8) .. ".log"
         audit.set_log_path(log_path)
         audit.log_error("openapi_build_failed", { error = tostring(err) })
         local fh = io.open(log_path, "r")

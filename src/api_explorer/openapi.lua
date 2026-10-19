@@ -244,11 +244,15 @@ local function build(opts)
 
     local path_order, path_entries = {}, {}
     for _, entry in ipairs(route_introspection.all()) do
-        if not path_entries[entry.pattern] then
-            path_entries[entry.pattern] = {}
-            path_order[#path_order + 1] = entry.pattern
+        -- The explorer's own 4 utility routes (/__guaraci/...) are framework-internal, not
+        -- part of the user's API, and never get a descriptor: never document them.
+        if not entry.pattern:find("^/__guaraci/") then
+            if not path_entries[entry.pattern] then
+                path_entries[entry.pattern] = {}
+                path_order[#path_order + 1] = entry.pattern
+            end
+            table.insert(path_entries[entry.pattern], entry)
         end
-        table.insert(path_entries[entry.pattern], entry)
     end
 
     local paths = new_omap()

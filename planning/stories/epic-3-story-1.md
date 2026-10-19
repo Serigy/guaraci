@@ -1,6 +1,6 @@
 # Epic 3 — Story 1: Serve the static same-origin explorer shell and assets
 
-**Status:** Draft
+**Status:** Ready
 
 ## User Story Goal
 
