@@ -1,6 +1,6 @@
 # Epic 1 — Story 2: Wire the endpoint generator and safe file creation
 
-**Status:** Draft
+**Status:** Ready
 
 ## User Story Goal
 
