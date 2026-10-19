@@ -1,6 +1,6 @@
 # Epic 2 — Story 3: Activate the explorer with production fail-closed behavior
 
-**Status:** Draft
+**Status:** Ready
 
 ## User Story Goal
 

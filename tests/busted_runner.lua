@@ -12,6 +12,7 @@ local SPEC_MODULES = {
     "tests.cli_dev_spec",
     "tests.cli_generate_spec",
     "tests.route_introspection_spec",
+    "tests.openapi_spec",
     "tests.cli_container_spec",
     "tests.guaraci_audit_warning_spec",
     "tests.security_final_spec",
