@@ -29,6 +29,25 @@ local function parse_cookies(cookie_header)
     return out
 end
 
+-- adapter_cgi.lua's CGI env round-trip (HTTP_X_CSRF_TOKEN -> "X-CSRF-TOKEN") normalizes header
+-- names to upper case, which matches neither a Title-Case nor an all-lowercase lookup; a plain
+-- exact/lowercase check here silently never finds the header or cookie over real HTTP (dev
+-- server or CGI), even though the exact same check passes in a handle_request-level test that
+-- constructs the headers table directly with whatever casing the test happened to choose.
+local function find_header(headers, name)
+    local direct = headers[name]
+    if direct ~= nil then
+        return direct
+    end
+    local wanted = string.lower(name)
+    for key, value in pairs(headers) do
+        if type(key) == "string" and string.lower(key) == wanted then
+            return value
+        end
+    end
+    return nil
+end
+
 local function safe_equals(a, b)
     a = tostring(a or "")
     b = tostring(b or "")
@@ -63,9 +82,9 @@ function M.create(opts)
         end
 
         local headers = req.headers or {}
-        local token_header = headers[header_name] or headers[string.lower(header_name)]
+        local token_header = find_header(headers, header_name)
 
-        local cookie_header = headers["cookie"] or headers["Cookie"]
+        local cookie_header = find_header(headers, "cookie")
         local cookies = parse_cookies(cookie_header)
         local token_cookie = cookies[cookie_name]
 

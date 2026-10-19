@@ -14,6 +14,14 @@ local COMMANDS = {
         summary = "dev server: guaraci dev [--port 8080] [--host H] [--container]\n" ..
             "             (public/ bypasses app middleware)"
     },
+    {
+        name = "generate", module = "guaraci_cli.generate",
+        summary = "generate <type> <name> [--fields ..] [--no-tenant] [--force]: scaffold endpoint"
+    },
+    {
+        name = "scaffold", module = "guaraci_cli.generate",
+        summary = "alias: guaraci scaffold <name> == guaraci generate endpoint <name>"
+    },
     { name = "version", summary = "print the version" },
     { name = "help", summary = "show this help" }
 }
@@ -70,7 +78,7 @@ function M.run(argv, streams)
     for i = 2, #argv do
         rest[#rest + 1] = argv[i]
     end
-    local code = mod.run(rest, { stdout = out, stderr = err, util = util })
+    local code = mod.run(rest, { stdout = out, stderr = err, util = util, command = name })
     return code or M.EXIT_OK
 end
 

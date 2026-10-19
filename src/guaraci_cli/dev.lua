@@ -225,12 +225,17 @@ local function reset_app_state(baseline)
     require("middleware_chain").clear()
     require("hooks").clear()
     require("guaraci").clear_models()
+    local introspection = package.loaded["route_introspection"]
+    if introspection then
+        introspection.clear()
+    end
 end
 
 -- Runs one request through app.lua + adapter_cgi and returns the HTTP response text.
 function M.dispatch(request, config)
     local ok, result = xpcall(function()
         reset_app_state(config.baseline)
+        require("guaraci").enable_explorer({ env = "dev" })
         local adapter = require("adapter_cgi")
         local options = dofile(config.app_path) or {}
         options.env = "dev"

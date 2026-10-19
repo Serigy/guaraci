@@ -40,6 +40,8 @@ guaraci check views/index.gc
 
 The scaffold contains `app.lua`, `views/index.gc`, `hooks/security_headers.lua`, `cgi-bin/app.cgi`, `spec/index_spec.lua`, `paseo.json`, `Dockerfile.dev`, `.gitignore`, and `README.md`. Exit codes are `0` success, `1` findings/failures, and `2` usage error. See [CLI](./operations/cli.md) and [Dev Server and Docker](./integrations/dev-server-and-docker.md).
 
+`guaraci generate endpoint <name> [--fields field:type[:required],...] [--no-tenant] [--force]` (alias `guaraci scaffold <name> ...`) scaffolds a complete CRUD resource on top of `auto_crud.generate` — `models/<name>.lua`, `routes/<name>.lua`, and `spec/<name>_spec.lua` — and never touches `app.lua`; the printed mount snippet tells you exactly what `require(...)` line to add. `guaraci dev` also activates the API explorer by default: `GET /__guaraci/api-docs` serves a live, simplified OpenAPI 3.0 document, and `GET /__guaraci/explorer` serves a same-origin, dependency-free HTML/JS page to browse and try requests against it. The explorer is fail-closed in production unless `force_production = true` is passed explicitly to `guaraci.enable_explorer(opts)`.
+
 ## Minimal End-to-End Example
 
 ### 1. Create a Route
@@ -107,6 +109,7 @@ Functions live in `src/guaraci.lua`; see the source for exact signatures. Additi
 
 - **handle_request(raw_req, opts)**: Main request handler. Takes a raw request table and an options dict; returns a response with status, headers, and body. Option keys: `templates_root`, `base_response`, `error_handler`, `escape`, `template_mode`, `template_api`, `template_functions`, `template_partials`, `auto_register_default_hooks`, `security_headers_path`.
 - **escape_html(value)**: HTML-safe escaping for template output.
+- **enable_explorer(opts)**: Registers `GET /__guaraci/api-docs` plus the API explorer's HTML/JS/CSS routes. Fail-closed when `opts.env` (or `GUARACI_ENV`) is `"prod"` unless `opts.force_production == true` exactly; returns `nil, "explorer_disabled_in_production"` and registers nothing in that case. `guaraci dev` calls this automatically on every reload.
 
 ### Routing (Phase 10)
 

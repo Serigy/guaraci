@@ -20,6 +20,7 @@ local middleware_csrf = require("middleware_csrf")
 local middleware_ratelimit = require("middleware_ratelimit")
 local file_manager = require("file_manager")
 local error_handler = require("error_handler")
+local api_explorer = require("api_explorer.explorer")
 
 local has_audit, audit = pcall(require, "guaraci_audit")
 
@@ -525,6 +526,10 @@ end
 function M.reset_error_handler()
     configured_error_handler = error_handler.create_default()
     return true
+end
+
+function M.enable_explorer(opts)
+    return api_explorer.enable(router_v2, opts)
 end
 
 return M

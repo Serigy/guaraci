@@ -2,6 +2,7 @@ local parser = require("parser")
 local sandbox = require("sandbox")
 local router = require("router")
 local db = require("db")
+local middleware_csrf = require("middleware_csrf")
 
 local function escape_html(value)
     local str = tostring(value or "")
@@ -25,6 +26,32 @@ local function compile_and_render(template, query)
 end
 
 describe("Security regression suite", function()
+    it("CSRF middleware finds the token header and cookie regardless of case " ..
+        "(adapter_cgi's CGI env round-trip upper-cases header names)", function()
+        local csrf = middleware_csrf.create()
+        local token = "0123456789abcdef"
+
+        -- Simulates the exact header casing adapter_cgi.parse_headers produces from
+        -- HTTP_X_CSRF_TOKEN / HTTP_COOKIE: upper-cased names with hyphens restored.
+        local req = {
+            method = "POST",
+            headers = { ["X-CSRF-TOKEN"] = token, ["COOKIE"] = "guaraci_csrf_token=" .. token }
+        }
+        local res = {}
+        local blocked = csrf(req, res, {})
+        assert.is_false(blocked)
+        assert.is_nil(res.status)
+
+        local mismatched_req = {
+            method = "POST",
+            headers = { ["X-CSRF-TOKEN"] = token, ["COOKIE"] = "guaraci_csrf_token=different0000" }
+        }
+        local mismatched_res = {}
+        local mismatched_blocked = csrf(mismatched_req, mismatched_res, {})
+        assert.is_true(mismatched_blocked)
+        assert.are.equal(403, mismatched_res.status)
+    end)
+
     it("envelopa expressoes com escape no parser", function()
         local compiled, compile_err = parser.compile("<p><%= Request.query.nome %></p>")
         assert(compiled ~= nil, "parser nao compilou: " .. tostring(compile_err))
@@ -327,3 +354,28 @@ describe("Context-aware escaping (Fase 7.1)", function()
         assert.are.equal("nosniff", res.headers["X-Content-Type-Options"])
     end)
 end)
+
+describe("security regression: case-insensitive header lookup on every runtime", function()
+    it("resolves a differently-cased header through the readonly request proxy", function()
+        local io_factory = require("guaraci_io")
+        -- LuaJIT and 5.1 ignore __pairs, so a pairs() scan over the proxy sees nothing;
+        -- CSRF and tenancy lookups must still find a header whose case differs.
+        local req = io_factory.new_request({
+            method = "POST",
+            path = "/x",
+            headers = { ["X-TENANT-ID"] = "acme", Cookie = "guaraci_csrf_token=zz" }
+        })
+
+        assert.are.equal("acme", req.headers["X-Tenant-Id"])
+        assert.are.equal("acme", req.headers["x-tenant-id"])
+        assert.are.equal("guaraci_csrf_token=zz", req.headers.cookie)
+        assert.are.equal("guaraci_csrf_token=zz", req.headers.Cookie)
+    end)
+
+    it("keeps the request read-only", function()
+        local io_factory = require("guaraci_io")
+        local req = io_factory.new_request({ method = "GET", path = "/", headers = {} })
+        assert.is_false(pcall(function() req.method = "POST" end))
+    end)
+end)
+

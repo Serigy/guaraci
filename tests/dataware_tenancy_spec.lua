@@ -37,4 +37,13 @@ describe("Dataware tenancy (Phase 11)", function()
         assert.are.equal(403, res.status)
         assert.is_true(tostring(res.body):find("Tenant context required", 1, true) ~= nil)
     end)
+
+    it("extrai tenant case-insensitively para suportar ambiente CGI (X-TENANT-ID)", function()
+        local tenant = dataware_tenancy.extract_tenant_id({
+            headers = {
+                ["X-TENANT-ID"] = "tenant-cgi"
+            }
+        })
+        assert.are.equal("tenant-cgi", tenant)
+    end)
 end)

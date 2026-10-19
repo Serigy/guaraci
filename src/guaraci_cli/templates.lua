@@ -37,13 +37,23 @@ M.index_spec = [==[
 package.path = "./?.lua;" .. package.path
 
 local guaraci = require("guaraci")
-local options = dofile("app.lua")
+local router_v2 = require("router_v2")
+
+local options
 
 local function get(path, query)
     return guaraci.handle_request({ method = "GET", path = path, query = query or {}, headers = {} }, options)
 end
 
 describe("{{name}}", function()
+    -- Specs share one process, so another spec file may have cleared the router.
+    -- Reloading app.lua here keeps this file self-sufficient whatever ran before.
+    before_each(function()
+        router_v2.clear()
+        guaraci.clear_models()
+        options = dofile("app.lua")
+    end)
+
     it("renders the index template", function()
         local res = get("/", { nome = "Spec" })
         assert.are.equal(200, res.status)

@@ -156,4 +156,20 @@ describe("Router V2 (Phase 10)", function()
         local count = router_v2.count()
         assert(count == 4, "DSL helpers devem registrar 4 rotas")
     end)
+
+    it("escapes Lua pattern magic characters in literal path segments", function()
+        router_v2.get("/api-docs", dummy_handler, "api_docs")
+        router_v2.get("/custom-explorer/style.css", dummy_handler, "custom_css")
+        router_v2.get("/v1.0/users/:id/profile-view", dummy_handler, "profile_view")
+
+        local h1 = router_v2.match("GET", "/api-docs")
+        assert(h1 ~= nil, "deve encontrar /api-docs (hífen em segmento estático)")
+
+        local h2 = router_v2.match("GET", "/custom-explorer/style.css")
+        assert(h2 ~= nil, "deve encontrar /custom-explorer/style.css (hífen e ponto)")
+
+        local h3, _, params = router_v2.match("GET", "/v1.0/users/42/profile-view")
+        assert(h3 ~= nil, "deve encontrar rota mista com parâmetros e literais com ponto e hífen")
+        assert(params.id == "42", "deve extrair parâmetro corretamente")
+    end)
 end)

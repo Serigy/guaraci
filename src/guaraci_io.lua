@@ -22,8 +22,32 @@ local function readonly(table_value)
         end
     end
 
+    -- LuaJIT and Lua 5.1 ignore __pairs, so a consumer that scans this proxy with
+    -- pairs() sees nothing there. Case-insensitive header lookups used to rely on
+    -- that scan and silently failed on LuaJIT; the lowercase index below makes a
+    -- plain index hit enough on every supported runtime. keys() stays available
+    -- for callers that genuinely need to enumerate.
+    local lowered = {}
+    for k, v in pairs(frozen) do
+        if type(k) == "string" then
+            local lower = string.lower(k)
+            if lower ~= k and frozen[lower] == nil and lowered[lower] == nil then
+                lowered[lower] = v
+            end
+        end
+    end
+
     return setmetatable({}, {
-        __index = frozen,
+        __index = function(_, key)
+            local direct = frozen[key]
+            if direct ~= nil then
+                return direct
+            end
+            if type(key) == "string" then
+                return lowered[string.lower(key)]
+            end
+            return nil
+        end,
         __newindex = function(_, key)
             error("Request e somente leitura: " .. tostring(key), 2)
         end,
