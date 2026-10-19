@@ -1,6 +1,6 @@
 # Epic 3 — Story 1: Serve the static same-origin explorer shell and assets
 
-**Status:** Ready
+**Status:** Done
 
 ## User Story Goal
 
@@ -20,12 +20,12 @@ Applicable PRD text (verbatim): “A página deve carregar somente assets same-o
 
 ## Implementation Checklist
 
-- [ ] Add semantic HTML regions for operation list, controls, and response display.
-- [ ] Add keyboard-accessible labels and readable contrast without images/fonts/external resources.
-- [ ] Add static asset routes and exact content types.
-- [ ] Generate a secure CSRF cookie on page response with required attributes.
-- [ ] Keep all dynamic rendering in JS DOM APIs, never `innerHTML` from API data.
-- [ ] Add asset size, CSP-string, content-type, cookie, and no-external-origin tests.
+- [x] Add semantic HTML regions for operation list, controls, and response display.
+- [x] Add keyboard-accessible labels and readable contrast without images/fonts/external resources.
+- [x] Add static asset routes and exact content types.
+- [x] Generate a secure CSRF cookie on page response with required attributes.
+- [x] Keep all dynamic rendering in JS DOM APIs, never `innerHTML` from API data.
+- [x] Add asset size, CSP-string, content-type, cookie, and no-external-origin tests.
 
 ## Acceptance Criteria & Test Cases
 
@@ -34,3 +34,17 @@ Applicable PRD text (verbatim): “A página deve carregar somente assets same-o
 - Explorer HTML response sets a 64-hex-character token with `Path=/; SameSite=Lax`.
 - A malicious operation/field name is rendered using `textContent`/`createElement` semantics, not HTML concatenation.
 - Run `lua5.4 tests/run_all.lua`, `lua5.4 scripts/check_rockspec.lua`, and `luacheck src hooks scripts bin tests`.
+
+## Dev Notes
+
+Modified/created files:
+- `src/api_explorer/assets.lua` (new): `M.html`, `M.css`, `M.js` as `[==[ ]==]` Lua strings, same pattern as `guaraci_cli/templates.lua`. HTML is fully static (no `<%= %>`/interpolation at all) with three semantic regions (`#controls` filters, `#operations` list, `#response` — the last `hidden` and empty, completed by E3-S2) and exactly one same-origin `<script src="/__guaraci/explorer/app.js"></script>`, no inline script body. CSS is plain, dependency-free (system font stack, no `@import`/external fonts/images), readable contrast. JS fetches `/__guaraci/api-docs`, flattens `paths` into a list of operations, renders each via `createElement`/`textContent` only (never `innerHTML`), shows path/query parameters with a visible "required" marker, and supports filtering by HTTP method (`<select>`) and free-text search (path/operationId/summary) — matching FR "listável/filtrável por método e caminho". No `eval`, no `new Function`, no inline event handlers. Combined size is 8204 bytes, far under the 50 KiB budget.
+- `src/api_explorer/explorer.lua` (completes E2-S3's placeholders): the HTML/app.js/style.css handlers now serve `assets.html/js/css` instead of empty bodies; the HTML handler also sets `Set-Cookie: guaraci_csrf_token=<64 hex>; Path=/; SameSite=Lax` (deliberately no `HttpOnly`, so `app.js` can read it for the double-submit CSRF pattern E3-S2 wires up) on every page response, using a fresh `guaraci_random.hex(32)` token each time.
+- `guaraci-scm-1.rockspec`: added `api_explorer.assets`.
+- `tests/api_explorer_spec.lua`: added HTTP-level checks (real asset bodies instead of placeholders, cookie present with exactly 64 hex chars + `Path=/` + `SameSite=Lax` + no `HttpOnly`, a fresh token per request) and a new `api_explorer.assets` describe block (50 KiB budget, exactly one same-origin `<script>` tag with no inline body, no external origin/CDN references, no inline handlers/`eval`/`new Function`, and JS using `textContent`/`createElement` with zero `innerHTML`).
+
+Notes:
+- Found and corrected a documentation inconsistency while implementing the CSRF cookie: architecture.md §4.3 says the token is "gerado com `guaraci_random.hex(16)` (32 bytes → 64 hex chars)", but `src/guaraci_random.lua`'s `M.hex(n)` takes `n` as a **byte count** (confirmed by reading its source: `M.bytes(n)` then 2 hex digits per byte), so `hex(16)` actually yields 16 bytes → 32 hex characters, not 64. The acceptance criterion ("sets a 64-hex-character token") is the concrete, testable requirement, so `explorer.lua` calls `guaraci_random.hex(32)` (32 bytes → 64 hex chars) to satisfy it exactly — confirmed both in the unit test and over a real `curl` response against `guaraci dev` (64-character hex cookie value, counted with `wc -c`).
+- Verified end-to-end over a real `guaraci dev --port 8098` server: the explorer page, `app.js` and `style.css` all return exact Content-Types and byte sizes matching `assets.lua`, and the `Set-Cookie` header is present with the correct attributes on real HTTP, not just simulated `handle_request`.
+- Verification: `lua5.4 tests/run_all.lua` (×3) and `luajit tests/run_all.lua` (×2) → ALL SPECS PASSED, no stray files; `lua5.4 scripts/check_rockspec.lua` → ROCKSPEC CHECK: OK; `lua5.4 scripts/smoke_cgi.lua` → SMOKE CGI: OK; `luacheck --no-color src hooks scripts tests bin` → 0 warnings / 0 errors in 109 files; `#assets.html + #assets.css + #assets.js` = 8204 bytes (< 51200).
+- No conflict found between this story's instructions and E2-S3's code; the placeholder handlers it left behind were designed exactly for this story to complete.

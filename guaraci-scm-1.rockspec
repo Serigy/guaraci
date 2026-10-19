@@ -27,6 +27,7 @@ build = {
     type = "builtin",
     modules = {
         adapter_cgi = "src/adapter_cgi.lua",
+        ["api_explorer.assets"] = "src/api_explorer/assets.lua",
         ["api_explorer.explorer"] = "src/api_explorer/explorer.lua",
         ["api_explorer.openapi"] = "src/api_explorer/openapi.lua",
         auto_crud = "src/auto_crud.lua",

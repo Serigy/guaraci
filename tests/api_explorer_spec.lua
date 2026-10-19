@@ -144,4 +144,75 @@ describe("api_explorer.explorer / guaraci.enable_explorer", function()
         assert.is_not_nil(res.body:find('"error":"openapi_build_failed"', 1, true))
         assert.is_not_nil(content:find('"openapi_build_failed"', 1, true))
     end)
+
+    it("serves the real HTML/JS/CSS asset bodies, not empty placeholders", function()
+        guaraci.enable_explorer({ env = "dev" })
+        local assets = require("api_explorer.assets")
+        assert.are.equal(assets.html, (request("GET", "/__guaraci/explorer")).body)
+        assert.are.equal(assets.js, (request("GET", "/__guaraci/explorer/app.js")).body)
+        assert.are.equal(assets.css, (request("GET", "/__guaraci/explorer/style.css")).body)
+    end)
+
+    it("sets the CSRF cookie on the HTML page response with the required attributes", function()
+        guaraci.enable_explorer({ env = "dev" })
+        local res = request("GET", "/__guaraci/explorer")
+        local cookie = res.headers["Set-Cookie"]
+        assert.is_not_nil(cookie)
+        local token = cookie:match("^guaraci_csrf_token=(%x+);")
+        assert.is_not_nil(token)
+        assert.are.equal(64, #token)
+        assert.is_not_nil(cookie:find("Path=/", 1, true))
+        assert.is_not_nil(cookie:find("SameSite=Lax", 1, true))
+        assert.is_nil(cookie:find("HttpOnly", 1, true))
+    end)
+
+    it("issues a fresh CSRF token on every page request", function()
+        guaraci.enable_explorer({ env = "dev" })
+        local first = (request("GET", "/__guaraci/explorer")).headers["Set-Cookie"]
+        local second = (request("GET", "/__guaraci/explorer")).headers["Set-Cookie"]
+        assert.is_true(first ~= second)
+    end)
+end)
+
+describe("api_explorer.assets", function()
+    local assets = require("api_explorer.assets")
+
+    it("stays under the 50 KiB combined budget", function()
+        assert.is_true(#assets.html + #assets.css + #assets.js < 50 * 1024)
+    end)
+
+    it("the HTML has exactly one script tag, same-origin, with no inline content", function()
+        local count = 0
+        for _ in assets.html:gmatch("<script") do
+            count = count + 1
+        end
+        assert.are.equal(1, count)
+        assert.is_not_nil(assets.html:find('<script src="/__guaraci/explorer/app.js"></script>', 1, true))
+        -- No inline script body: the only "<script" occurrence is immediately self-closing.
+        assert.is_nil(assets.html:find("<script>", 1, true))
+    end)
+
+    it("references no external origin and no CDN/framework", function()
+        for _, source in ipairs({ assets.html, assets.css, assets.js }) do
+            assert.is_nil(source:find("http://", 1, true))
+            assert.is_nil(source:find("https://", 1, true))
+            assert.is_nil(source:find("//cdn", 1, true))
+        end
+    end)
+
+    it("contains no inline event handlers, eval, or new Function", function()
+        assert.is_nil(assets.html:find("onclick", 1, true))
+        assert.is_nil(assets.html:find("onload", 1, true))
+        assert.is_nil(assets.html:find(" style=", 1, true))
+        for _, source in ipairs({ assets.html, assets.js }) do
+            assert.is_nil(source:find("eval(", 1, true))
+            assert.is_nil(source:find("new Function", 1, true))
+        end
+    end)
+
+    it("renders catalog data via textContent/createElement, never innerHTML", function()
+        assert.is_nil(assets.js:find("innerHTML", 1, true))
+        assert.is_not_nil(assets.js:find("textContent", 1, true))
+        assert.is_not_nil(assets.js:find("createElement", 1, true))
+    end)
 end)

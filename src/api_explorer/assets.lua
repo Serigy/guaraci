@@ -1,0 +1,355 @@
+-- Static same-origin explorer assets, embedded as Lua strings (ADR-01): no dependency on
+-- files being present on disk/package.path, identical behavior in CGI (new process per
+-- request) and `guaraci dev` (reload). M.html has no inline <script> and no dynamic data
+-- interpolation at all (ADR-02, §5.6): every piece of catalog data enters via fetch() + DOM
+-- APIs inside M.js, never via string concatenation into HTML.
+local M = {}
+
+M.html = [==[<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guaraci API Explorer</title>
+<link rel="stylesheet" href="/__guaraci/explorer/style.css">
+</head>
+<body>
+<header>
+<h1>Guaraci API Explorer</h1>
+</header>
+<main>
+<section id="controls" aria-label="Filters">
+<label for="method-filter">Method</label>
+<select id="method-filter">
+<option value="">All methods</option>
+<option value="GET">GET</option>
+<option value="POST">POST</option>
+<option value="PUT">PUT</option>
+<option value="PATCH">PATCH</option>
+<option value="DELETE">DELETE</option>
+<option value="HEAD">HEAD</option>
+</select>
+<label for="path-filter">Search</label>
+<input type="search" id="path-filter" placeholder="Filter by path, name or summary">
+</section>
+<section id="operations" aria-label="Operations">
+<ul id="operation-list"></ul>
+</section>
+<section id="response" aria-label="Response" hidden>
+<h2>Response</h2>
+<dl id="response-meta"></dl>
+<pre id="response-body"></pre>
+</section>
+</main>
+<script src="/__guaraci/explorer/app.js"></script>
+</body>
+</html>
+]==]
+
+M.css = [==[:root {
+    color-scheme: light dark;
+}
+
+body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    padding: 1rem;
+    color: #1a1a1a;
+    background: #ffffff;
+    line-height: 1.4;
+}
+
+header h1 {
+    font-size: 1.25rem;
+    margin: 0 0 1rem;
+}
+
+#controls {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+#controls label {
+    font-weight: 600;
+}
+
+#controls select,
+#controls input {
+    font-size: 1rem;
+    padding: 0.25rem 0.4rem;
+}
+
+#operation-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.operation {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.operation-header {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+    flex-wrap: wrap;
+}
+
+.method {
+    font-weight: 700;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    color: #ffffff;
+    background: #555555;
+    font-size: 0.85rem;
+}
+
+.method-get {
+    background: #1d4ed8;
+}
+
+.method-post {
+    background: #15803d;
+}
+
+.method-put {
+    background: #b45309;
+}
+
+.method-patch {
+    background: #7e22ce;
+}
+
+.method-delete {
+    background: #b91c1c;
+}
+
+.method-head {
+    background: #374151;
+}
+
+.path {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+}
+
+.operation-id,
+.summary {
+    color: #333333;
+}
+
+.params {
+    list-style: none;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.param {
+    font-size: 0.85rem;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 0.1rem 0.4rem;
+    display: inline-flex;
+    gap: 0.3rem;
+}
+
+.param-required {
+    color: #b91c1c;
+    font-weight: 600;
+}
+
+.empty,
+.error {
+    font-style: italic;
+    color: #555555;
+}
+
+#response {
+    margin-top: 1.5rem;
+    border-top: 1px solid #ccc;
+    padding-top: 1rem;
+}
+
+#response-body {
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: #f5f5f5;
+    padding: 0.75rem;
+    border-radius: 4px;
+}
+]==]
+
+M.js = [==[(function () {
+    "use strict";
+
+    var catalog = [];
+
+    function flattenOperations(doc) {
+        var ops = [];
+        var paths = (doc && doc.paths) || {};
+        Object.keys(paths).forEach(function (path) {
+            var methods = paths[path];
+            Object.keys(methods).forEach(function (method) {
+                ops.push({ path: path, method: method.toUpperCase(), operation: methods[method] });
+            });
+        });
+        return ops;
+    }
+
+    function matchesFilter(op, methodFilter, textFilter) {
+        if (methodFilter && op.method !== methodFilter) {
+            return false;
+        }
+        if (!textFilter) {
+            return true;
+        }
+        var haystack = (
+            op.path + " " +
+            (op.operation.operationId || "") + " " +
+            (op.operation.summary || "")
+        ).toLowerCase();
+        return haystack.indexOf(textFilter.toLowerCase()) !== -1;
+    }
+
+    function createParamRow(param) {
+        var li = document.createElement("li");
+        li.className = "param";
+
+        var name = document.createElement("span");
+        name.className = "param-name";
+        name.textContent = param.name;
+        li.appendChild(name);
+
+        var loc = document.createElement("span");
+        loc.className = "param-in";
+        loc.textContent = "(" + param["in"] + ")";
+        li.appendChild(loc);
+
+        if (param.required) {
+            var req = document.createElement("span");
+            req.className = "param-required";
+            req.textContent = "required";
+            li.appendChild(req);
+        }
+
+        return li;
+    }
+
+    function createOperationItem(op) {
+        var li = document.createElement("li");
+        li.className = "operation";
+
+        var header = document.createElement("div");
+        header.className = "operation-header";
+
+        var method = document.createElement("span");
+        method.className = "method method-" + op.method.toLowerCase();
+        method.textContent = op.method;
+        header.appendChild(method);
+
+        var path = document.createElement("span");
+        path.className = "path";
+        path.textContent = op.path;
+        header.appendChild(path);
+
+        if (op.operation.summary) {
+            var summary = document.createElement("span");
+            summary.className = "summary";
+            summary.textContent = op.operation.summary;
+            header.appendChild(summary);
+        }
+
+        if (op.operation.operationId) {
+            var opId = document.createElement("span");
+            opId.className = "operation-id";
+            opId.textContent = op.operation.operationId;
+            header.appendChild(opId);
+        }
+
+        li.appendChild(header);
+
+        var params = (op.operation.parameters || []);
+        if (params.length > 0) {
+            var list = document.createElement("ul");
+            list.className = "params";
+            params.forEach(function (param) {
+                list.appendChild(createParamRow(param));
+            });
+            li.appendChild(list);
+        }
+
+        return li;
+    }
+
+    function clearChildren(node) {
+        while (node.firstChild) {
+            node.removeChild(node.firstChild);
+        }
+    }
+
+    function render() {
+        var list = document.getElementById("operation-list");
+        clearChildren(list);
+
+        var methodFilter = document.getElementById("method-filter").value;
+        var textFilter = document.getElementById("path-filter").value;
+
+        var visible = catalog.filter(function (op) {
+            return matchesFilter(op, methodFilter, textFilter);
+        });
+
+        if (visible.length === 0) {
+            var empty = document.createElement("li");
+            empty.className = "empty";
+            empty.textContent = "No operations match the current filters.";
+            list.appendChild(empty);
+            return;
+        }
+
+        visible.forEach(function (op) {
+            list.appendChild(createOperationItem(op));
+        });
+    }
+
+    function showLoadError() {
+        var list = document.getElementById("operation-list");
+        clearChildren(list);
+        var li = document.createElement("li");
+        li.className = "error";
+        li.textContent = "Failed to load the API catalog.";
+        list.appendChild(li);
+    }
+
+    function loadCatalog() {
+        fetch("/__guaraci/api-docs", { credentials: "same-origin" })
+            .then(function (res) {
+                if (!res.ok) {
+                    throw new Error("api-docs responded with " + res.status);
+                }
+                return res.json();
+            })
+            .then(function (doc) {
+                catalog = flattenOperations(doc);
+                render();
+            })
+            .catch(showLoadError);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        loadCatalog();
+        document.getElementById("method-filter").addEventListener("change", render);
+        document.getElementById("path-filter").addEventListener("input", render);
+    });
+})();
+]==]
+
+return M

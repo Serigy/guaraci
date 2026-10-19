@@ -2,11 +2,11 @@
 -- app.js and style.css routes. Fail-closed in production (ADR-03): when env == "prod" and
 -- opts.force_production is not exactly true, M.enable registers nothing and returns early —
 -- the 4 routes simply never exist, so they 404 exactly like any other missing route, at zero
--- per-request cost. The HTML/app.js/style.css handlers are placeholders completed by Epic 3
--- Story 1 (api_explorer.assets); this story only wires their routes, content types and the
--- fail-closed/force_production/audit contract plus the fully working api-docs route.
+-- per-request cost.
 local openapi = require("api_explorer.openapi")
+local assets = require("api_explorer.assets")
 local json_util = require("json_util")
+local guaraci_random = require("guaraci_random")
 
 local has_audit, audit = pcall(require, "guaraci_audit")
 
@@ -74,23 +74,31 @@ local function api_docs_handler(opts)
     end
 end
 
-local function html_placeholder_handler()
+-- 32 bytes -> 64 hex characters (architecture §4.3 requires exactly 64; its own prose cites
+-- "guaraci_random.hex(16)" for this, but hex(n) takes a byte count and hex(16) only yields 32
+-- hex characters per src/guaraci_random.lua — hex(32) is the call that actually satisfies the
+-- documented 64-character requirement, which this module follows).
+local CSRF_TOKEN_BYTES = 32
+
+local function html_handler()
     return function(_, res)
-        send(res, 200, "text/html; charset=utf-8", "")
+        local token = guaraci_random.hex(CSRF_TOKEN_BYTES)
+        send(res, 200, "text/html; charset=utf-8", assets.html)
+        res.headers["Set-Cookie"] = "guaraci_csrf_token=" .. token .. "; Path=/; SameSite=Lax"
         return res
     end
 end
 
-local function js_placeholder_handler()
+local function js_handler()
     return function(_, res)
-        send(res, 200, "application/javascript; charset=utf-8", "")
+        send(res, 200, "application/javascript; charset=utf-8", assets.js)
         return res
     end
 end
 
-local function css_placeholder_handler()
+local function css_handler()
     return function(_, res)
-        send(res, 200, "text/css; charset=utf-8", "")
+        send(res, 200, "text/css; charset=utf-8", assets.css)
         return res
     end
 end
@@ -108,9 +116,9 @@ function M.enable(router, opts)
     local path = opts.path or "/__guaraci/explorer"
 
     router.get(escape_pattern_literal(API_DOCS_PATH), api_docs_handler(opts))
-    router.get(escape_pattern_literal(path), html_placeholder_handler())
-    router.get(escape_pattern_literal(path .. "/app.js"), js_placeholder_handler())
-    router.get(escape_pattern_literal(path .. "/style.css"), css_placeholder_handler())
+    router.get(escape_pattern_literal(path), html_handler())
+    router.get(escape_pattern_literal(path .. "/app.js"), js_handler())
+    router.get(escape_pattern_literal(path .. "/style.css"), css_handler())
 
     if env == "prod" and forced then
         log_security("api_explorer_enabled_in_production", { path = path })

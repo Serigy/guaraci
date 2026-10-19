@@ -1,6 +1,6 @@
 # Epic 3 — Story 2: Implement explorer request forms, responses, and CSRF handling
 
-**Status:** Draft
+**Status:** Ready
 
 ## User Story Goal
 
