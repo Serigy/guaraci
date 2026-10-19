@@ -28,7 +28,7 @@ Depois da publicacao:
 luarocks install guaraci
 ```
 
-O LuaRocks instala a biblioteca e o binario `guaraci`; ele e o canal de atualizacao (a CLI nao se auto-atualiza). Para o dev server:
+O LuaRocks instala a biblioteca e o binario `guaraci`; ele e o canal de atualizacao (a CLI nao se auto-atualiza). O modulo `nika` <!-- stale-names-allow --> (luarocks.org/modules/efsn88/nika <!-- stale-names-allow -->, versoes 0.0.1 a 0.0.4 pre-alpha) esta descontinuado; `guaraci` e o pacote oficial a partir daqui. Para o dev server:
 
 ```bash
 luarocks install luasocket

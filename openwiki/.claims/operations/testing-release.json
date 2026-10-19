@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:39fd365acd1ed57a37d153c2a73a13e478e9d055b8d6be2bb7c88a148482d364",
+  "pageVersion": "sha256:64b1cd4f41558f220e4173df1a702f03939e349d44fdae1139a07a31242ea4f0",
   "claims": [
     {
       "id": "claim_41c4ef18b5254314a024c7e19fd58f12",
@@ -84,7 +84,7 @@
     },
     {
       "id": "claim_1bccdaba914b4b199f216fe8b5a9a1a7",
-      "statement": "derive-rock derives a versioned rockspec from guaraci-scm-1.rockspec, lints and installs it with luarocks make, optionally packs the .src.rock, and release.yml publishes via luarocks upload using LUAROCKS_API_KEY.",
+      "statement": "derive-rock derives a versioned rockspec from guaraci-scm-1.rockspec, lints and installs it with luarocks make, optionally packs the .src.rock, and the dedicated luarocks-publish.yml workflow (not release.yml) publishes it via luarocks upload using LUAROCKS_API_KEY.",
       "evidence": [
         {
           "resource": "repo://.github/workflows/release.yml#L179-L225",
