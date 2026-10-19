@@ -37,6 +37,25 @@ local function has_required_field(fields)
 end
 
 -- Appends `local <var_name> = { ... }` across multiple short lines (one field per line) so
+-- Lua 5.4 keywords cannot be used as bare table keys; such a field name must be
+-- rendered as ["name"] or the generated file fails to parse. SQLite keywords hit the
+-- same problem in DDL, so column names are always emitted as quoted identifiers.
+local LUA_RESERVED = {
+    ["and"] = true, ["break"] = true, ["do"] = true, ["else"] = true,
+    ["elseif"] = true, ["end"] = true, ["false"] = true, ["for"] = true,
+    ["function"] = true, ["goto"] = true, ["if"] = true, ["in"] = true,
+    ["local"] = true, ["nil"] = true, ["not"] = true, ["or"] = true,
+    ["repeat"] = true, ["return"] = true, ["then"] = true, ["true"] = true,
+    ["until"] = true, ["while"] = true
+}
+
+local function lua_key(name)
+    if LUA_RESERVED[name] then
+        return string.format("[%q]", name)
+    end
+    return name
+end
+
 -- the line stays well under the luacheck line-length limit no matter how many --fields exist.
 local function append_payload_block(lines, indent, var_name, fields)
     if #fields == 0 then
@@ -45,7 +64,7 @@ local function append_payload_block(lines, indent, var_name, fields)
     end
     lines[#lines + 1] = indent .. "local " .. var_name .. " = {"
     for _, field in ipairs(fields) do
-        lines[#lines + 1] = string.format("%s    %s = %s,", indent, field.name, SAMPLE_VALUE[field.type])
+        lines[#lines + 1] = string.format("%s    %s = %s,", indent, lua_key(field.name), SAMPLE_VALUE[field.type])
     end
     lines[#lines + 1] = indent .. "}"
 end
@@ -65,9 +84,9 @@ local function schema_field_lines(fields)
     local lines = {}
     for _, field in ipairs(fields) do
         if field.required then
-            lines[#lines + 1] = string.format("    %s = { type = %q, required = true },", field.name, field.type)
+            lines[#lines + 1] = string.format("    %s = { type = %q, required = true },", lua_key(field.name), field.type)
         else
-            lines[#lines + 1] = string.format("    %s = { type = %q },", field.name, field.type)
+            lines[#lines + 1] = string.format("    %s = { type = %q },", lua_key(field.name), field.type)
         end
     end
     return lines
@@ -200,7 +219,7 @@ function M.render_spec(name, fields, opts)
         columns[#columns + 1] = "            tenant_id TEXT,"
     end
     for _, field in ipairs(fields) do
-        columns[#columns + 1] = string.format("            %s %s,", field.name, SQLITE_TYPE[field.type])
+        columns[#columns + 1] = string.format("            %q %s,", field.name, SQLITE_TYPE[field.type])
     end
     columns[#columns] = (columns[#columns]:gsub(",$", ""))
 
@@ -210,6 +229,7 @@ function M.render_spec(name, fields, opts)
         'local guaraci = require("guaraci")',
         'local router_v2 = require("router_v2")',
         'local route_introspection = require("route_introspection")',
+        'local guaraci_random = require("guaraci_random")',
         "local mount = require(" .. string.format("%q", M.routes_module(name)) .. ")",
         "",
         "local function request(method, path, request_opts)",
@@ -233,8 +253,10 @@ function M.render_spec(name, fields, opts)
         "        router_v2.clear()",
         "        route_introspection.clear()",
         "        guaraci.clear_models()",
+        -- guaraci_random is /dev/urandom-backed; math.random is unseeded in 5.4 and
+        -- collides across processes that start in the same wall-clock second.
         '        temp_db_path = "spec/tmp_' .. string.lower(name) ..
-        '_" .. tostring(os.time()) .. "_" .. tostring(math.random(1000, 9999)) .. ".db"',
+        '_" .. guaraci_random.hex(8) .. ".db"',
         "        connection = sqlite.open(temp_db_path)",
         "        connection:exec([[",
         string.format("            CREATE TABLE %s (", resource)

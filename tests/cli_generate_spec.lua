@@ -350,3 +350,38 @@ describe("guaraci_cli.generate.run (filesystem, via bin/guaraci)", function()
         os.execute("rm -rf " .. util.shell_quote(dir))
     end)
 end)
+
+describe("guaraci generate: Lua and SQL reserved words as field names", function()
+    it("renders reserved field names as quoted keys so generated files parse", function()
+        local fields = {
+            { name = "start", type = "string", required = true },
+            { name = "end", type = "string", required = true }
+        }
+
+        local model_src = templates.render_model("booking", fields, {})
+        local spec_src = templates.render_spec("booking", fields, {})
+
+        -- bare `end = ...` is a syntax error; the quoted form is required
+        assert.is_not_nil(model_src:find('["end"] = { type = "string", required = true }', 1, true))
+        assert.is_nil(model_src:find("\n    end = {", 1, true))
+
+        assert.is_not_nil(load(model_src, "model", "t", {}))
+        assert.is_not_nil(load(spec_src, "spec", "t", {}))
+    end)
+
+    it("quotes column identifiers in the generated DDL", function()
+        local fields = { { name = "end", type = "string", required = false } }
+        local spec_src = templates.render_spec("booking", fields, {})
+
+        assert.is_not_nil(spec_src:find('"end" TEXT', 1, true))
+        assert.is_nil(spec_src:find("            end TEXT", 1, true))
+    end)
+
+    it("leaves ordinary field names unquoted", function()
+        local fields = { { name = "title", type = "string", required = true } }
+        local model_src = templates.render_model("post", fields, {})
+
+        assert.is_not_nil(model_src:find('title = { type = "string", required = true }', 1, true))
+        assert.is_nil(model_src:find('["title"]', 1, true))
+    end)
+end)
