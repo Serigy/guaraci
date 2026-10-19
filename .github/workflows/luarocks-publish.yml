@@ -1,0 +1,158 @@
+name: LuaRocks Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to publish, e.g. v0.0.5-alpha.1"
+        required: true
+        type: string
+      dry_run:
+        description: "Skip luarocks upload (derive, lint, pack and print the upload command only)"
+        required: false
+        default: true
+        type: boolean
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: luarocks-publish-${{ github.workflow }}-${{ inputs.tag || github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.resolve.outputs.tag }}
+      dry_run: ${{ steps.resolve.outputs.dry_run }}
+      skip: ${{ steps.resolve.outputs.skip }}
+    steps:
+      - name: Resolve tag, dry_run and skip
+        id: resolve
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+          INPUT_DRY_RUN: ${{ inputs.dry_run }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_AUTHOR: ${{ github.event.release.author.login }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "tag=$INPUT_TAG" >> "$GITHUB_OUTPUT"
+            echo "dry_run=$INPUT_DRY_RUN" >> "$GITHUB_OUTPUT"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+            echo "dry_run=false" >> "$GITHUB_OUTPUT"
+            if [ "$RELEASE_AUTHOR" = "github-actions[bot]" ]; then
+              echo "Release $RELEASE_TAG was published by github-actions[bot] (release.yml or release-on-tag.yml), which already ran this pipeline for the same tag; skipping to avoid a double publish."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "skip=false" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+  ci:
+    needs: resolve
+    if: ${{ needs.resolve.outputs.skip != 'true' }}
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    name: publish
+    needs: [resolve, ci]
+    if: ${{ needs.resolve.outputs.skip != 'true' }}
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ needs.resolve.outputs.tag }}
+      DRY_RUN: ${{ needs.resolve.outputs.dry_run }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: leafo/gh-actions-lua@v11
+        with:
+          luaVersion: "5.4"
+      - uses: leafo/gh-actions-luarocks@v5
+
+      - name: Derive, lint, install and pack the rock
+        id: rock
+        uses: ./.github/actions/derive-rock
+        with:
+          tag: ${{ env.TAG }}
+          pack: "true"
+
+      - name: Check whether this version is already on LuaRocks
+        id: check
+        shell: bash
+        env:
+          ROCK_VERSION: ${{ steps.rock.outputs.rock_version }}
+        run: |
+          if luarocks search guaraci "$ROCK_VERSION" --porcelain | grep -q .; then
+            echo "guaraci $ROCK_VERSION is already published on LuaRocks; skipping the upload."
+            echo "already_published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "already_published=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Dry run notice
+        if: ${{ env.DRY_RUN == 'true' && steps.check.outputs.already_published != 'true' }}
+        shell: bash
+        env:
+          ROCKSPEC: ${{ steps.rock.outputs.rockspec }}
+        run: |
+          echo "Dry run: derive, lint, install and pack all succeeded for $TAG."
+          echo "Would publish with:"
+          echo "  luarocks upload --api-key=\"\$LUAROCKS_API_KEY\" --force \"$ROCKSPEC\""
+
+      - name: Validate LuaRocks secret
+        if: ${{ env.DRY_RUN != 'true' && steps.check.outputs.already_published != 'true' }}
+        shell: bash
+        env:
+          LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
+        run: |
+          if [ -z "$LUAROCKS_API_KEY" ]; then
+            echo "::error::Secret LUAROCKS_API_KEY is not configured on the repository. Add it before running with dry_run=false."
+            exit 1
+          fi
+
+      - name: Publish to LuaRocks
+        if: ${{ env.DRY_RUN != 'true' && steps.check.outputs.already_published != 'true' }}
+        shell: bash
+        env:
+          LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
+          ROCKSPEC: ${{ steps.rock.outputs.rockspec }}
+        run: luarocks upload --api-key="$LUAROCKS_API_KEY" --force "$ROCKSPEC"
+
+      - name: Attach rockspec and src.rock to the GitHub Release
+        if: ${{ env.DRY_RUN != 'true' && steps.check.outputs.already_published != 'true' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          files: |
+            dist/*.rockspec
+            dist/*.src.rock
+
+      - name: Commit versioned rockspec to rockspecs/
+        if: ${{ env.DRY_RUN != 'true' && steps.check.outputs.already_published != 'true' }}
+        shell: bash
+        env:
+          ROCKSPEC: ${{ steps.rock.outputs.rockspec }}
+        run: |
+          git fetch origin main
+          git checkout -B main origin/main
+          mkdir -p rockspecs
+          cp "$ROCKSPEC" rockspecs/
+          if git diff --quiet -- rockspecs && [ -z "$(git ls-files --others --exclude-standard rockspecs)" ]; then
+            echo "rockspecs/ sem alteracoes."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rockspecs
+          git commit -m "chore: add $(basename "$ROCKSPEC") [skip ci]"
+          git push origin main

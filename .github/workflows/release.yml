@@ -17,11 +17,6 @@ on:
         required: false
         default: true
         type: boolean
-      publish_luarocks:
-        description: "Publicar pacote no LuaRocks"
-        required: false
-        default: false
-        type: boolean
 
 permissions:
   contents: write
@@ -99,17 +94,6 @@ jobs:
               throw err;
             }
 
-      - name: Validar secret LuaRocks
-        if: ${{ inputs.publish_luarocks == true && steps.existing_release.outputs.exists != 'true' }}
-        shell: bash
-        env:
-          LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
-        run: |
-          if [ -z "$LUAROCKS_API_KEY" ]; then
-            echo "Secret LUAROCKS_API_KEY nao configurado no repositorio."
-            exit 1
-          fi
-
       # The tag is only created after CI and rockspec validation passed.
       - name: Criar e publicar tag
         if: ${{ steps.existing_release.outputs.exists != 'true' }}
@@ -163,12 +147,13 @@ jobs:
             dist/*.rockspec
             dist/*.src.rock
 
-      - name: Publicar no LuaRocks
-        if: ${{ inputs.publish_luarocks == true && steps.existing_release.outputs.exists != 'true' }}
+      - name: Aviso sobre publicacao no LuaRocks
+        if: ${{ steps.existing_release.outputs.exists != 'true' }}
         shell: bash
         env:
-          LUAROCKS_API_KEY: ${{ secrets.LUAROCKS_API_KEY }}
-        run: luarocks upload --api-key="$LUAROCKS_API_KEY" "${{ steps.rock.outputs.rockspec }}"
+          TAG: ${{ needs.tag-name.outputs.tag }}
+        run: |
+          echo "::notice::Release $TAG criada. Para publicar (ou re-publicar) o pacote no LuaRocks, rode o workflow 'LuaRocks Publish': gh workflow run luarocks-publish.yml -f tag=$TAG -f dry_run=false"
 
       - name: Commitar rockspec versionado em rockspecs/
         if: ${{ steps.existing_release.outputs.exists != 'true' }}
