@@ -268,8 +268,13 @@ describe("guaraci_cli.generate.run (filesystem, via bin/guaraci)", function()
         return dir
     end
 
+    -- Use the interpreter that is running this suite: CI installs a plain `lua`,
+    -- while local shells have `lua5.4`. Hardcoding either one yields exit 127.
+    local interpreter = (type(arg) == "table" and arg[-1]) or os.getenv("LUA") or "lua"
+
     local function run_cli(dir, args)
-        local pipe = io.popen("cd " .. util.shell_quote(dir) .. " && lua5.4 " ..
+        local pipe = io.popen("cd " .. util.shell_quote(dir) .. " && " ..
+            util.shell_quote(interpreter) .. " " ..
             util.shell_quote(guaraci_bin) .. " " .. args .. " 2>&1")
         local output = pipe:read("a")
         local ok, _, code = pipe:close()
