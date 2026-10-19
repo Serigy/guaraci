@@ -272,13 +272,20 @@ describe("guaraci_cli.generate.run (filesystem, via bin/guaraci)", function()
     -- while local shells have `lua5.4`. Hardcoding either one yields exit 127.
     local interpreter = (type(arg) == "table" and arg[-1]) or os.getenv("LUA") or "lua"
 
+    -- Lua 5.1 and older LuaJIT builds return only true/nil from popen close, with no
+    -- exit status, so reading it there reports 0 for every command. The marker below
+    -- carries the real code through stdout on every runtime.
     local function run_cli(dir, args)
         local pipe = io.popen("cd " .. util.shell_quote(dir) .. " && " ..
             util.shell_quote(interpreter) .. " " ..
-            util.shell_quote(guaraci_bin) .. " " .. args .. " 2>&1")
-        local output = pipe:read("a")
-        local ok, _, code = pipe:close()
-        return (ok and 0) or code or 1, output
+            util.shell_quote(guaraci_bin) .. " " .. args .. " 2>&1" ..
+            '; printf "__EXIT:%d" "$?"')
+        local output = pipe:read("*a") or ""
+        pipe:close()
+
+        local code = output:match("__EXIT:(%d+)%s*$")
+        output = output:gsub("__EXIT:%d+%s*$", "")
+        return tonumber(code) or 1, output
     end
 
     it("creates exactly the three documented files and the canonical mount snippet", function()
