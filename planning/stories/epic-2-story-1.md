@@ -1,6 +1,6 @@
 # Epic 2 — Story 1: Register and reset route introspection metadata
 
-**Status:** Ready
+**Status:** Done
 
 ## User Story Goal
 
@@ -29,11 +29,11 @@ Applicable PRD text (verbatim): “O produto deve expor uma leitura aditiva das 
 
 ## Implementation Checklist
 
-- [ ] Implement `describe/get/clear` with overwrite idempotence for one method/pattern.
-- [ ] Read registered route metadata without invoking route handlers.
-- [ ] Implement stable aggregation with descriptor lookup and path parameter extraction.
-- [ ] Clear metadata on every dev reload alongside router, middleware, hooks, and models.
-- [ ] Add module/package/spec registration.
+- [x] Implement `describe/get/clear` with overwrite idempotence for one method/pattern.
+- [x] Read registered route metadata without invoking route handlers.
+- [x] Implement stable aggregation with descriptor lookup and path parameter extraction.
+- [x] Clear metadata on every dev reload alongside router, middleware, hooks, and models.
+- [x] Add module/package/spec registration.
 
 ## Acceptance Criteria & Test Cases
 
@@ -42,3 +42,17 @@ Applicable PRD text (verbatim): “O produto deve expor uma leitura aditiva das 
 - Static and `:id` routes, generated and ad-hoc, appear in fixed method/registration order; ad-hoc entries have no invented fields.
 - Two simulated dev reloads do not retain stale descriptors or duplicate metadata.
 - Run `lua5.4 tests/run_all.lua`, `lua5.4 scripts/check_rockspec.lua`, and `luacheck src hooks scripts tests bin`.
+
+## Dev Notes
+
+Modified/created files:
+- `src/route_introspection.lua` (new): `M.describe/get/all/clear`, keyed on `"METHOD pattern"`, fixed `GET,POST,PUT,PATCH,DELETE,HEAD` iteration order over `router_v2.get_routes(method)` (registration order within a method, never `pairs()`).
+- `src/guaraci_cli/dev.lua`: `reset_app_state` now also clears `route_introspection` when loaded (guarded by `package.loaded`, matching ADR-06 — this module is never force-required by `dev.lua`/`guaraci.lua`, only cleared if some app code already pulled it in).
+- `guaraci-scm-1.rockspec`: added `route_introspection`.
+- `tests/busted_runner.lua`: registered `tests.route_introspection_spec`.
+- `tests/route_introspection_spec.lua` (new): round-trip shape, method/pattern key sensitivity, overwrite idempotence, `clear()`, fixed-order aggregation mixing generated + ad-hoc + static + `:id` routes, a check that `all()` never invokes a handler, and two simulated dev-reload cycles with no stale/duplicate descriptors.
+
+Notes:
+- End-to-end sanity check beyond the story's own unit tests: regenerated a `Product` (tenant, 2 fields) and a `Widget` (`--no-tenant`, no fields) endpoint with `bin/guaraci` in a scratch directory and ran their generated `spec/*_spec.lua` files directly — all 10 generated assertions passed (list/create/400/404/tenant-isolation for Product; list/create/non-table-400/404/no-tenant-header for Widget). This was blocked in E1-S2 because `route_introspection` did not exist yet; it now resolves and the whole generator → runtime chain works.
+- Verification: `lua5.4 tests/run_all.lua` → ALL SPECS PASSED; `luajit tests/run_all.lua` → ALL SPECS PASSED; `lua5.4 scripts/check_rockspec.lua` → ROCKSPEC CHECK: OK; `lua5.4 scripts/smoke_cgi.lua` → SMOKE CGI: OK; `luacheck --no-color src hooks scripts tests bin` → 0 warnings / 0 errors in 104 files.
+- No conflict found between this story's instructions and Epic 1's code.

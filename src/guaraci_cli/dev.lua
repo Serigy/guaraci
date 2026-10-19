@@ -225,6 +225,10 @@ local function reset_app_state(baseline)
     require("middleware_chain").clear()
     require("hooks").clear()
     require("guaraci").clear_models()
+    local introspection = package.loaded["route_introspection"]
+    if introspection then
+        introspection.clear()
+    end
 end
 
 -- Runs one request through app.lua + adapter_cgi and returns the HTTP response text.

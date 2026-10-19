@@ -1,6 +1,6 @@
 # Epic 2 — Story 2: Build and serve the live simplified OpenAPI document
 
-**Status:** Draft
+**Status:** Ready
 
 ## User Story Goal
 

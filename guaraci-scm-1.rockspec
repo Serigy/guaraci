@@ -56,6 +56,7 @@ build = {
         guaraci_io = "src/guaraci_io.lua",
         guaraci_random = "src/guaraci_random.lua",
         ratelimit_store = "src/ratelimit_store.lua",
+        route_introspection = "src/route_introspection.lua",
         guaraci_version = "src/guaraci_version.lua",
         hooks = "src/hooks.lua",
         json_util = "src/json_util.lua",
