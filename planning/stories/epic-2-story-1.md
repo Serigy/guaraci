@@ -1,6 +1,6 @@
 # Epic 2 — Story 1: Register and reset route introspection metadata
 
-**Status:** Draft
+**Status:** Ready
 
 ## User Story Goal
 

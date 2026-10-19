@@ -1,6 +1,8 @@
 -- guaraci generate endpoint <name> / guaraci scaffold <name>: deterministic CRUD scaffolding.
--- File writing and CLI dispatch wiring land in Epic 1 Story 2; this module currently exposes
--- the parsing seam (`parse_fields`) that the templates and the future `run` build on.
+-- Both commands converge on generate_endpoint() so they produce byte-identical artifacts (FR01.2).
+local templates = require("guaraci_cli.generate_templates")
+local util = require("guaraci_cli.util")
+
 local M = {}
 
 -- field (CLI vocabulary) -> SQLite column type / OpenAPI type (architecture.md §3.2).
@@ -93,6 +95,155 @@ function M.parse_fields(raw)
     end
 
     return { ok = true, fields = fields }
+end
+
+-- <name> validation (architecture.md §5.1): letter/digit/_ first, then letters/digits/_/-.
+-- Structurally excludes "/", "\\", space and ".." from the allowed character class.
+local ENDPOINT_NAME_PATTERN = "^[%w_][%w_%-]*$"
+
+-- Builds the three destination paths and re-asserts the ADR-07 traversal guard as defense in
+-- depth (name validation above already excludes "/", "\\" and ".." structurally).
+local function target_paths(name)
+    local lower = string.lower(name)
+    local paths = {
+        model = "models/" .. lower .. ".lua",
+        routes = "routes/" .. lower .. ".lua",
+        spec = "spec/" .. lower .. "_spec.lua"
+    }
+    for _, path in pairs(paths) do
+        if path:find("..", 1, true) or not path:match("^[%w_%-/]+%.lua$") then
+            return nil, path
+        end
+    end
+    return paths
+end
+
+local function generate_endpoint(name, raw_flags, io_streams)
+    local out, err, command = io_streams.stdout, io_streams.stderr, io_streams.command
+
+    if not name or not name:match(ENDPOINT_NAME_PATTERN) then
+        err:write("guaraci " .. command .. ": invalid name '" .. tostring(name) ..
+            "' (use letters, digits, _ -)\n")
+        return 2
+    end
+
+    local parsed, parse_err = util.parse_args(raw_flags, {
+        value_flags = { fields = true },
+        flags = { ["no-tenant"] = true, force = true }
+    })
+    if not parsed then
+        err:write("guaraci " .. command .. ": " .. parse_err .. "\n")
+        return 2
+    end
+    if #parsed.positional > 0 then
+        err:write("guaraci " .. command .. ": unexpected argument '" .. parsed.positional[1] .. "'\n")
+        return 2
+    end
+
+    local field_result = M.parse_fields(parsed.flags.fields)
+    if not field_result.ok then
+        err:write("guaraci " .. command .. ": " .. field_result.message .. "\n")
+        return 2
+    end
+
+    local paths, bad_path = target_paths(name)
+    if not paths then
+        err:write("guaraci " .. command .. ": refusing unsafe path '" .. tostring(bad_path) .. "'\n")
+        return 2
+    end
+
+    local force = parsed.flags.force == true
+    local conflicts = {}
+    for _, key in ipairs({ "model", "routes", "spec" }) do
+        if util.file_exists(paths[key]) and not force then
+            conflicts[#conflicts + 1] = paths[key]
+        end
+    end
+    if #conflicts > 0 then
+        err:write("guaraci " .. command .. ": destino já existe (use --force para substituir):\n")
+        for _, path in ipairs(conflicts) do
+            err:write("  " .. path .. "\n")
+        end
+        return 1
+    end
+
+    for _, dir in ipairs({ "models", "routes", "spec" }) do
+        if not os.execute("mkdir -p " .. util.shell_quote(dir)) then
+            err:write("guaraci " .. command .. ": cannot create directory '" .. dir .. "'\n")
+            return 1
+        end
+    end
+
+    local opts = { no_tenant = parsed.flags["no-tenant"] == true }
+    local files = {
+        { paths.model, templates.render_model(name, field_result.fields, opts) },
+        { paths.routes, templates.render_routes(name, field_result.fields, opts) },
+        { paths.spec, templates.render_spec(name, field_result.fields, opts) }
+    }
+
+    for _, file in ipairs(files) do
+        local ok, write_err = util.write_file(file[1], file[2])
+        if not ok then
+            err:write("guaraci " .. command .. ": cannot write " .. file[1] .. ": " .. tostring(write_err) .. "\n")
+            return 1
+        end
+    end
+
+    local notes = {}
+    if opts.no_tenant then
+        notes[#notes + 1] = "Tenant: modo global (--no-tenant, require_tenant = false)."
+    else
+        notes[#notes + 1] = "Tenant: multi-tenant (padrão, require_tenant = true)."
+    end
+    if #field_result.fields == 0 then
+        notes[#notes + 1] = "Aviso: " .. M.NO_FIELDS_NOTICE .. "."
+    end
+
+    out:write(table.concat(notes, "\n") .. "\n\n")
+    out:write(templates.mount_snippet({ paths.model, paths.routes, paths.spec }, name))
+
+    return 0
+end
+
+local USAGE = "uso: guaraci generate endpoint <name> [--fields campo:tipo[:required],...] [--no-tenant] [--force]\n" ..
+    "     guaraci scaffold <name> [--fields ...] [--no-tenant] [--force]\n"
+
+-- guaraci generate <type> <name> [...] / guaraci scaffold <name> [...] (architecture.md §4.5).
+function M.run(args, io_streams)
+    local err = io_streams.stderr
+    local command = io_streams.command or "generate"
+
+    if command == "scaffold" then
+        local name = args[1]
+        if not name then
+            err:write("guaraci scaffold: nome obrigatório\n" .. USAGE)
+            return 2
+        end
+        local rest = {}
+        for i = 2, #args do
+            rest[#rest + 1] = args[i]
+        end
+        return generate_endpoint(name, rest, io_streams)
+    end
+
+    local type_name = args[1]
+    if type_name ~= "endpoint" then
+        err:write("generate <type>: tipo desconhecido '" .. tostring(type_name) .. "' (suportado: endpoint)\n" ..
+            USAGE)
+        return 2
+    end
+
+    local name = args[2]
+    if not name then
+        err:write("guaraci generate endpoint: nome obrigatório\n" .. USAGE)
+        return 2
+    end
+
+    local rest = {}
+    for i = 3, #args do
+        rest[#rest + 1] = args[i]
+    end
+    return generate_endpoint(name, rest, io_streams)
 end
 
 return M
