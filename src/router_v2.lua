@@ -7,6 +7,10 @@ local M = {}
 local _routes = {}            -- { method → { { pattern, handler, name, lua_pattern, param_names } } }
 local _compiled_patterns = {} -- cache de padrões compilados
 
+local function escape_literal(str)
+    return (str:gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1"))
+end
+
 -- Compila um padrão de rota para regex Lua
 -- Exemplos:
 --   /users/:id → /users/([^/]+)
@@ -17,16 +21,36 @@ local function compile_pattern(pattern)
         return _compiled_patterns[pattern]
     end
 
-    local lua_pattern = pattern
+    local parts = {}
+    local i = 1
+    local len = #pattern
 
-    -- Substitui :param por capture group
-    lua_pattern = lua_pattern:gsub(":([a-zA-Z_][a-zA-Z0-9_]*)", "([^/]+)")
+    while i <= len do
+        local p_start, p_end = pattern:find("^:([a-zA-Z_][a-zA-Z0-9_]*)", i)
+        if p_start then
+            parts[#parts + 1] = "([^/]+)"
+            i = p_end + 1
+        else
+            local r_start, r_end, regex = pattern:find("^{([^}]+)}", i)
+            if r_start then
+                parts[#parts + 1] = "(" .. regex .. ")"
+                i = r_end + 1
+            else
+                local next_special = pattern:find("[:{]", i + 1)
+                local literal
+                if next_special then
+                    literal = pattern:sub(i, next_special - 1)
+                    i = next_special
+                else
+                    literal = pattern:sub(i)
+                    i = len + 1
+                end
+                parts[#parts + 1] = escape_literal(literal)
+            end
+        end
+    end
 
-    -- Substitui {regex} por capture group com regex
-    lua_pattern = lua_pattern:gsub("{([^}]+)}", function(regex)
-        return "(" .. regex .. ")"
-    end)
-
+    local lua_pattern = table.concat(parts)
     _compiled_patterns[pattern] = lua_pattern
     return lua_pattern
 end

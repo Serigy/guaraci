@@ -14,15 +14,6 @@ local M = {}
 
 local API_DOCS_PATH = "/__guaraci/api-docs"
 
--- router_v2.lua compiles a registered pattern straight into a Lua pattern, only substituting
--- ":param"/"{regex}" placeholders — any other Lua pattern magic character in a literal segment
--- (notably "-", as in "api-docs") is left raw and silently fails to match itself. None of this
--- module's routes use ":param"/"{regex}", so it is always safe to escape the whole literal path
--- before registering it; this is a local workaround and does not modify router_v2.lua itself.
-local function escape_pattern_literal(str)
-    return (str:gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1"))
-end
-
 -- Same cascade as error_handler.current_env, for consistency across modules (architecture §4.1):
 -- opts.env -> GUARACI_ENV -> "prod". Never read from query string, cookie or request header.
 local function current_env(opts)
@@ -115,10 +106,10 @@ function M.enable(router, opts)
 
     local path = opts.path or "/__guaraci/explorer"
 
-    router.get(escape_pattern_literal(API_DOCS_PATH), api_docs_handler(opts))
-    router.get(escape_pattern_literal(path), html_handler())
-    router.get(escape_pattern_literal(path .. "/app.js"), js_handler())
-    router.get(escape_pattern_literal(path .. "/style.css"), css_handler())
+    router.get(API_DOCS_PATH, api_docs_handler(opts))
+    router.get(path, html_handler())
+    router.get(path .. "/app.js", js_handler())
+    router.get(path .. "/style.css", css_handler())
 
     if env == "prod" and forced then
         log_security("api_explorer_enabled_in_production", { path = path })

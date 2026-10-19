@@ -1,13 +1,29 @@
 local M = {}
 
+local function find_header(headers, name)
+    if type(headers) ~= "table" then
+        return nil
+    end
+    local direct = headers[name]
+    if direct ~= nil then
+        return direct
+    end
+    local wanted = string.lower(name)
+    for key, value in pairs(headers) do
+        if type(key) == "string" and string.lower(key) == wanted then
+            return value
+        end
+    end
+    return nil
+end
+
 local function default_extractor(req)
     if type(req) ~= "table" then
         return nil
     end
 
     local headers = req.headers or {}
-    return headers["X-Tenant-Id"]
-        or headers["x-tenant-id"]
+    return find_header(headers, "x-tenant-id")
         or req.tenant_id
         or (req.query and req.query.tenant_id)
 end
