@@ -60,3 +60,15 @@ Notes:
 - Tried running a freshly generated `spec/<name>_spec.lua` directly (outside the generator's own unit tests) against a real SQLite db: it fails to `require("route_introspection")`, because that module is Epic 2 Story 1's deliverable and does not exist yet. This is expected — generated code correctly anticipates a module from a not-yet-built story. Full runtime execution of generated specs becomes verifiable once E2-S1 lands; for now, correctness is covered by the `load()` syntax-check in E1-S1's tests and by the shape assertions here.
 - Verification: `lua5.4 tests/run_all.lua` → ALL SPECS PASSED (43 specs incl. the two new `cli_generate_spec` describe blocks); `luajit tests/run_all.lua` → ALL SPECS PASSED; `lua5.4 scripts/check_rockspec.lua` → ROCKSPEC CHECK: OK; `lua5.4 scripts/smoke_cgi.lua` → SMOKE CGI: OK; `luacheck --no-color src hooks scripts tests bin` → 0 warnings / 0 errors in 102 files.
 - No conflict found between this story's instructions and Story 1's code.
+
+## QA Findings
+
+- **Status:** Approved (mantido como Done)
+- **Verificações Realizadas:**
+  - Execução via CLI (`bin/guaraci generate endpoint` e alias `bin/guaraci scaffold`) gerando exatamente os 3 arquivos documentados (`models/`, `routes/`, `spec/`).
+  - Verificação de que `app.lua` nunca é criado, alterado ou formatado.
+  - Detecção de colisão prévia: na presença de arquivo preexistente sem `--force`, a CLI encerra com exit code 1, lista os conflitos e não altera nenhum arquivo. Com `--force`, sobrescreve determinísticamente apenas após validação completa.
+  - Tratamento de nomes hostis: caminhos com path traversal (`../x`), barras (`a/b`, `a\b`), caracteres nulos, espaços e símbolos shell são rejeitados com exit code 2 antes de qualquer I/O.
+  - Execução dos testes gerados em projeto temporário: o arquivo de testes gerado passou em 100% dos casos contra banco SQLite real.
+- **Apontamentos Não-Bloqueantes (Recomendações Futuras):**
+  - [Severidade Baixa / Resiliência] `src/guaraci_cli/generate.lua:184-190`: Caso ocorra falha de I/O em um arquivo intermediário (ex.: diretório `spec/` sem permissão de escrita após `models/` e `routes/` terem sido gravados com sucesso), os arquivos já gravados não sofrem rollback atômico, restando arquivos parciais no disco. Recomenda-se implementar limpeza/rollback dos arquivos criados nesta execução em caso de falha de escrita.

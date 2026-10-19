@@ -48,3 +48,12 @@ Notes:
 - Verified end-to-end over a real `guaraci dev --port 8098` server: the explorer page, `app.js` and `style.css` all return exact Content-Types and byte sizes matching `assets.lua`, and the `Set-Cookie` header is present with the correct attributes on real HTTP, not just simulated `handle_request`.
 - Verification: `lua5.4 tests/run_all.lua` (×3) and `luajit tests/run_all.lua` (×2) → ALL SPECS PASSED, no stray files; `lua5.4 scripts/check_rockspec.lua` → ROCKSPEC CHECK: OK; `lua5.4 scripts/smoke_cgi.lua` → SMOKE CGI: OK; `luacheck --no-color src hooks scripts tests bin` → 0 warnings / 0 errors in 109 files; `#assets.html + #assets.css + #assets.js` = 8204 bytes (< 51200).
 - No conflict found between this story's instructions and E2-S3's code; the placeholder handlers it left behind were designed exactly for this story to complete.
+
+## QA Findings
+
+- **Status:** Approved (mantido como Done)
+- **Verificações Realizadas:**
+  - Entrega de assets estáticos same-origin embutidos como strings Lua (`assets.html`, `assets.js`, `assets.css`) com tamanho combinado de ~17 KB (muito abaixo do teto de 50 KiB).
+  - Segurança de DOM e CSP: ausência total de chamadas a `innerHTML`, `outerHTML`, `document.write`, `eval` ou `new Function`. O HTML contém unicamente uma tag `<script src="/__guaraci/explorer/app.js"></script>` sem scripts inline.
+  - Sem dependências externas: nenhuma URL externa, CDN ou framework de terceiros referenciada nos assets.
+  - Geração de cookie CSRF no carregamento da página HTML: token de 64 caracteres hexadecimais (`guaraci_random.hex(32)`), com flags `Path=/` e `SameSite=Lax`.

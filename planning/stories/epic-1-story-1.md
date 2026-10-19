@@ -61,3 +61,15 @@ Notes:
 - Verified generated output against a hand-built fixture (5 fields, tenant and `--no-tenant`, with and without fields) with `luacheck --std lua54 --max-line-length 140`: initially found one line-length violation in `render_spec`'s create-test line (grows with field count), fixed by emitting the request payload as a short multi-line `local payload = { ... }` block instead of one long inline table literal. Re-verified clean with 0 warnings.
 - Test results: `lua5.4 tests/run_all.lua` → ALL SPECS PASSED; `luajit tests/run_all.lua` → ALL SPECS PASSED; `lua5.4 scripts/check_rockspec.lua` → ROCKSPEC CHECK: OK; `lua5.4 scripts/smoke_cgi.lua` → SMOKE CGI: OK; `luacheck --no-color src hooks scripts tests bin` → 0 warnings / 0 errors in 102 files.
 - No conflict found between this story's instructions and the existing code; architecture §5.2/§5.3 canonical shapes were followed verbatim (confirmed by printing rendered output and diffing visually against the architecture doc).
+
+## QA Findings
+
+- **Status:** Approved (mantido como Done)
+- **Verificações Realizadas:**
+  - Validação da gramática de `--fields` com casos válidos e inválidos (segmento vazio, campos duplicados, tipo ausente, regras não suportadas como `min:0`).
+  - Mapeamento determinístico de todos os 5 tipos de dados (`string`, `number`, `integer`, `boolean`, `table`), incluindo tipos SQLite e OpenAPI.
+  - Renderização determinística de templates de modelo, rotas e testes com verificação de idempotência (mesma entrada gera bytes idênticos).
+  - Isolamento de tenant: verificação de que `--no-tenant` gera `without_tenant()` e middleware global, enquanto default mantém `require_tenant = true`.
+  - Conformidade de sintaxe: todos os artefatos gerados carregam como Lua válido via `load()`.
+- **Apontamentos Não-Bloqueantes (Recomendações Futuras):**
+  - [Severidade Baixa / Melhoria] `src/guaraci_cli/generate_templates.lua:68-71`: Nomes de campo que coincidem com palavras reservadas de Lua (ex: `end`, `function`, `repeat`, `local`) passam na regex `NAME_PATTERN = "^[%a_][%w_]*$"`, mas ao serem emitidos sem colchetes em `schema_field_lines` (`end = { type = ... }`) causam erro de sintaxe em tempo de carga do Lua. Recomenda-se renderizar chaves entre colchetes (`[%q] = ...`) ou rejeitar palavras reservadas no parser.

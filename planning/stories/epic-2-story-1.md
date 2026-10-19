@@ -56,3 +56,12 @@ Notes:
 - End-to-end sanity check beyond the story's own unit tests: regenerated a `Product` (tenant, 2 fields) and a `Widget` (`--no-tenant`, no fields) endpoint with `bin/guaraci` in a scratch directory and ran their generated `spec/*_spec.lua` files directly — all 10 generated assertions passed (list/create/400/404/tenant-isolation for Product; list/create/non-table-400/404/no-tenant-header for Widget). This was blocked in E1-S2 because `route_introspection` did not exist yet; it now resolves and the whole generator → runtime chain works.
 - Verification: `lua5.4 tests/run_all.lua` → ALL SPECS PASSED; `luajit tests/run_all.lua` → ALL SPECS PASSED; `lua5.4 scripts/check_rockspec.lua` → ROCKSPEC CHECK: OK; `lua5.4 scripts/smoke_cgi.lua` → SMOKE CGI: OK; `luacheck --no-color src hooks scripts tests bin` → 0 warnings / 0 errors in 104 files.
 - No conflict found between this story's instructions and Epic 1's code.
+
+## QA Findings
+
+- **Status:** Approved (mantido como Done)
+- **Verificações Realizadas:**
+  - Registro de metadados via `route_introspection.describe()` com idempotência de sobrescrita confirmada.
+  - Introspecção segura: `route_introspection.all()` inspeciona metadados de rotas registradas no `router_v2` sem jamais invocar os handlers de negócio.
+  - Ordem determinística de iteração: rotas agrupadas por método na ordem fixa `GET, POST, PUT, PATCH, DELETE, HEAD` e na ordem estável de registro.
+  - Reset de ciclo de vida: `route_introspection.clear()` integrado no `reset_app_state` de `dev.lua`, garantindo que múltiplos reloads não acumulem rotas ou metadados obsoletos.
