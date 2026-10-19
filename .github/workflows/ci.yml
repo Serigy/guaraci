@@ -85,7 +85,9 @@ jobs:
           submodules: true
       - name: Fail on leftover "nika"
         run: |
-          if grep -rniE "\bnika\b|\.nika\b" docs src README.md openwiki; then
+          # Lines marked "stale-names-allow" are deliberate historical/deprecation
+          # references to the pre-rename LuaRocks module name, not leftovers.
+          if grep -rniE "\bnika\b|\.nika\b" docs src README.md openwiki | grep -v 'stale-names-allow'; then
             echo "::error::Stale 'nika' names found (project renamed to Guaraci)"
             exit 1
           fi
