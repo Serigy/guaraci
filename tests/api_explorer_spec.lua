@@ -215,4 +215,155 @@ describe("api_explorer.assets", function()
         assert.is_not_nil(assets.js:find("textContent", 1, true))
         assert.is_not_nil(assets.js:find("createElement", 1, true))
     end)
+
+    it("omits the CSRF header for GET/HEAD and sends it for POST/PUT/PATCH/DELETE", function()
+        assert.is_not_nil(assets.js:find("UNSAFE_METHODS", 1, true))
+        assert.is_not_nil(assets.js:find('POST: true, PUT: true, PATCH: true, DELETE: true', 1, true))
+        assert.is_not_nil(assets.js:find('headers["X-CSRF-Token"]', 1, true))
+        assert.is_not_nil(assets.js:find("guaraci_csrf_token", 1, true))
+    end)
+
+    it("validates JSON bodies client-side before sending", function()
+        assert.is_not_nil(assets.js:find("JSON.parse", 1, true))
+        assert.is_not_nil(assets.js:find("Invalid JSON body", 1, true))
+    end)
+
+    it("renders status, every header, and pretty-printed JSON or raw text", function()
+        assert.is_not_nil(assets.js:find("res.headers", 1, true))
+        assert.is_not_nil(assets.js:find("headers.forEach", 1, true))
+        assert.is_not_nil(assets.js:find("JSON.stringify(JSON.parse(bodyText), null, 2)", 1, true))
+        assert.is_not_nil(assets.js:find("renderNetworkError", 1, true))
+        assert.is_not_nil(assets.js:find("status-error", 1, true))
+    end)
+
+    it("builds same-origin requests only, encoding path/query values", function()
+        assert.is_not_nil(assets.js:find("encodeURIComponent", 1, true))
+        assert.is_nil(assets.js:find("http://", 1, true))
+        assert.is_nil(assets.js:find("https://", 1, true))
+    end)
+
+    it("transmits the validated JSON object as a form-encoded body the server can parse", function()
+        -- adapter_cgi.lua only decodes application/x-www-form-urlencoded (and multipart)
+        -- bodies into req.body_table; there is no JSON request-body decoder anywhere in the
+        -- framework, so sending Content-Type: application/json would silently never reach
+        -- auto_crud's validation/handler at all. The JSON editor still validates the
+        -- payload as a JSON object client-side (JSON.parse + an is-a-plain-object check)
+        -- before it is form-encoded for transmission.
+        assert.is_not_nil(assets.js:find('"application/x-www-form-urlencoded"', 1, true))
+        assert.is_nil(assets.js:find('"application/json"', 1, true))
+        assert.is_not_nil(assets.js:find("JSON body must be an object", 1, true))
+    end)
+end)
+
+describe("explorer request pipeline (E3-S2): CSRF, validation and tenant behavior over handle_request", function()
+    local middleware_chain = require("middleware_chain")
+
+    local function raw_request(method, path, opts)
+        opts = opts or {}
+        return guaraci.handle_request({
+            method = method, path = path, headers = opts.headers, body_table = opts.body_table
+        }, { auto_register_default_hooks = false, env = "dev" })
+    end
+
+    before_each(function()
+        router_v2.clear()
+        middleware_chain.clear()
+    end)
+
+    after_each(function()
+        router_v2.clear()
+        middleware_chain.clear()
+    end)
+
+    it("rejects a mutating request with an absent or mismatched CSRF token, accepts a matching one", function()
+        router_v2.post("/csrf_check", function(req, res) res.body = "ok"; return res end)
+        guaraci.use(guaraci.middleware_csrf(), "csrf")
+
+        local absent = raw_request("POST", "/csrf_check", { body_table = {} })
+        assert.are.equal(403, absent.status)
+        assert.is_not_nil(absent.body:find("csrf_token_invalid", 1, true))
+
+        local mismatched = raw_request("POST", "/csrf_check", {
+            headers = { ["X-CSRF-Token"] = "0000000000000000", Cookie = "guaraci_csrf_token=1111111111111111" },
+            body_table = {}
+        })
+        assert.are.equal(403, mismatched.status)
+
+        local token = "abcdefabcdefabcdefabcdefabcdefab"
+        local matching = raw_request("POST", "/csrf_check", {
+            headers = { ["X-CSRF-Token"] = token, Cookie = "guaraci_csrf_token=" .. token },
+            body_table = {}
+        })
+        assert.are.equal(200, matching.status)
+        assert.are.equal("ok", matching.body)
+    end)
+
+    it("rejects a mutation missing a required field with 400 and never calls the database", function()
+        local db = require("db")
+        local dataware = require("dataware")
+        local auto_crud = require("auto_crud")
+        local calls = {}
+
+        dataware.clear()
+        db.set_driver({
+            execute_prepared = function(sql, params)
+                calls[#calls + 1] = { sql = sql, params = params }
+                return { { id = 1 } }
+            end
+        })
+
+        local model = dataware.model("ExplorerWidget"):table("explorer_widgets")
+        model:schema({ title = { type = "string", required = true } })
+
+        local group = guaraci.group("/explorer_widgets")
+        group.use(function(req, res)
+            local method = string.upper(tostring(req.method or "GET"))
+            if method ~= "POST" and method ~= "PUT" then
+                return false
+            end
+            local payload = type(req.body_table) == "table" and req.body_table or {}
+            if payload.title == nil or payload.title == "" then
+                res.status = 400
+                res.headers = res.headers or {}
+                res.headers["Content-Type"] = "application/json; charset=utf-8"
+                res.body = '{"code":"invalid_request","message":"Field title is required","retryable":false}'
+                return true
+            end
+            return false
+        end, "explorer_widgets_validate", 60)
+        auto_crud.generate(model, group, { base_path = "" })
+
+        local res = raw_request("POST", "/explorer_widgets", {
+            headers = { ["X-Tenant-Id"] = "tenant-a" }, body_table = {}
+        })
+
+        assert.are.equal(400, res.status)
+        assert.are.equal(0, #calls)
+    end)
+
+    it("does not block a --no-tenant request for lacking a tenant header", function()
+        router_v2.get("/no_tenant_check", function(req, res)
+            res.status = 200
+            res.body = "ok"
+            return res
+        end)
+        local res = raw_request("GET", "/no_tenant_check", {})
+        assert.are.equal(200, res.status)
+    end)
+
+    it("blocks a tenant-required request lacking X-Tenant-Id with 403 tenant_required", function()
+        local db = require("db")
+        local dataware = require("dataware")
+        local auto_crud = require("auto_crud")
+        dataware.clear()
+        db.set_driver({ execute_prepared = function() return { { total = 0 } } end })
+
+        local model = dataware.model("ExplorerTenanted"):table("explorer_tenanted"):tenant("tenant_id")
+        local group = guaraci.group("/explorer_tenanted")
+        auto_crud.generate(model, group, { base_path = "" })
+
+        local res = raw_request("GET", "/explorer_tenanted", {})
+        assert.are.equal(403, res.status)
+        assert.is_not_nil(res.body:find("Tenant context required", 1, true))
+    end)
 end)

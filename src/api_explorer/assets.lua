@@ -186,6 +186,62 @@ header h1 {
     padding: 0.75rem;
     border-radius: 4px;
 }
+
+#response-meta {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 0.2rem 0.75rem;
+    margin: 0 0 0.75rem;
+}
+
+#response-meta dt {
+    font-weight: 600;
+}
+
+#response-meta dd {
+    margin: 0;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+}
+
+.status-ok {
+    color: #15803d;
+}
+
+.status-error {
+    color: #b91c1c;
+}
+
+.try-form {
+    margin-top: 0.6rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: end;
+}
+
+.try-form .field {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.85rem;
+    gap: 0.15rem;
+}
+
+.try-form input,
+.try-form textarea {
+    font-size: 0.9rem;
+    padding: 0.2rem 0.3rem;
+}
+
+.try-form textarea {
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    min-width: 16rem;
+}
+
+.form-error {
+    color: #b91c1c;
+    margin: 0;
+    width: 100%;
+}
 ]==]
 
 M.js = [==[(function () {
@@ -244,6 +300,220 @@ M.js = [==[(function () {
         return li;
     }
 
+    var UNSAFE_METHODS = { POST: true, PUT: true, PATCH: true, DELETE: true };
+
+    function readCookie(name) {
+        var match = document.cookie.match(new RegExp("(?:^|; )" + name + "=([^;]*)"));
+        return match ? decodeURIComponent(match[1]) : null;
+    }
+
+    function clearNode(node) {
+        while (node.firstChild) {
+            node.removeChild(node.firstChild);
+        }
+    }
+
+    function buildUrl(op, values) {
+        var path = op.path.replace(/\{([^}]+)\}/g, function (_, name) {
+            return encodeURIComponent(values.path[name] || "");
+        });
+        var query = [];
+        Object.keys(values.query).forEach(function (name) {
+            var value = values.query[name];
+            if (value !== "") {
+                query.push(encodeURIComponent(name) + "=" + encodeURIComponent(value));
+            }
+        });
+        return query.length > 0 ? path + "?" + query.join("&") : path;
+    }
+
+    function addMetaRow(dl, name, value, className) {
+        var dt = document.createElement("dt");
+        dt.textContent = name;
+        dl.appendChild(dt);
+        var dd = document.createElement("dd");
+        dd.textContent = value;
+        if (className) {
+            dd.className = className;
+        }
+        dl.appendChild(dd);
+    }
+
+    function renderResponse(status, headers, bodyText) {
+        var section = document.getElementById("response");
+        section.hidden = false;
+
+        var meta = document.getElementById("response-meta");
+        clearNode(meta);
+        addMetaRow(meta, "Status", String(status), status >= 200 && status < 300 ? "status-ok" : "status-error");
+        headers.forEach(function (value, name) {
+            addMetaRow(meta, name, value);
+        });
+
+        var pretty = bodyText;
+        try {
+            pretty = JSON.stringify(JSON.parse(bodyText), null, 2);
+        } catch (parseErr) {
+            pretty = bodyText;
+        }
+        document.getElementById("response-body").textContent = pretty;
+    }
+
+    function renderNetworkError(err) {
+        var section = document.getElementById("response");
+        section.hidden = false;
+        var meta = document.getElementById("response-meta");
+        clearNode(meta);
+        addMetaRow(meta, "Error", "Network error", "status-error");
+        document.getElementById("response-body").textContent = String((err && err.message) || err);
+    }
+
+    // The server's CGI adapter only decodes application/x-www-form-urlencoded (and
+    // multipart) bodies into req.body_table; there is no JSON request-body decoder anywhere
+    // in the framework (confirmed by reading adapter_cgi.lua and json_util.lua), so a raw
+    // application/json request would never reach the generated route's validation/auto_crud
+    // handler at all. The JSON editor still validates the payload as a JSON object
+    // client-side (required by this story), but it is transmitted as top-level form fields
+    // the server already knows how to parse; a nested value is re-serialized with
+    // JSON.stringify, matching the documented "table" field contract (the column stores the
+    // JSON-encoded string, not a nested object).
+    function encodeFormBody(fields) {
+        return Object.keys(fields).map(function (key) {
+            var value = fields[key];
+            var text = (typeof value === "object" && value !== null) ? JSON.stringify(value) : String(value);
+            return encodeURIComponent(key) + "=" + encodeURIComponent(text);
+        }).join("&");
+    }
+
+    function sendRequest(op, values, body) {
+        var headers = {};
+        var fetchOpts = { method: op.method, credentials: "same-origin", headers: headers };
+
+        if (body !== null) {
+            headers["Content-Type"] = "application/x-www-form-urlencoded";
+            fetchOpts.body = encodeFormBody(body);
+        }
+
+        if (UNSAFE_METHODS[op.method]) {
+            var token = readCookie("guaraci_csrf_token");
+            if (token) {
+                headers["X-CSRF-Token"] = token;
+            }
+        }
+
+        fetch(buildUrl(op, values), fetchOpts)
+            .then(function (res) {
+                return res.text().then(function (text) {
+                    renderResponse(res.status, res.headers, text);
+                });
+            })
+            .catch(renderNetworkError);
+    }
+
+    function createFieldInput(param, kind) {
+        var label = document.createElement("label");
+        label.className = "field";
+
+        var text = document.createElement("span");
+        text.textContent = param.name + (param.required ? " *" : "");
+        label.appendChild(text);
+
+        var input = document.createElement("input");
+        input.type = "text";
+        input.dataset.paramName = param.name;
+        input.dataset.paramKind = kind;
+        label.appendChild(input);
+
+        return label;
+    }
+
+    function createTryForm(op) {
+        var form = document.createElement("form");
+        form.className = "try-form";
+
+        var pathParams = (op.operation.parameters || []).filter(function (p) { return p["in"] === "path"; });
+        var queryParams = (op.operation.parameters || []).filter(function (p) { return p["in"] === "query"; });
+        var hasBody = Boolean(op.operation.requestBody);
+
+        pathParams.concat(queryParams).forEach(function (param) {
+            form.appendChild(createFieldInput(param, param["in"]));
+        });
+
+        var bodyField = null;
+        if (hasBody) {
+            var bodyLabel = document.createElement("label");
+            bodyLabel.className = "field";
+            var bodyText = document.createElement("span");
+            bodyText.textContent = "JSON body";
+            bodyLabel.appendChild(bodyText);
+            bodyField = document.createElement("textarea");
+            bodyField.rows = 4;
+            bodyField.placeholder = "{}";
+            bodyLabel.appendChild(bodyField);
+            form.appendChild(bodyLabel);
+        }
+
+        var error = document.createElement("p");
+        error.className = "form-error";
+        error.hidden = true;
+        form.appendChild(error);
+
+        var submit = document.createElement("button");
+        submit.type = "submit";
+        submit.textContent = "Send " + op.method;
+        form.appendChild(submit);
+
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            error.hidden = true;
+            error.textContent = "";
+
+            var values = { path: {}, query: {} };
+            var missing = [];
+
+            pathParams.forEach(function (param) {
+                var input = form.querySelector(
+                    'input[data-param-name="' + param.name + '"][data-param-kind="path"]');
+                if (param.required && input.value === "") {
+                    missing.push(param.name);
+                }
+                values.path[param.name] = input.value;
+            });
+            queryParams.forEach(function (param) {
+                var input = form.querySelector(
+                    'input[data-param-name="' + param.name + '"][data-param-kind="query"]');
+                values.query[param.name] = input.value;
+            });
+
+            if (missing.length > 0) {
+                error.textContent = "Missing required field(s): " + missing.join(", ");
+                error.hidden = false;
+                return;
+            }
+
+            var bodyRaw = bodyField ? bodyField.value.trim() : "";
+            var parsedBody = null;
+            if (bodyRaw !== "") {
+                try {
+                    parsedBody = JSON.parse(bodyRaw);
+                } catch (parseErr) {
+                    error.textContent = "Invalid JSON body: " + parseErr.message;
+                    error.hidden = false;
+                    return;
+                }
+                if (typeof parsedBody !== "object" || parsedBody === null || Array.isArray(parsedBody)) {
+                    error.textContent = "JSON body must be an object";
+                    error.hidden = false;
+                    return;
+                }
+            }
+
+            sendRequest(op, values, parsedBody);
+        });
+
+        return form;
+    }
+
     function createOperationItem(op) {
         var li = document.createElement("li");
         li.className = "operation";
@@ -287,18 +557,14 @@ M.js = [==[(function () {
             li.appendChild(list);
         }
 
-        return li;
-    }
+        li.appendChild(createTryForm(op));
 
-    function clearChildren(node) {
-        while (node.firstChild) {
-            node.removeChild(node.firstChild);
-        }
+        return li;
     }
 
     function render() {
         var list = document.getElementById("operation-list");
-        clearChildren(list);
+        clearNode(list);
 
         var methodFilter = document.getElementById("method-filter").value;
         var textFilter = document.getElementById("path-filter").value;
@@ -322,7 +588,7 @@ M.js = [==[(function () {
 
     function showLoadError() {
         var list = document.getElementById("operation-list");
-        clearChildren(list);
+        clearNode(list);
         var li = document.createElement("li");
         li.className = "error";
         li.textContent = "Failed to load the API catalog.";

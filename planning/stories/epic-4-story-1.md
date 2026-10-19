@@ -1,6 +1,6 @@
 # Epic 4 — Story 1: Document, validate, and prepare the release
 
-**Status:** Draft
+**Status:** Ready
 
 ## User Story Goal
 
