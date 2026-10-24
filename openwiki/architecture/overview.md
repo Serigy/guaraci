@@ -2,9 +2,6 @@
 type: "Reference"
 title: "Architecture Overview"
 openwiki_generated: true
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-16T16:12:57.544Z
 ---
 
 

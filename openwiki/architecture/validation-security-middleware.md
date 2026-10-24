@@ -3,9 +3,6 @@ type: architecture
 title: Validation, Binding, and Security Middleware
 description: Declarative schema validation, JSON/form binding with type coercion, and the native CORS, CSRF, and rate-limit security middlewares.
 tags: [lua, validation, binding, cors, csrf, rate-limit, security]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-16T16:12:57.544Z
 ---
 
 # Validation, Binding, and Security Middleware
