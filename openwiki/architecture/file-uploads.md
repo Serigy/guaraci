@@ -3,9 +3,6 @@ type: architecture
 title: File Uploads
 description: How Guaraci parses multipart/form-data requests, validates MIME type and size, stores files through a pluggable provider registry, and cleans up per-request uploads.
 tags: [lua, upload, multipart, mime, validation, storage, security]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-16T16:12:57.544Z
 ---
 
 # File Uploads
