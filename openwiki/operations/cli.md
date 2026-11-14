@@ -1,9 +1,9 @@
 ---
-type: operations
-title: CLI
-description: The guaraci command-line interface: project scaffolding with new, template checking, spec running, and the development server.
-tags: [lua, cli, tooling, quickstart, scaffolding]
+type: "Reference"
+title: "CLI"
+openwiki_generated: true
 ---
+
 
 # CLI
 

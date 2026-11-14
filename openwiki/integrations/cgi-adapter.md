@@ -3,9 +3,6 @@ type: integration
 title: CGI Adapter
 description: The reference CGI adapter that translates the CGI environment into Guaraci's agnostic request/response contract, plus the request/response factory and the smoke-test path.
 tags: [lua, cgi, adapter, integration, smoke-test]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-16T16:12:57.544Z
 ---
 
 # CGI Adapter

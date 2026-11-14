@@ -3,9 +3,6 @@ type: architecture
 title: Routing and Middleware
 description: Explicit Gin-style routing with router_v2, prefixed route groups, the priority-ordered middleware chain, the request-scoped context store, and the deprecated file-system router.
 tags: [lua, routing, middleware, route-group, context-store]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-16T16:12:57.544Z
 ---
 
 # Routing and Middleware

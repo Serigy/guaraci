@@ -58,11 +58,11 @@
       "completedRunId": "76c6e8eb-9320-46ce-b591-5380f91967d0"
     },
     "/openwiki/operations/testing-release.md": {
+      "gitHead": "c36c22cb1a0f223fd20151b8b9fa4f638eafa602",
+      "sourceFingerprint": "sha256:e277dbd166e30445650f7b94880cb78b22f7e237109c3746f7c6baec0e439b0e",
       "pageVersion": "sha256:64b1cd4f41558f220e4173df1a702f03939e349d44fdae1139a07a31242ea4f0",
       "completedBy": "pi",
-      "completedRunId": "76c6e8eb-9320-46ce-b591-5380f91967d0",
-      "gitHead": "c36c22cb1a0f223fd20151b8b9fa4f638eafa602",
-      "sourceFingerprint": "sha256:e277dbd166e30445650f7b94880cb78b22f7e237109c3746f7c6baec0e439b0e"
+      "completedRunId": "76c6e8eb-9320-46ce-b591-5380f91967d0"
     }
   }
 }

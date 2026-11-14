@@ -3,9 +3,6 @@ type: operations
 title: Testing and Release
 description: The self-contained Busted-style test harness, the local runner, and the GitHub Actions release/packaging pipeline (GitHub Release + LuaRocks).
 tags: [lua, testing, busted, ci, release, luarocks, github-actions]
-verified:
-  - by: openwiki/0.7.2
-    at: 2026-10-16T16:12:57.544Z
 ---
 
 # Testing and Release
