@@ -1,9 +1,9 @@
 ---
-type: quickstart
-title: Quickstart
-description: How to install, run, and write a first Guaraci application: routing, .gc templates, and the CGI adapter.
-tags: [lua, quickstart, getting-started, guaraci]
+type: "Reference"
+title: "Quickstart"
+openwiki_generated: true
 ---
+
 
 # Quickstart
 
